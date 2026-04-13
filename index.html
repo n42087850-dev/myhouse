@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MYHOUSE</title>
+</head>
+<body style="background:#0f172a; color:white; font-family:sans-serif; display:flex; flex-direction:column; align-items:center; padding:20px;">
+    
+    <h1 style="color:#38bdf8;">MYHOUSE: МАТЕРИАЛЫ + МАСТЕР</h1>
+    
+    <div style="background:#1e293b; padding:20px; border-radius:15px; width:100%; max-width:400px; position:relative; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+        <!-- Кнопка копирования -->
+        <button onclick="copyRes()" id="copyBtn" style="display:none; position:absolute; top:10px; right:10px; background:#334155; color:#38bdf8; border:1px solid #38bdf8; border-radius:8px; padding:5px 10px; cursor:pointer; font-size:12px; z-index:10;">
+            📋 Копировать
+        </button>
+
+        <select id="t" style="width:100%; padding:10px; margin-bottom:10px; border-radius:5px;">
+            <option value="living_room">Гостиная</option>
+            <option value="kitchen">Кухня</option>
+            <option value="bathroom">Ванная</option>
+            <option value="bedroom">Спальня</option>
+            <option value="toilet">Туалет</option>
+        </select>
+        
+        <div style="display:flex; gap:5px; margin-bottom:10px;">
+            <input id="w" type="number" placeholder="Ширина" style="width:33%; padding:10px; border-radius:5px; border:none;">
+            <input id="l" type="number" placeholder="Длина" style="width:33%; padding:10px; border-radius:5px; border:none;">
+            <input id="h" type="number" value="2.7" style="width:33%; padding:10px; border-radius:5px; border:none;">
+        </div>
+
+        <label style="font-size:14px; color:#94a3b8;">Цена мастера за м² (UZS):</label>
+        <input id="rate" type="number" value="80000" style="width:95%; padding:10px; margin:10px 0; border-radius:5px; border:none;">
+        
+        <select id="s" style="width:100%; padding:10px; margin-bottom:10px; border-radius:5px;">
+            <option value="minimal">Минимализм</option>
+            <option value="modern">Модерн</option>
+            <option value="luxury">Люкс</option>
+        </select>
+
+        <button onclick="calc()" style="width:100%; background:#38bdf8; color:#0f172a; padding:15px; border:none; border-radius:10px; font-weight:bold; cursor:pointer; font-size:16px;">ПОСЧИТАТЬ ВСЁ</button>
+    </div>
+
+    <div id="res" style="width:100%; max-width:450px; margin-top:20px;"></div>
+    <div id="img" style="width:100%; max-width:800px; margin-top:20px;"></div>
+
+<script>
+let lastText = ""; 
+
+async function calc() {
+    const resDiv = document.getElementById('res');
+    const imgDiv = document.getElementById('img');
+    const copyBtn = document.getElementById('copyBtn');
+    resDiv.innerHTML = '<p style="color:#38bdf8; text-align:center;">Связь с сервером...</p>';
+
+    try {
+        const roomType = document.getElementById('t').value;
+        const roomName = document.getElementById('t').options[document.getElementById('t').selectedIndex].text;
+        const width = parseFloat(document.getElementById('w').value) || 0;
+        const length = parseFloat(document.getElementById('l').value) || 0;
+        const height = parseFloat(document.getElementById('h').value) || 2.7;
+        const style = document.getElementById('s').value;
+        const rate = parseFloat(document.getElementById('rate').value) || 0;
+
+        const body = { 
+            rooms: [{ type: roomType, width: width, length: length, height: height }], 
+            style: style, 
+            master_rate: rate 
+        };
+
+        const r = await fetch("http://127.0.0.1:8000/calculate", { 
+            method: "POST", 
+            headers: {"Content-Type":"application/json"}, 
+            body: JSON.stringify(body) 
+        });
+        
+        if (!r.ok) throw new Error('Ошибка бэкенда');
+        
+        const d = await r.json();
+        const materials = d.details[0].materials_list;
+
+        // Формируем текст для копирования (без лишних символов)
+        lastText = "РАСЧЕТ MYHOUSE:\n" +
+                   "Помещение: " + roomName + "\n" +
+                   "Материалы: " + d.mat_cost.toLocaleString() + " сум\n" +
+                   "Работа: " + d.work_cost.toLocaleString() + " сум\n" +
+                   "Итого: " + (d.mat_cost + d.work_cost).toLocaleString() + " сум\n\n" +
+                   "Список материалов:\n" + 
+                   materials.map(m => "- " + m.n + ": " + m.q + " " + m.u).join("\n");
+
+        // Вывод результата на экран
+        let matHtml = "";
+        materials.forEach(m => {
+            matHtml += '<li style="margin-bottom:5px;">' + m.n + ': <b style="color:#38bdf8;">' + m.q + ' ' + m.u + '</b></li>';
+        });
+
+        resDiv.innerHTML = `
+            <div style="background:#1e293b; padding:20px; border-radius:15px; border:2px solid #10b981;">
+                <p>💰 Материалы: <b>` + d.mat_cost.toLocaleString() + ` сум</b></p>
+                <p>👷 Работа мастера: <b>` + d.work_cost.toLocaleString() + ` сум</b></p>
+                <hr style="border:0; border-top:1px solid #334155; margin:15px 0;">
+                <h4 style="margin:0 0 10px 0;">📋 Список материалов:</h4>
+                <ul style="font-size:13px; list-style:none; padding:0; margin:0;">` + matHtml + `</ul>
+            </div>`;
+
+        copyBtn.style.display = "block";
+
+        const ir = await fetch("http://127.0.0.1:8000/design/" + roomType + "/" + style);
+        const id = await ir.json();
+        imgDiv.innerHTML = '<img src="' + id.image + '" style="width:100%; border-radius:20px; margin-top:10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">';
+        
+    } catch (err) {
+        resDiv.innerHTML = '<div style="color:#ef4444; background:#451a1a; padding:15px; border-radius:10px;">⚠️ Ошибка: Проверь бэкенд (uvicorn)</div>';
+        console.error(err);
+    }
+}
+
+function copyRes() {
+    if (!lastText) return;
+    navigator.clipboard.writeText(lastText).then(function() {
+        const btn = document.getElementById('copyBtn');
+        btn.innerText = "✅ Готово";
+        setTimeout(function() { btn.innerText = "📋 Копировать"; }, 2000);
+    }).catch(function(err) {
+        alert("Не удалось скопировать");
+    });
+}
+</script>
+<div style="display: flex; justify-content: center; width: 100%;">
+    <p style="color: #64748b; font-size: 11px; text-align: center; margin-top: 20px; max-width: 500px; line-height: 1.5; border-left: 2px solid #38bdf8; padding-left: 15px;">
+        <i>* Данный программный продукт является прототипом. Расчеты произведены на основе стилей Минимализм, Модерн и Люкс. Визуализации представлены в качестве стилистических референсов. Для получения юридически значимой сметы рекомендуется консультация со специалистом.</i>
+    </p>
+</div>
+
+<footer style="margin-top: 50px; padding: 30px; border-top: 1px solid #1e293b; width: 100%; text-align: center; background: linear-gradient(to bottom, transparent, #0f172a);">
+    <p style="color: #94a3b8; font-size: 14px; letter-spacing: 2px; margin-bottom: 8px;">
+        PROJECT ARCHITECT & DEVELOPER
+    </p>
+    <p style="color: #f8fafc; font-size: 18px; font-weight: 800; text-transform: uppercase;">
+        <span style="color: #38bdf8;">NODIRJON</span> SOBIROV
+    </p>
+    <p style="color: #64748b; font-size: 12px; font-style: italic; margin-top: 5px;">
+        Student at Tashkent University of Information Technologies (TUIT)
+    </p>
+    <div style="margin-top: 15px; height: 2px; width: 50px; background: #38bdf8; margin-left: auto; margin-right: auto;"></div>
+    <p style="color: #475569; font-size: 10px; margin-top: 15px; text-transform: uppercase; letter-spacing: 1px;">
+        © 2026 MyHouse AI Solution | All Intellectual Property Reserved
+    </p>
+</footer>
+
+                                                                                                                                                                                                                                                                                                                      
+</footer>
+</body>
+</html>
