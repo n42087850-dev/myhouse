@@ -106,7 +106,7 @@ async function calc() {
 
         const ir = await fetch('https://myhouse-mc1v.onrender.com/design/' + roomType + '/' + style);
         const id = await ir.json();
-        imgDiv.innerHTML = '<img src="' + id.image + '" style="width:100%; border-radius:20px; margin-top:10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">';
+        imgDiv.innerHTML = '<img src="https://myhouse-mc1v.onrender.com/' + id.image + '" style="width:100%; border-radius:20px; margin-top:10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">';
         
     } catch (err) {
         resDiv.innerHTML = '<div style="color:#ef4444; background:#451a1a; padding:15px; border-radius:10px;">⚠️ Ошибка: Проверь бэкенд (uvicorn)</div>';
