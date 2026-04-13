@@ -104,7 +104,7 @@ async function calc() {
 
         copyBtn.style.display = "block";
 
-        const ir = await fetch('https://myhouse-mc1v.onrender.com/design/ + roomType + "/" + style);
+        const ir = await fetch('https://myhouse-mc1v.onrender.com/design/' + roomType) + roomType + "/" + style);
         const id = await ir.json();
         imgDiv.innerHTML = '<img src="' + id.image + '" style="width:100%; border-radius:20px; margin-top:10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">';
         
