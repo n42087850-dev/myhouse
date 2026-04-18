@@ -1,153 +1,254 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <title>MYHOUSE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MYHOUSE AI Solution</title>
+    <style>
+        :root {
+            --primary: #38bdf8;
+            --gold: #fbbf24;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .room-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+            position: relative;
+        }
+        .remove-room {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        input, select {
+            background: #334155;
+            color: white;
+            border: 1px solid #475569;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            outline: none;
+        }
+        input:focus { border-color: var(--primary); }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        
+        .add-btn {
+            width: 100%;
+            background: transparent;
+            border: 2px dashed var(--primary);
+            color: var(--primary);
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+        .add-btn:hover { background: rgba(56, 189, 248, 0.1); }
+        
+        .main-btn {
+            width: 100%;
+            background: var(--primary);
+            color: var(--bg);
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+        .master-info-box {
+            font-size: 12px;
+            color: var(--gold);
+            cursor: help;
+            text-decoration: underline;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+        #res { margin-top: 25px; }
+        .res-card {
+            background: #020617;
+            border: 1px solid var(--primary);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        img { width: 100%; border-radius: 15px; margin-top: 15px; }
+    </style>
 </head>
-<body style="background:#0f172a; color:white; font-family:sans-serif; display:flex; flex-direction:column; align-items:center; padding:20px;">
-    
-    <h1 style="color:#38bdf8;">MYHOUSE: МАТЕРИАЛЫ + МАСТЕР</h1>
-    
-    <div style="background:#1e293b; padding:20px; border-radius:15px; width:100%; max-width:400px; position:relative; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
-        <!-- Кнопка копирования -->
-        <button onclick="copyRes()" id="copyBtn" style="display:none; position:absolute; top:10px; right:10px; background:#334155; color:#38bdf8; border:1px solid #38bdf8; border-radius:8px; padding:5px 10px; cursor:pointer; font-size:12px; z-index:10;">
-            📋 Копировать
-        </button>
+<body>
 
-        <select id="t" style="width:100%; padding:10px; margin-bottom:10px; border-radius:5px;">
-            <option value="living_room">Гостиная</option>
-            <option value="kitchen">Кухня</option>
-            <option value="bathroom">Ванная</option>
-            <option value="bedroom">Спальня</option>
-            <option value="toilet">Туалет</option>
-        </select>
-        
-        <div style="display:flex; gap:5px; margin-bottom:10px;">
-            <input id="w" type="number" placeholder="Ширина" style="width:33%; padding:10px; border-radius:5px; border:none;">
-            <input id="l" type="number" placeholder="Длина" style="width:33%; padding:10px; border-radius:5px; border:none;">
-            <input id="h" type="number" value="2.7" style="width:33%; padding:10px; border-radius:5px; border:none;">
-        </div>
-
-        <label style="font-size:14px; color:#94a3b8;">Цена мастера за м² (UZS):</label>
-        <input id="rate" type="number" value="80000" style="width:95%; padding:10px; margin:10px 0; border-radius:5px; border:none;">
-        
-        <select id="s" style="width:100%; padding:10px; margin-bottom:10px; border-radius:5px;">
-            <option value="minimal">Минимализм</option>
-            <option value="modern">Модерн</option>
-            <option value="luxury">Люкс</option>
-        </select>
-
-        <button onclick="calc()" style="width:100%; background:#38bdf8; color:#0f172a; padding:15px; border:none; border-radius:10px; font-weight:bold; cursor:pointer; font-size:16px;">ПОСЧИТАТЬ ВСЁ</button>
+<div class="container">
+    <div class="header">
+        <h1>MYHOUSE AI</h1>
+        <p style="color: #64748b; font-size: 13px;">Engineering & Visualization System</p>
     </div>
 
-    <div id="res" style="width:100%; max-width:450px; margin-top:20px;"></div>
-    <div id="img" style="width:100%; max-width:800px; margin-top:20px;"></div>
+    <div id="rooms-container"></div>
 
-<script>
-let lastText = ""; 
+    <button class="add-btn" onclick="addRoom()">+ Xona qo'shish (Добавить комнату)</button>
 
-async function calc() {
-    const resDiv = document.getElementById('res');
-    const imgDiv = document.getElementById('img');
-    const copyBtn = document.getElementById('copyBtn');
-    resDiv.innerHTML = '<p style="color:#38bdf8; text-align:center;">Связь с сервером...</p>';
+    <div class="room-card" style="border-left: 4px solid var(--gold);">
+        <label style="font-size: 12px; color: #94a3b8;">Usta haqi (м²) / Ставка мастера:</label>
+        <input id="rate" type="number" value="100000" style="width: 100%; box-sizing: border-box; margin-top: 5px;">
+        <span class="master-info-box" onclick="showMasterWorks()">Nimalar kiradi? (Что входит в стоимость?)</span>
 
-    try {
-        const roomType = document.getElementById('t').value;
-        const roomName = document.getElementById('t').options[document.getElementById('t').selectedIndex].text;
-        const width = parseFloat(document.getElementById('w').value) || 0;
-        const length = parseFloat(document.getElementById('l').value) || 0;
-        const height = parseFloat(document.getElementById('h').value) || 2.7;
-        const style = document.getElementById('s').value;
-        const rate = parseFloat(document.getElementById('rate').value) || 0;
+        <label style="font-size: 12px; color: #94a3b8;">Dizayn uslubi / Стиль дизайна:</label>
+        <select id="style" style="width: 100%; margin-top: 5px;">
+            <option value="minimal">Minimalism</option>
+            <option value="japandi">Japandi</option>
+            <option value="loft">Loft</option>
+            <option value="neoclassic">Neoclassic</option>
+            <option value="ethnic_modern">Ethnic Modern (Uzbek)</option>
+        </select>
+    </div>
 
-        const body = { 
-            rooms: [{ type: roomType, width: width, length: length, height: height }], 
-            style: style, 
-            master_rate: rate 
-        };
+    <button class="main-btn" onclick="calculateAll()">HISOBLASH / ПОСЧИТАТЬ</button>
 
-        const r = await fetch('https://myhouse-mc1v.onrender.com/calculate', { 
-            method: "POST", 
-            headers: {"Content-Type":"application/json"}, 
-            body: JSON.stringify(body) 
-        });
-        
-        if (!r.ok) throw new Error('Ошибка бэкенда');
-        
-        const d = await r.json();
-        const materials = d.details[0].materials_list;
-
-        // Формируем текст для копирования (без лишних символов)
-        lastText = "РАСЧЕТ MYHOUSE:\n" +
-                   "Помещение: " + roomName + "\n" +
-                   "Материалы: " + d.mat_cost.toLocaleString() + " сум\n" +
-                   "Работа: " + d.work_cost.toLocaleString() + " сум\n" +
-                   "Итого: " + (d.mat_cost + d.work_cost).toLocaleString() + " сум\n\n" +
-                   "Список материалов:\n" + 
-                   materials.map(m => "- " + m.n + ": " + m.q + " " + m.u).join("\n");
-
-        // Вывод результата на экран
-        let matHtml = "";
-        materials.forEach(m => {
-            matHtml += '<li style="margin-bottom:5px;">' + m.n + ': <b style="color:#38bdf8;">' + m.q + ' ' + m.u + '</b></li>';
-        });
-
-        resDiv.innerHTML = `
-            <div style="background:#1e293b; padding:20px; border-radius:15px; border:2px solid #10b981;">
-                <p>💰 Материалы: <b>` + d.mat_cost.toLocaleString() + ` сум</b></p>
-                <p>👷 Работа мастера: <b>` + d.work_cost.toLocaleString() + ` сум</b></p>
-                <hr style="border:0; border-top:1px solid #334155; margin:15px 0;">
-                <h4 style="margin:0 0 10px 0;">📋 Список материалов:</h4>
-                <ul style="font-size:13px; list-style:none; padding:0; margin:0;">` + matHtml + `</ul>
-            </div>`;
-
-        copyBtn.style.display = "block";
-
-        const ir = await fetch('https://myhouse-mc1v.onrender.com/design/' + roomType + '/' + style);
-        const id = await ir.json();
-        imgDiv.innerHTML = '<img src="https://myhouse-mc1v.onrender.com/' + id.image + '" style="width:100%; border-radius:20px; margin-top:10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">';
-        
-    } catch (err) {
-        resDiv.innerHTML = '<div style="color:#ef4444; background:#451a1a; padding:15px; border-radius:10px;">⚠️ Ошибка: Проверь бэкенд (uvicorn)</div>';
-        console.error(err);
-    }
-}
-
-function copyRes() {
-    if (!lastText) return;
-    navigator.clipboard.writeText(lastText).then(function() {
-        const btn = document.getElementById('copyBtn');
-        btn.innerText = "✅ Готово";
-        setTimeout(function() { btn.innerText = "📋 Копировать"; }, 2000);
-    }).catch(function(err) {
-        alert("Не удалось скопировать");
-    });
-}
-</script>
-<div style="display: flex; justify-content: center; width: 100%;">
-    <p style="color: #64748b; font-size: 11px; text-align: center; margin-top: 20px; max-width: 500px; line-height: 1.5; border-left: 2px solid #38bdf8; padding-left: 15px;">
-        <i>* Данный программный продукт является прототипом. Расчеты произведены на основе стилей Минимализм, Модерн и Люкс. Визуализации представлены в качестве стилистических референсов. Для получения юридически значимой сметы рекомендуется консультация со специалистом.</i>
-    </p>
+    <div id="res"></div>
+    <div id="img-gallery"></div>
 </div>
 
-<footer style="margin-top: 50px; padding: 30px; border-top: 1px solid #1e293b; width: 100%; text-align: center; background: linear-gradient(to bottom, transparent, #0f172a);">
-    <p style="color: #94a3b8; font-size: 14px; letter-spacing: 2px; margin-bottom: 8px;">
-        PROJECT ARCHITECT & DEVELOPER
-    </p>
-    <p style="color: #f8fafc; font-size: 18px; font-weight: 800; text-transform: uppercase;">
-        <span style="color: #38bdf8;">NODIRJON</span> SOBIROV
-    </p>
-    <p style="color: #64748b; font-size: 12px; font-style: italic; margin-top: 5px;">
-        Student at Tashkent University of Information Technologies (TUIT)
-    </p>
-    <div style="margin-top: 15px; height: 2px; width: 50px; background: #38bdf8; margin-left: auto; margin-right: auto;"></div>
-    <p style="color: #475569; font-size: 10px; margin-top: 15px; text-transform: uppercase; letter-spacing: 1px;">
-        © 2026 MyHouse AI Solution | All Intellectual Property Reserved
-    </p>
+<script>
+    let roomCount = 0;
+
+    // Функция добавления новой комнаты
+    function addRoom() {
+        roomCount++;
+        const container = document.getElementById('rooms-container');
+        const div = document.createElement('div');
+        div.className = 'room-card';
+        div.id = `room-${roomCount}`;
+        div.innerHTML = `
+            <span class="remove-room" onclick="removeRoom(${roomCount})">×</span>
+            <select class="r-type" style="width: 100%;">
+                <option value="living_room">Mehmonxona (Гостиная)</option>
+                <option value="bedroom">Yotoqxona (Спальня)</option>
+                <option value="kitchen">Oshxona (Кухня)</option>
+                <option value="bathroom">Vanna (Ванная)</option>
+                <option value="toilet">Hojatxona (Туалет)</option>
+            </select>
+            <div class="grid-3">
+                <input class="r-w" type="number" placeholder="Eni (м)">
+                <input class="r-l" type="number" placeholder="Bo'yi (м)">
+                <input class="r-h" type="number" placeholder="Balandligi" value="2.7">
+            </div>
+            <input class="r-o" type="number" placeholder="Eshik/Oyna m² (Проемы)" style="width: 100%; box-sizing: border-box;">
+        `;
+        container.appendChild(div);
+    }
+
+    function removeRoom(id) {
+        document.getElementById(`room-${id}`).remove();
+    }
+
+    function showMasterWorks() {
+        alert("В стоимость включено:\n- Стяжка и наливной пол\n- Штукатурка и шпатлевка\n- Грунтовка стен/пола\n- Поклейка обоев/покраска\n- Укладка покрытия (Таркетт/Кафель)\n- Монтаж гипсокартона");
+    }
+
+    async function calculateAll() {
+        const rooms = [];
+        const cards = document.querySelectorAll('.room-card:not([style*="gold"])');
+        
+        cards.forEach(card => {
+            rooms.push({
+                type: card.querySelector('.r-type').value,
+                width: parseFloat(card.querySelector('.r-w').value) || 0,
+                length: parseFloat(card.querySelector('.r-l').value) || 0,
+                height: parseFloat(card.querySelector('.r-h').value) || 2.7,
+                openings_area: parseFloat(card.querySelector('.r-o').value) || 0
+            });
+        });
+
+        const style = document.getElementById('style').value;
+        const rate = parseFloat(document.getElementById('rate').value) || 0;
+
+        try {
+            const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ rooms, style, master_rate: rate })
+            });
+            const data = await response.json();
+            displayResults(data);
+        } catch (e) {
+            alert("Xatolik! Server bilan aloqa yo'q.");
+        }
+    }
+
+    function displayResults(data) {
+        const resDiv = document.getElementById('res');
+        const imgDiv = document.getElementById('img-gallery');
+        
+        let html = `<div class="res-card">
+            <h3 style="color:var(--primary); margin-top:0;">UMUMIY HISOB (ИТОГО):</h3>
+            <p>👷 Ish haqi: <b style="color:var(--gold)">${data.summary.total_work_cost}</b></p>
+            <hr border="0" style="border-top:1px solid #334155">
+            <h4>Xarajatlar (Материалы):</h4>
+            <ul style="font-size:14px; padding-left:20px;">
+        `;
+        
+        data.total_materials.forEach(m => {
+            html += `<li>${m}</li>`;
+        });
+        
+        html += `</ul></div>`;
+        resDiv.innerHTML = html;
+
+        // Загружаем картинку для первой комнаты из списка (как пример стиля)
+        const firstRoom = data.details[0].type;
+        const style = data.summary.style_applied;
+        loadDesign(firstRoom, style);
+    }
+
+    async function loadDesign(type, style) {
+        const ir = await fetch(`https://myhouse-mc1v.onrender.com/design/${type}/${style}`);
+        const id = await ir.json();
+        document.getElementById('img-gallery').innerHTML = `<img src="https://myhouse-mc1v.onrender.com/${id.image}" alt="Design">`;
+    }
+
+    // Добавляем одну комнату при старте
+    addRoom();
+</script>
+
+<footer style="margin-top: 50px; text-align: center; color: #64748b; font-size: 12px;">
+    <p>PROJECT ARCHITECT: NODIRJON SOBIROV</p>
+    <p>© 2026 MyHouse AI Solution</p>
 </footer>
 
-                                                                                                                                                                                                                                                                                                                      
-</footer>
 </body>
 </html>

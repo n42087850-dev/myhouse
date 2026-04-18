@@ -1,12 +1,13 @@
-from fastapi import FastAPI # Исправили 'From' на 'from'
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles # Добавили для картинок
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from typing import List
-import os # Добавили для работы с папками
+from typing import List, Optional
+import os
 
-app = FastAPI(title="MYHOUSE Full Engine")
+app = FastAPI(title="MYHOUSE Full Engine V2")
 
+# Разрешаем CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,94 +16,97 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Вот этот блок позволит твоему сайту видеть картинки в интернете
+# Подключение папки с картинками
 script_dir = os.path.dirname(__file__)
 images_path = os.path.join(script_dir, "images")
 if os.path.exists(images_path):
     app.mount("/images", StaticFiles(directory=images_path), name="images")
 
-# Цены только на МАТЕРИАЛЫ (средние по рынку)
-MAT_WALL = 180000      
-MAT_FLOOR = 400000     
-MAT_CEILING = 150000   
+# --- АВТОМАТИЗАЦИЯ КАРТИНОК ---
+ROOM_TYPES = ["living_room", "bedroom", "kitchen", "bathroom", "toilet"]
+STYLES = ["japandi", "loft", "neoclassic", "minimal", "ethnic_modern"]
 
 DESIGN_IMAGES = {
-    "living_room": {
-        "minimal": "images/living_room_minimal.jpg",
-        "modern": "images/living_room_modern.jpg",
-        "luxury": "images/living_room_luxury.jpg"
-    },
-    "bedroom": {
-        "minimal": "images/bedroom_minimal.jpg",
-        "modern": "images/bedroom_modern.jpg",
-        "luxury": "images/bedroom_luxury.jpg"
-    },
-    "kitchen": {
-        "minimal": "images/kitchen_minimal.jpg",
-        "modern": "images/kitchen_modern.jpg",
-        "luxury": "images/kitchen_luxury.jpg"
-    },
-    "bathroom": {
-        "minimal": "images/bathroom_minimal.jpg",
-        "modern": "images/bathroom_modern.jpg",
-        "luxury": "images/bathroom_luxury.jpg"
-    },
-    "toilet": {
-        "minimal": "images/toilet_minimal.jpg",
-        "modern": "images/toilet_modern.jpg",
-        "luxury": "images/toilet_luxury.jpg"
-    }
+    room: {style: f"images/{room}_{style}.jpg" for style in STYLES}
+    for room in ROOM_TYPES
 }
 
+# --- МОДЕЛИ ДАННЫХ ---
 class Room(BaseModel):
     type: str
     width: float
     length: float
     height: float
+    openings_area: float = 0  # Площадь окон и дверей для вычета
 
 class CalculateRequest(BaseModel):
     rooms: List[Room]
     style: str
-    master_rate: float # Цена мастера за м2
+    master_rate: float # Единая ставка (детализация будет в описании)
 
+# --- ЛОГИКА РАСЧЕТА ---
 @app.post("/calculate")
 def calculate(data: CalculateRequest):
-    total_mat_cost = 0
     total_work_cost = 0
     detailed_rooms = []
+    
+    # Коэффициент запаса
+    MARGIN = 1.1 
 
     for room in data.rooms:
-        f_area = room.width * room.length
-        w_area = 2 * (room.width + room.length) * room.height
+        # 1. Площади
+        floor_area = room.width * room.length
+        ceiling_area = floor_area # Потолок равен полу
+        perimeter = 2 * (room.width + room.length)
+        # Стены с вычетом проемов
+        wall_area_net = (perimeter * room.height) - room.openings_area
         
-        # Стоимость материалов
-        m_cost = (f_area * MAT_FLOOR) + (w_area * MAT_WALL) + (f_area * MAT_CEILING)
-        total_mat_cost += m_cost
-        
-        # Стоимость работы мастера (площадь всех поверхностей * ставка)
-        work_cost = (f_area + w_area + f_area) * data.master_rate
+        # 2. Труд мастера (Суммарная площадь поверхностей)
+        # Считаем работу по полу, потолку и чистым стенам
+        total_surface = floor_area + ceiling_area + wall_area_net
+        work_cost = total_surface * data.master_rate
         total_work_cost += work_cost
+
+        # 3. Список материалов (Только материалы!)
+        materials = [
+            {"n": "Цемент М-400 (стяжка)", "q": round(floor_area * 18 * MARGIN), "u": "кг"},
+            {"n": "Грунтовка глубокого проникновения", "q": round(total_surface * 0.3 * MARGIN, 1), "u": "л"},
+            {"n": "Шпатлевка финишная", "q": round(wall_area_net * 1.2 * MARGIN), "u": "кг"},
+            {"n": "Таркетт / Кафель (пол)", "q": round(floor_area * MARGIN, 1), "u": "кв.м"},
+            {"n": "Краска / Обои (стены)", "q": round(wall_area_net * MARGIN, 1), "u": "кв.м"},
+            {"n": "Гипсокартон (потолок)", "q": round(ceiling_area * MARGIN, 1), "u": "кв.м"}
+        ]
 
         detailed_rooms.append({
             "type": room.type,
-            "wall_m2": round(w_area, 2),
-            "floor_m2": round(f_area, 2),
-            "materials_list": [
-                {"n": "Грунтовка", "q": round(w_area / 40, 1), "u": "канистр"},
-                {"n": "Шпатлевка", "q": round(w_area / 12, 1), "u": "мешков"},
-                {"n": "Стяжка", "q": round(f_area / 3, 1), "u": "мешков"},
-                {"n": "Кафель/Таркетт", "q": round(f_area * 1.1, 1), "u": "кв.м"}
-            ]
+            "areas": {
+                "floor": round(floor_area, 2),
+                "ceiling": round(ceiling_area, 2),
+                "walls": round(wall_area_net, 2)
+            },
+            "materials": materials
         })
 
+    # Детализация работ (для вывода при клике на цену мастера)
+    master_works_info = [
+        "Стяжка пола и наливной пол",
+        "Штукатурка и выравнивание стен",
+        "Грунтовка и шпатлевка",
+        "Поклейка обоев / Оттаченто / Эмульсия",
+        "Монтаж гипсокартона",
+        "Укладка напольного покрытия"
+    ]
+
     return {
-        "mat_cost": round(total_mat_cost, 2),
-        "work_cost": round(total_work_cost, 2),
+        "summary": {
+            "total_work_cost": f"{round(total_work_cost):,}".replace(",", " ") + " UZS",
+            "master_works_list": master_works_info
+        },
         "details": detailed_rooms
     }
 
 @app.get("/design/{room_type}/{style}")
 def get_design(room_type: str, style: str):
     room_data = DESIGN_IMAGES.get(room_type, DESIGN_IMAGES["living_room"])
-    img_url = room_data.get(style, room_data["modern"])
+    img_url = room_data.get(style.lower(), room_data["minimal"])
     return {"image": img_url}
