@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYHOUSE AI Solution</title>
+    <title>MYHOUSE</title>
     <style>
         :root {
             --primary: #38bdf8;
@@ -12,141 +12,99 @@
             --card: #1e293b;
             --text: #f8fafc;
         }
+        * { box-sizing: border-box; }
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        .container {
-            width: 100%;
-            max-width: 480px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .header h1 {
-            color: var(--primary);
-            font-size: 24px;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+        .container { width: 100%; max-width: 450px; }
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h1 { color: var(--primary); font-size: 28px; font-weight: 800; margin: 0; letter-spacing: 2px; }
         .room-card {
             background: var(--card);
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 15px;
-            border-left: 4px solid var(--primary);
+            border-left: 5px solid var(--primary);
             position: relative;
         }
-        .remove-room {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #ef4444;
-            cursor: pointer;
-            font-size: 20px;
-        }
+        .remove-room { position: absolute; top: 10px; right: 10px; color: #ef4444; cursor: pointer; font-size: 20px; }
         input, select {
-            background: #334155;
-            color: white;
-            border: 1px solid #475569;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            margin-bottom: 10px;
-            outline: none;
+            background: #0f172a; color: white; border: 1px solid #334155;
+            padding: 12px; border-radius: 10px; font-size: 14px;
+            margin-bottom: 10px; width: 100%; outline: none;
         }
-        input:focus { border-color: var(--primary); }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        
+        .params-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .add-btn {
-            width: 100%;
-            background: transparent;
-            border: 2px dashed var(--primary);
-            color: var(--primary);
-            padding: 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-bottom: 20px;
-            transition: 0.3s;
+            width: 100%; background: transparent; border: 2px dashed #334155;
+            color: #94a3b8; padding: 12px; border-radius: 12px;
+            cursor: pointer; font-weight: 600; margin-bottom: 20px;
         }
-        .add-btn:hover { background: rgba(56, 189, 248, 0.1); }
-        
         .main-btn {
-            width: 100%;
-            background: var(--primary);
-            color: var(--bg);
-            padding: 18px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+            width: 100%; background: var(--primary); color: #0f172a;
+            padding: 20px; border: none; border-radius: 15px;
+            font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase;
         }
-        .master-info-box {
-            font-size: 12px;
-            color: var(--gold);
-            cursor: help;
-            text-decoration: underline;
-            margin-bottom: 15px;
-            display: inline-block;
+        .res-card { background: #020617; border: 1px solid var(--primary); padding: 20px; border-radius: 15px; margin-top: 20px; }
+        .gallery-item { margin-top: 20px; background: #1e293b; padding: 10px; border-radius: 15px; }
+        .gallery-item img { width: 100%; border-radius: 10px; }
+        .disclaimer { 
+            color: #64748b; font-size: 11px; text-align: center; 
+            margin-top: 25px; padding: 15px; border-left: 2px solid var(--primary); 
+            background: rgba(30, 41, 59, 0.5); font-style: italic; line-height: 1.4;
         }
-        #res { margin-top: 25px; }
-        .res-card {
-            background: #020617;
-            border: 1px solid var(--primary);
-            padding: 20px;
-            border-radius: 15px;
-        }
-        img { width: 100%; border-radius: 15px; margin-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>MYHOUSE AI</h1>
-        <p style="color: #64748b; font-size: 13px;">Engineering & Visualization System</p>
+        <h1>MYHOUSE</h1>
+        <p style="color: #64748b; font-size: 12px; margin-top: 5px; letter-spacing: 1px;">ENGINEERING & DESIGN</p>
     </div>
 
     <div id="rooms-container"></div>
 
     <button class="add-btn" onclick="addRoom()">+ Xona qo'shish (Добавить комнату)</button>
 
-    <div class="room-card" style="border-left: 4px solid var(--gold);">
-        <label style="font-size: 12px; color: #94a3b8;">Usta haqi (м²) / Ставка мастера:</label>
-        <input id="rate" type="number" value="100000" style="width: 100%; box-sizing: border-box; margin-top: 5px;">
-        <span class="master-info-box" onclick="showMasterWorks()">Nimalar kiradi? (Что входит в стоимость?)</span>
-
-        <label style="font-size: 12px; color: #94a3b8;">Dizayn uslubi / Стиль дизайна:</label>
-        <select id="style" style="width: 100%; margin-top: 5px;">
-            <option value="minimal">Minimalism</option>
-            <option value="japandi">Japandi</option>
-            <option value="loft">Loft</option>
-            <option value="neoclassic">Neoclassic</option>
-            <option value="ethnic_modern">Ethnic Modern (Uzbek)</option>
-        </select>
+    <div class="room-card" style="border-left-color: var(--gold);">
+        <label style="font-size: 12px; color: #94a3b8; margin-bottom: 5px; display: block;">Usta stavkasi (м²):</label>
+        <input id="rate" type="number" value="100000">
     </div>
 
-    <button class="main-btn" onclick="calculateAll()">HISOBLASH / ПОСЧИТАТЬ</button>
+    <button class="main-btn" onclick="calculateAll()">HISOBLASH</button>
 
     <div id="res"></div>
-    <div id="img-gallery"></div>
+    <div id="gallery"></div>
+
+    <div class="disclaimer">
+        * Данный программный продукт является прототипом. Расчеты произведены на основе выбранных стилей интерьера. Визуализации представлены в качестве стилистических референсов. Для получения юридически значимой сметы рекомендуется консультация со специалистом.
+    </div>
+
+    <footer style="margin-top: 40px; text-align: center; border-top: 1px solid #1e293b; padding-top: 20px; padding-bottom: 40px;">
+        <p style="color: #94a3b8; font-size: 11px;">PROJECT ARCHITECT & DEVELOPER</p>
+        <p style="color: #f8fafc; font-size: 16px; font-weight: 800; margin-top: 5px;">
+            <span style="color: var(--primary);">NODIRJON</span> SOBIROV
+        </p>
+        <p style="color: #64748b; font-size: 12px; font-style: italic; margin-top: 5px;">
+            Student at Tashkent University of Information Technologies (TUIT)
+        </p>
+        <div style="margin-top: 15px; height: 2px; width: 40px; background: var(--primary); margin-left: auto; margin-right: auto;"></div>
+        <p style="color: #475569; font-size: 10px; margin-top: 15px; text-transform: uppercase;">
+            © 2026 MyHouse Solution | All Intellectual Property Reserved
+        </p>
+    </footer>
 </div>
 
 <script>
     let roomCount = 0;
 
-    // Функция добавления новой комнаты
     function addRoom() {
         roomCount++;
         const container = document.getElementById('rooms-container');
@@ -154,101 +112,83 @@
         div.className = 'room-card';
         div.id = `room-${roomCount}`;
         div.innerHTML = `
-            <span class="remove-room" onclick="removeRoom(${roomCount})">×</span>
-            <select class="r-type" style="width: 100%;">
-                <option value="living_room">Mehmonxona (Гостиная)</option>
-                <option value="bedroom">Yotoqxona (Спальня)</option>
-                <option value="kitchen">Oshxona (Кухня)</option>
-                <option value="bathroom">Vanna (Ванная)</option>
-                <option value="toilet">Hojatxona (Туалет)</option>
-            </select>
-            <div class="grid-3">
+            <span class="remove-room" onclick="document.getElementById('room-${roomCount}').remove()">×</span>
+            <div style="display: flex; gap: 8px; margin-bottom: 5px;">
+                <select class="r-type" style="flex: 1;">
+                    <option value="living_room">Гостиная</option>
+                    <option value="bedroom">Спальня</option>
+                    <option value="kitchen">Кухня</option>
+                    <option value="bathroom">Ванная</option>
+                </select>
+                <select class="r-style" style="flex: 1;">
+                    <option value="minimal">Minimalism</option>
+                    <option value="japandi">Japandi</option>
+                    <option value="loft">Loft</option>
+                    <option value="neoclassic">Neoclassic</option>
+                    <option value="ethnic_modern">Ethnic</option>
+                </select>
+            </div>
+            <div class="params-grid">
                 <input class="r-w" type="number" placeholder="Eni (м)">
                 <input class="r-l" type="number" placeholder="Bo'yi (м)">
-                <input class="r-h" type="number" placeholder="Balandligi" value="2.7">
+                <input class="r-h" type="number" placeholder="Balandlik.">
             </div>
-            <input class="r-o" type="number" placeholder="Eshik/Oyna m² (Проемы)" style="width: 100%; box-sizing: border-box;">
+            <input class="r-o" type="number" placeholder="Eshik/Oyna m²" style="margin-top: 5px;">
         `;
         container.appendChild(div);
     }
 
-    function removeRoom(id) {
-        document.getElementById(`room-${id}`).remove();
-    }
-
-    function showMasterWorks() {
-        alert("В стоимость включено:\n- Стяжка и наливной пол\n- Штукатурка и шпатлевка\n- Грунтовка стен/пола\n- Поклейка обоев/покраска\n- Укладка покрытия (Таркетт/Кафель)\n- Монтаж гипсокартона");
-    }
-
     async function calculateAll() {
         const rooms = [];
-        const cards = document.querySelectorAll('.room-card:not([style*="gold"])');
+        const blocks = document.querySelectorAll('.room-card:not([style*="gold"])');
         
-        cards.forEach(card => {
+        blocks.forEach(block => {
+            let hValue = parseFloat(block.querySelector('.r-h').value);
+            if (isNaN(hValue) || hValue <= 0) hValue = 2.7;
+
             rooms.push({
-                type: card.querySelector('.r-type').value,
-                width: parseFloat(card.querySelector('.r-w').value) || 0,
-                length: parseFloat(card.querySelector('.r-l').value) || 0,
-                height: parseFloat(card.querySelector('.r-h').value) || 2.7,
-                openings_area: parseFloat(card.querySelector('.r-o').value) || 0
+                type: block.querySelector('.r-type').value,
+                style: block.querySelector('.r-style').value,
+                width: parseFloat(block.querySelector('.r-w').value) || 0,
+                length: parseFloat(block.querySelector('.r-l').value) || 0,
+                height: hValue,
+                openings_area: parseFloat(block.querySelector('.r-o').value) || 0
             });
         });
 
-        const style = document.getElementById('style').value;
+        if (rooms.length === 0) return alert("Xona qo'shing!");
         const rate = parseFloat(document.getElementById('rate').value) || 0;
+        document.getElementById('res').innerHTML = "Hisoblanmoqda...";
 
         try {
             const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ rooms, style, master_rate: rate })
+                body: JSON.stringify({ rooms, style: rooms[0].style, master_rate: rate })
             });
             const data = await response.json();
-            displayResults(data);
+            
+            let html = `<div class="res-card"><h3>HISOBOT:</h3>`;
+            data.total_materials.forEach(m => { html += `<div style="font-size:13px; margin-bottom:5px;">• ${m}</div>`; });
+            html += `<hr style="border-color:#1e293b"><p>Ish haqi: <b>${data.summary.total_work_cost}</b></p></div>`;
+            document.getElementById('res').innerHTML = html;
+
+            document.getElementById('gallery').innerHTML = "";
+            for (let r of rooms) {
+                const imgResp = await fetch(`https://myhouse-mc1v.onrender.com/design/${r.type}/${r.style}`);
+                const imgData = await imgResp.json();
+                document.getElementById('gallery').innerHTML += `
+                    <div class="gallery-item">
+                        <p style="font-size:12px; color:var(--primary); font-weight:bold; margin-bottom:8px;">${r.type.toUpperCase()} - ${r.style.toUpperCase()}</p>
+                        <img src="https://myhouse-mc1v.onrender.com/${imgData.image}">
+                    </div>`;
+            }
         } catch (e) {
-            alert("Xatolik! Server bilan aloqa yo'q.");
+            document.getElementById('res').innerHTML = "Xatolik! Server bilan aloqa yo'q.";
         }
     }
 
-    function displayResults(data) {
-        const resDiv = document.getElementById('res');
-        const imgDiv = document.getElementById('img-gallery');
-        
-        let html = `<div class="res-card">
-            <h3 style="color:var(--primary); margin-top:0;">UMUMIY HISOB (ИТОГО):</h3>
-            <p>👷 Ish haqi: <b style="color:var(--gold)">${data.summary.total_work_cost}</b></p>
-            <hr border="0" style="border-top:1px solid #334155">
-            <h4>Xarajatlar (Материалы):</h4>
-            <ul style="font-size:14px; padding-left:20px;">
-        `;
-        
-        data.total_materials.forEach(m => {
-            html += `<li>${m}</li>`;
-        });
-        
-        html += `</ul></div>`;
-        resDiv.innerHTML = html;
-
-        // Загружаем картинку для первой комнаты из списка (как пример стиля)
-        const firstRoom = data.details[0].type;
-        const style = data.summary.style_applied;
-        loadDesign(firstRoom, style);
-    }
-
-    async function loadDesign(type, style) {
-        const ir = await fetch(`https://myhouse-mc1v.onrender.com/design/${type}/${style}`);
-        const id = await ir.json();
-        document.getElementById('img-gallery').innerHTML = `<img src="https://myhouse-mc1v.onrender.com/${id.image}" alt="Design">`;
-    }
-
-    // Добавляем одну комнату при старте
     addRoom();
 </script>
-
-<footer style="margin-top: 50px; text-align: center; color: #64748b; font-size: 12px;">
-    <p>PROJECT ARCHITECT: NODIRJON SOBIROV</p>
-    <p>© 2026 MyHouse AI Solution</p>
-</footer>
-
 </body>
 </html>
