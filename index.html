@@ -14,50 +14,42 @@
         }
         * { box-sizing: border-box; }
         body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background: var(--bg); color: var(--text);
+            font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px;
+            display: flex; flex-direction: column; align-items: center;
         }
         .container { width: 100%; max-width: 450px; }
         .header { text-align: center; margin-bottom: 25px; }
         .header h1 { color: var(--primary); font-size: 28px; font-weight: 800; margin: 0; letter-spacing: 2px; }
+        
         .room-card {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            border-left: 5px solid var(--primary);
-            position: relative;
+            background: var(--card); padding: 20px; border-radius: 15px;
+            margin-bottom: 15px; border-left: 5px solid var(--primary); position: relative;
         }
         .remove-room { position: absolute; top: 10px; right: 10px; color: #ef4444; cursor: pointer; font-size: 20px; }
+        
         input, select {
             background: #0f172a; color: white; border: 1px solid #334155;
-            padding: 12px; border-radius: 10px; font-size: 14px;
-            margin-bottom: 10px; width: 100%; outline: none;
+            padding: 12px; border-radius: 10px; font-size: 14px; margin-bottom: 10px; width: 100%; outline: none;
         }
         .params-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
         .add-btn {
             width: 100%; background: transparent; border: 2px dashed #334155;
-            color: #94a3b8; padding: 12px; border-radius: 12px;
-            cursor: pointer; font-weight: 600; margin-bottom: 20px;
+            color: #94a3b8; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; margin-bottom: 20px;
         }
         .main-btn {
             width: 100%; background: var(--primary); color: #0f172a;
-            padding: 20px; border: none; border-radius: 15px;
-            font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase;
+            padding: 20px; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase;
         }
+
         .res-card { background: #020617; border: 1px solid var(--primary); padding: 20px; border-radius: 15px; margin-top: 20px; }
         .gallery-item { margin-top: 20px; background: #1e293b; padding: 10px; border-radius: 15px; }
         .gallery-item img { width: 100%; border-radius: 10px; }
+
         .disclaimer { 
-            color: #64748b; font-size: 11px; text-align: center; 
-            margin-top: 25px; padding: 15px; border-left: 2px solid var(--primary); 
-            background: rgba(30, 41, 59, 0.5); font-style: italic; line-height: 1.4;
+            color: #64748b; font-size: 11px; text-align: center; margin-top: 25px; padding: 15px; 
+            border-left: 2px solid var(--gold); background: rgba(30, 41, 59, 0.5); font-style: italic; line-height: 1.4;
         }
     </style>
 </head>
@@ -70,7 +62,6 @@
     </div>
 
     <div id="rooms-container"></div>
-
     <button class="add-btn" onclick="addRoom()">+ Xona qo'shish (Добавить комнату)</button>
 
     <div class="room-card" style="border-left-color: var(--gold);">
@@ -84,21 +75,13 @@
     <div id="gallery"></div>
 
     <div class="disclaimer">
-        * Данный программный продукт является прототипом. Расчеты произведены на основе выбранных стилей интерьера. Визуализации представлены в качестве стилистических референсов. Для получения юридически значимой сметы рекомендуется консультация со специалистом.
+        * Прототип системы. В расчет материалов автоматически заложен <b>запас 10%</b> на подрезку и производственный брак. Визуализации являются стилистическими референсами.
     </div>
 
     <footer style="margin-top: 40px; text-align: center; border-top: 1px solid #1e293b; padding-top: 20px; padding-bottom: 40px;">
         <p style="color: #94a3b8; font-size: 11px;">PROJECT ARCHITECT & DEVELOPER</p>
-        <p style="color: #f8fafc; font-size: 16px; font-weight: 800; margin-top: 5px;">
-            <span style="color: var(--primary);">NODIRJON</span> SOBIROV
-        </p>
-        <p style="color: #64748b; font-size: 12px; font-style: italic; margin-top: 5px;">
-            Student at Tashkent University of Information Technologies (TUIT)
-        </p>
-        <div style="margin-top: 15px; height: 2px; width: 40px; background: var(--primary); margin-left: auto; margin-right: auto;"></div>
-        <p style="color: #475569; font-size: 10px; margin-top: 15px; text-transform: uppercase;">
-            © 2026 MyHouse Solution | All Intellectual Property Reserved
-        </p>
+        <p style="color: #f8fafc; font-size: 16px; font-weight: 800; margin-top: 5px;"><span style="color: var(--primary);">NODIRJON</span> SOBIROV</p>
+        <p style="color: #475569; font-size: 10px; margin-top: 15px; text-transform: uppercase;">© 2026 MyHouse Solution</p>
     </footer>
 </div>
 
@@ -131,7 +114,7 @@
             <div class="params-grid">
                 <input class="r-w" type="number" placeholder="Eni (м)">
                 <input class="r-l" type="number" placeholder="Bo'yi (м)">
-                <input class="r-h" type="number" placeholder="Balandlik.">
+                <input class="r-h" type="number" placeholder="Baland.">
             </div>
             <input class="r-o" type="number" placeholder="Eshik/Oyna m²" style="margin-top: 5px;">
         `;
@@ -143,9 +126,7 @@
         const blocks = document.querySelectorAll('.room-card:not([style*="gold"])');
         
         blocks.forEach(block => {
-            let hValue = parseFloat(block.querySelector('.r-h').value);
-            if (isNaN(hValue) || hValue <= 0) hValue = 2.7;
-
+            let hValue = parseFloat(block.querySelector('.r-h').value) || 2.7;
             rooms.push({
                 type: block.querySelector('.r-type').value,
                 style: block.querySelector('.r-style').value,
@@ -158,7 +139,8 @@
 
         if (rooms.length === 0) return alert("Xona qo'shing!");
         const rate = parseFloat(document.getElementById('rate').value) || 0;
-        document.getElementById('res').innerHTML = "Hisoblanmoqda...";
+        const resDiv = document.getElementById('res');
+        resDiv.innerHTML = "<div style='text-align:center;'>Hisoblanmoqda (Сервер просыпается)...</div>";
 
         try {
             const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
@@ -166,12 +148,20 @@
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ rooms, style: rooms[0].style, master_rate: rate })
             });
+
+            if (!response.ok) throw new Error();
             const data = await response.json();
             
-            let html = `<div class="res-card"><h3>HISOBOT:</h3>`;
-            data.total_materials.forEach(m => { html += `<div style="font-size:13px; margin-bottom:5px;">• ${m}</div>`; });
+            let html = `<div class="res-card"><h3>HISOBOT (+10% zapas):</h3>`;
+            // Добавляем 10% к количеству каждого материала
+            data.details.forEach(room => {
+                room.materials.forEach(m => {
+                    let qtyWithReserve = (m.q * 1.1).toFixed(1);
+                    html += `<div style="font-size:13px; margin-bottom:5px;">• ${m.n}: <b>${qtyWithReserve} ${m.u}</b></div>`;
+                });
+            });
             html += `<hr style="border-color:#1e293b"><p>Ish haqi: <b>${data.summary.total_work_cost}</b></p></div>`;
-            document.getElementById('res').innerHTML = html;
+            resDiv.innerHTML = html;
 
             document.getElementById('gallery').innerHTML = "";
             for (let r of rooms) {
@@ -179,15 +169,14 @@
                 const imgData = await imgResp.json();
                 document.getElementById('gallery').innerHTML += `
                     <div class="gallery-item">
-                        <p style="font-size:12px; color:var(--primary); font-weight:bold; margin-bottom:8px;">${r.type.toUpperCase()} - ${r.style.toUpperCase()}</p>
+                        <p style="font-size:12px; color:var(--primary); font-weight:bold;">${r.type.toUpperCase()} - ${r.style.toUpperCase()}</p>
                         <img src="https://myhouse-mc1v.onrender.com/${imgData.image}">
                     </div>`;
             }
         } catch (e) {
-            document.getElementById('res').innerHTML = "Xatolik! Server bilan aloqa yo'q.";
+            resDiv.innerHTML = "<b style='color:#ef4444'>Сервер временно недоступен. Пожалуйста, подождите 30 секунд (идет запуск) и нажмите еще раз.</b>";
         }
     }
-
     addRoom();
 </script>
 </body>
