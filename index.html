@@ -108,8 +108,8 @@
             </div>
             <div class="params-grid">
                 <input class="r-w" type="number" placeholder="Eni (м)">
-                <input class="r-l" type="number" placeholder="Bo'yi (м)">
-                <input class="r-h" type="number" placeholder="Balandlik.">
+                <input class="r-l" type="number" placeholder="Uzunligi (м)">
+                <input class="r-h" type="number" placeholder="Balandligi">
             </div>
             <input class="r-o" type="number" placeholder="Eshik/Oyna m²" style="margin-top: 5px;">
         `;
@@ -152,7 +152,7 @@
             // Собираем все материалы по всем комнатам и добавляем 10%
             data.details.forEach(room => {
                 room.materials.forEach(m => {
-                    let qtyWithReserve = (m.q * 1.1).toFixed(1);
+                    let qtyWithReserve = m.q;
                     html += `<div style="font-size:13px; margin-bottom:5px;">• ${m.n}: <b>${qtyWithReserve} ${m.u}</b></div>`;
                 });
             });
@@ -171,7 +171,7 @@
                     </div>`;
             }
         } catch (e) {
-            resDiv.innerHTML = "<b style='color:#ef4444'>Aloqa xatosi! Server uyg'onmoqda. Iltimos, 30 soniyadan keyин yana bir bor 'Hisoblash' tugmasini bosing.</b>";
+            resDiv.innerHTML = "<b style='color:#ef4444'>Aloqa xatosi! Server uyg'onmoqda. Iltimos, 30 soniyadan keyin yana bir bor 'Hisoblash' tugmasini bosing.</b>";
         }
     }
 
