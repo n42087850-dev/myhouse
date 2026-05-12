@@ -10,7 +10,6 @@
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 480px; }
         
-        /* ТАБЫ */
         .tabs { display: flex; gap: 5px; margin-bottom: 15px; background: var(--card); padding: 5px; border-radius: 15px; }
         .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; border-radius: 10px; font-size: 11px; font-weight: 800; transition: 0.3s; color: var(--subtext); border: 1px solid transparent; }
         .tab.active { background: var(--primary); color: #0f172a; border-color: var(--primary); }
@@ -25,7 +24,6 @@
         
         .params-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         
-        /* Список работ */
         .work-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
         .work-row input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--primary); cursor: pointer; }
         .work-row .work-info { flex: 1; display: flex; flex-direction: column; }
@@ -107,15 +105,17 @@
                 <option value="bedroom">Yotoqxona (Спальня)</option>
                 <option value="corridor">Koridor (Коридор)</option>
                 <option value="kitchen">Oshxona (Кухня)</option>
-                <option value="bathroom">Vanna/Hojatxona</option>
+                <option value="bathroom">Vanna (Ванная)</option>
+                <option value="toilet">Hojatxona (Туалет)</option>
             </select>
+            <label>Dizayn uslubi (Стиль дизайна)</label>
             <select class="r-style">
-    <option value="minimal">Minimalism</option>
-    <option value="japandi">Japandi</option>
-    <option value="loft">Loft</option>
-    <option value="Neoclassic">NeoClassic (Неоклассика)</option>
-    <option value="Ethnic modern">Ethnic Modern (Этно Модерн)</option>
-</select>
+                <option value="minimal">Minimalism</option>
+                <option value="japandi">Japandi</option>
+                <option value="loft">Loft</option>
+                <option value="neoclassic">NeoClassic (Неоклассика)</option>
+                <option value="ethnic_modern">Ethnic Modern (Этно Модерн)</option>
+            </select>
             <div class="params-grid">
                 <div><label>Eni (м)</label><input class="r-w" type="number" placeholder="0"></div>
                 <div><label>Uzunligi (м)</label><input class="r-l" type="number" placeholder="0"></div>
@@ -145,68 +145,73 @@
     }
 
     async function calculateMaterials() {
-    const resDiv = document.getElementById('res-materials');
-    resDiv.innerHTML = "<div class='res-card'>Hisoblanmoqda... (Идет расчет)</div>";
-    
-    const rooms = [];
-    document.querySelectorAll('#tab0 .card').forEach(b => {
-        const w = parseFloat(b.querySelector('.r-w').value) || 0;
-        const l = parseFloat(b.querySelector('.r-l').value) || 0;
-        const h = parseFloat(b.querySelector('.r-h').value) || 0;
-        const o = parseFloat(b.querySelector('.r-o').value) || 0;
+        const resDiv = document.getElementById('res-materials');
+        resDiv.innerHTML = "<div class='res-card'>Hisoblanmoqda... (Идет расчет)</div>";
         
-        if (w > 0 && l > 0) {
-            rooms.push({
-                type: b.querySelector('.r-type').value,
-                width: w, length: l, height: h,
-                openings_area: o
-            });
-        }
-    });
-
-    if (rooms.length === 0) return alert("Xona o'lchamlarini kiriting!");
-
-    try {
-        const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ rooms: rooms, style: "minimal" })
+        const rooms = [];
+        document.querySelectorAll('#tab0 .card').forEach(b => {
+            const w = parseFloat(b.querySelector('.r-w').value) || 0;
+            const l = parseFloat(b.querySelector('.r-l').value) || 0;
+            const h = parseFloat(b.querySelector('.r-h').value) || 0;
+            const o = parseFloat(b.querySelector('.r-o').value) || 0;
+            
+            if (w > 0 && l > 0) {
+                rooms.push({
+                    type: b.querySelector('.r-type').value,
+                    style: b.querySelector('.r-style').value,
+                    width: w, length: l, height: h,
+                    openings_area: o
+                });
+            }
         });
-        const data = await response.json();
-        
-        // 1. Считаем общие площади для второго таба
-        totalFloorArea = data.details.reduce((sum, r) => sum + r.floor_area, 0);
-        totalWallArea = data.details.reduce((sum, r) => sum + r.wall_area, 0);
 
-        // 2. Выводим список материалов
-        let html = `<div class="res-card">
-                        <h3 style="color:var(--primary); margin-top:0;">Qurilish materiallari:</h3>`;
-        data.details.forEach(room => {
-            html += `<div style="margin-bottom:10px; border-bottom:1px solid #1e293b;">
-                        <b style="color:var(--gold); text-transform:uppercase;">${room.room_type}</b><br>`;
-            room.materials.forEach(m => {
-                html += `<span style="font-size:13px;">• ${m.name}: <b>${m.quantity} ${m.unit}</b></span><br>`;
+        if (rooms.length === 0) return alert("Xona o'lchamlarini kiriting!");
+
+        try {
+            const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ rooms: rooms })
+            });
+            const data = await response.json();
+            
+            totalFloorArea = data.details.reduce((sum, r) => sum + r.floor_area, 0);
+            totalWallArea = data.details.reduce((sum, r) => sum + r.wall_area, 0);
+
+            let html = `<div class="res-card">
+                            <h3 style="color:var(--primary); margin-top:0;">Qurilish materiallari:</h3>`;
+            data.details.forEach(room => {
+                html += `<div style="margin-bottom:10px; border-bottom:1px solid #1e293b; text-align:left;">
+                            <b style="color:var(--gold); text-transform:uppercase;">${room.room_type}</b><br>`;
+                room.materials.forEach(m => {
+                    let displayQuantity = m.quantity;
+                    let displayUnit = m.unit;
+                    if (m.name.toLowerCase().includes("sement")) {
+                        displayQuantity = Math.ceil(m.quantity / 50);
+                        displayUnit = "qop (мешков)";
+                    }
+                    html += `<span style="font-size:13px;">• ${m.name}: <b>${displayQuantity} ${displayUnit}</b></span><br>`;
+                });
+                html += `</div>`;
             });
             html += `</div>`;
-        });
-        html += `</div>`;
-        
-        // 3. Выводим дизайн (берём первую комнату для примера)
-        const firstRoom = rooms[0];
-        html += `<div class="res-card">
-                    <h3 style="color:var(--primary);">Dizayn (Visualizatsiya):</h3>
-                    <img src="https://myhouse-mc1v.onrender.com/design/${firstRoom.type}/minimal" 
-                         style="width:100%; border-radius:10px; border:1px solid var(--primary);"
-                         onerror="this.src='https://via.placeholder.com/400x250?text=Dizayn+yuklanmadi'">
-                 </div>`;
-        
-        resDiv.innerHTML = html;
-        alert("Hisoblandi! Endi 'USTA MEHNATI' bo'limiga o'ting.");
+            
+            const firstRoom = rooms[0];
+            html += `<div class="res-card">
+                        <h3 style="color:var(--primary);">Dizayn (Visualizatsiya):</h3>
+                        <img src="https://myhouse-mc1v.onrender.com/design/${firstRoom.type}/${firstRoom.style}" 
+                             style="width:100%; border-radius:10px; border:1px solid var(--primary);"
+                             onerror="this.src='https://via.placeholder.com/400x250?text=Dizayn+yuklanmadi'">
+                     </div>`;
+            
+            resDiv.innerHTML = html;
+            alert("Hisoblandi! Endi 'USTA MEHNATI' bo'limiga o'ting.");
 
-    } catch (e) {
-        resDiv.innerHTML = "<div class='res-card' style='border-color:red;'>Server bilan aloqa yo'q. Internetni yoki Render statusini tekshiring.</div>";
+        } catch (e) {
+            resDiv.innerHTML = "<div class='res-card' style='border-color:red;'>Server bilan aloqa yo'q. Render statusini tekshiring.</div>";
+        }
     }
-}
+
     function calculateWorkSum() {
         if (totalFloorArea === 0) return alert("Avval 1-bo'limda xonalarni hisoblang!");
         let totalSum = 0;
@@ -217,7 +222,6 @@
             if (ch.checked) {
                 const id = ch.dataset.id;
                 const price = parseFloat(prices[i].value) || 0;
-                // Логика: если работа по полу - умножаем на пол, если по стенам - на стены
                 if (["styajka", "nalivnoy", "laminat", "kafel_p", "plintus", "elektro", "santex"].includes(id)) {
                     totalSum += price * totalFloorArea;
                 } else {
