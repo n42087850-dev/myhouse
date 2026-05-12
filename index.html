@@ -87,6 +87,13 @@
     <div id="rooms-container"></div>
     
     <button class="add-btn" onclick="addRoom()">+ Xona qo'shish (Добавить комнату)</button>
+
+    <div style="text-align: center; margin-bottom: 15px;">
+        <span class="work-cost-link" style="font-size: 13px;" onclick="openPriceList()">
+            Xizmatlar narxi (Посмотреть расценки)
+        </span>
+    </div>
+
     <button class="main-btn" onclick="calculateAll()">HISOBLASH (РАССЧИТАТЬ)</button>
 
     <div id="res"></div>
@@ -94,15 +101,13 @@
 
     <div class="disclaimer">
         * Dastur prototip bosqichida. Materiallar hisobida 10% zaxira mavjud. Ish haqi tafsilotlarini ko'rish uchun summaning ustiga bosing.
-        <br><br>
-        * Продукт в режиме прототипа. В расчет заложен запас 10%. Нажмите на сумму работ для детализации.
     </div>
 </div>
 
 <div id="workModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeModal()">×</span>
-        <h3 style="color: var(--primary); margin-top: 0;">Ishlar ro'yxati (Смета работ)</h3>
+        <h3 id="modal-title" style="color: var(--primary); margin-top: 0;">Ma'lumot</h3>
         <div id="modal-body" style="font-size: 13px; color: var(--text);"></div>
     </div>
 </div>
@@ -144,7 +149,7 @@
                     <input class="r-w" type="number" placeholder="0.0">
                 </div>
                 <div>
-                    <label>Uzunligi (Длина), м</label>
+                    <label>Uzuni (Длина), м</label>
                     <input class="r-l" type="number" placeholder="0.0">
                 </div>
                 <div>
@@ -159,14 +164,27 @@
         container.appendChild(div);
     }
 
-    function openModal() {
+    function openPriceList() {
+        document.getElementById('modal-title').innerText = "Xizmatlar narxi (Прайс-лист)";
+        document.getElementById('modal-body').innerHTML = `
+            <ul style="padding-left: 15px; line-height: 1.8;">
+                <li>Styajka: 45 000 UZS/m²</li>
+                <li>Shtukaturka: 40 000 UZS/m²</li>
+                <li>Shpatlevka: 25 000 UZS/m²</li>
+                <li>Oboi: 20 000 UZS/m²</li>
+                <li>Laminat: 35 000 UZS/m²</li>
+                <li>Elektrika/Santexnika: 110 000 UZS/m²</li>
+            </ul>`;
+        document.getElementById('workModal').style.display = 'flex';
+    }
+
+    function openDetailModal() {
         if(!lastResponse) return;
-        const modalBody = document.getElementById('modal-body');
-        let html = `<p style="color: var(--gold);">${lastResponse.summary.master_works_detail}</p><ul style="padding-left: 15px;">`;
+        document.getElementById('modal-title').innerText = "Ishlar smetasi (Детализация)";
+        let html = `<p style="color: var(--gold);">${lastResponse.summary.master_works_detail}</p><ul>`;
         lastResponse.summary.works_included.forEach(w => html += `<li>${w}</li>`);
-        html += `</ul><div style="margin-top:15px; padding-top:10px; border-top:1px solid #334155; font-weight:bold;">
-                 Jami (Итого): ${lastResponse.summary.total_cost_uzs} UZS</div>`;
-        modalBody.innerHTML = html;
+        html += `</ul><p><b>Jami: ${lastResponse.summary.total_work_cost}</b></p>`;
+        document.getElementById('modal-body').innerHTML = html;
         document.getElementById('workModal').style.display = 'flex';
     }
 
@@ -183,59 +201,53 @@
             if (w && l && h) {
                 rooms.push({
                     type: block.querySelector('.r-type').value,
+                    style: block.querySelector('.r-style').value,
                     width: w, length: l, height: h,
                     openings_area: parseFloat(block.querySelector('.r-o').value) || 0
                 });
             }
         });
 
-        if (rooms.length === 0) return alert("Barcha maydonlarni to'ldiring! (Заполните все поля!)");
+        if (rooms.length === 0) return alert("Ma'lumotlarni to'ldiring!");
         
         const resDiv = document.getElementById('res');
-        resDiv.innerHTML = "<div style='text-align:center; color:var(--primary); padding:20px;'>Hisoblanmoqda (Расчет)...</div>";
+        resDiv.innerHTML = "<div style='text-align:center; color:var(--primary); padding:20px;'>Hisoblanmoqda...</div>";
 
         try {
-            const selectedStyle = document.querySelector('.r-style').value;
             const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ rooms, style: selectedStyle })
+                body: JSON.stringify({ rooms, style: rooms[0].style, master_rate: 100000 })
             });
 
+            if (!response.ok) throw new Error();
             lastResponse = await response.json();
             
-            let html = `<div class="res-card">
-                <h3 style="margin-top:0; color:var(--gold);">HISOBOT (ОТЧЕТ):</h3>`;
+            let html = `<div class="res-card"><h3 style="color:var(--gold); margin-top:0;">HISOBOT:</h3>`;
             
             lastResponse.details.forEach(room => {
-                html += `<div style="margin-bottom:15px;">
-                    <b style="color:var(--primary); text-transform:uppercase; font-size:12px;">${room.room_type}:</b>`;
+                html += `<div style="margin-bottom:10px;"><b style="color:var(--primary); font-size:12px;">${room.room_type.toUpperCase()}:</b>`;
                 room.materials.forEach(m => {
-                    html += `<div style="font-size:13px; margin-top:3px;">• ${m.name}: <b>${m.quantity} ${m.unit}</b></div>`;
+                    html += `<div style="font-size:13px;">• ${m.n}: <b>${m.q} ${m.u}</b></div>`;
                 });
                 html += `</div>`;
             });
 
-            html += `<div style="border-top:1px solid #1e293b; margin-top:10px; padding-top:10px;">
-                     Ish haqi (Труд): <span class="work-cost-link" onclick="openModal()">${lastResponse.summary.total_cost_uzs} UZS</span>
-                     <br><small style="color:var(--subtext); font-size:10px;">Batafsil ko'rish uchun summani bosing</small>
-                     </div></div>`;
+            html += `<hr style="border-color:#1e293b"><p>Ish haqi: <span class="work-cost-link" onclick="openDetailModal()">${lastResponse.summary.total_work_cost}</span></p></div>`;
             resDiv.innerHTML = html;
 
             document.getElementById('gallery').innerHTML = "";
-            for (let block of blocks) {
-                const rType = block.querySelector('.r-type').value;
-                const rStyle = block.querySelector('.r-style').value;
-                const imgResp = await fetch(`https://myhouse-mc1v.onrender.com/design/${rType}/${rStyle}`);
+            for (let r of rooms) {
+                const imgResp = await fetch(`https://myhouse-mc1v.onrender.com/design/${r.type}/${r.style}`);
                 const imgData = await imgResp.json();
                 document.getElementById('gallery').innerHTML += `
                     <div class="gallery-item">
-                        <p style="font-size:11px; color:var(--primary); margin:0;">${rType.toUpperCase()} / ${rStyle.toUpperCase()}</p>
+                        <p style="font-size:11px; color:var(--primary);">${r.type.toUpperCase()}</p>
                         <img src="https://myhouse-mc1v.onrender.com/${imgData.image}">
                     </div>`;
             }
         } catch (e) {
-            resDiv.innerHTML = "<div class='res-card' style='border-color:var(--danger)'>Xatolik yuz berdi. Server uyg'onishini kuting (30 soniya).</div>";
+            resDiv.innerHTML = "<div class='res-card' style='border-color:var(--danger)'>Server uyg'onishini kuting (30 soniya).</div>";
         }
     }
 
