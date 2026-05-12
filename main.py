@@ -1,11 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List, Dict, Optional
 import os
 
-app = FastAPI(title="MYHOUSE Full Engine V3")
+app = FastAPI(title="MYHOUSE Full Engine V3.1")
 
 # Разрешаем CORS
 app.add_middleware(
@@ -22,7 +22,7 @@ images_path = os.path.join(script_dir, "images")
 if os.path.exists(images_path):
     app.mount("/images", StaticFiles(directory=images_path), name="images")
 
-# --- 1. СПРАВОЧНИК СТОИМОСТИ РАБОТ (UZS за м2/м.п) ---
+# --- 1. СПРАВОЧНИК СТОИМОСТИ РАБОТ ---
 WORK_PRICES = {
     "floor": {
         "styajka": 45000,
@@ -30,7 +30,7 @@ WORK_PRICES = {
         "tarkett_laminat": 35000,
         "parket": 80000,
         "kafel": 75000,
-        "plintus": 15000  # за погонный метр
+        "plintus": 15000
     },
     "walls": {
         "shtukaturka": 40000,
@@ -46,13 +46,13 @@ WORK_PRICES = {
         "shpatlevka_pokraska": 40000
     },
     "engineering": {
-        "electro": 60000, # на м2 пола
+        "electro": 60000,
         "santehnika": 50000,
         "otoplenie": 45000
     }
 }
 
-# --- 2. ЛОГИКА СТИЛЕЙ (Для синхронизации с фото) ---
+# --- 2. ЛОГИКА СТИЛЕЙ ---
 STYLE_CONFIG = {
     "japandi": {"floor": "Светлое дерево", "wall": "Матовая эмульсия"},
     "loft": {"floor": "Бетон / Темный ламинат", "wall": "Кирпич / Декоративный бетон"},
@@ -63,11 +63,11 @@ STYLE_CONFIG = {
 
 # --- 3. МОДЕЛИ ДАННЫХ ---
 class Room(BaseModel):
-    type: str  # living_room, bedroom, kitchen, bathroom, toilet
+    type: str  # living_room, bedroom, kitchen, bathroom, toilet, corridor
     width: float
     length: float
     height: float
-    openings_area: float = 0
+    openings_area: Optional[float] = 0 # Сделали необязательным
 
 class CalculateRequest(BaseModel):
     rooms: List[Room]
@@ -75,7 +75,8 @@ class CalculateRequest(BaseModel):
 
 # --- 4. ВСПОМОГАТЕЛЬНАЯ ЛОГИКА ---
 def get_room_images():
-    room_types = ["living_room", "bedroom", "kitchen", "bathroom", "toilet"]
+    # Добавили corridor в генерацию путей для фото
+    room_types = ["living_room", "bedroom", "kitchen", "bathroom", "toilet", "corridor"]
     styles = ["japandi", "loft", "neoclassic", "minimal", "ethnic_modern"]
     return {room: {style: f"images/{room}_{style}.jpg" for style in styles} for room in room_types}
 
@@ -86,22 +87,25 @@ DESIGN_IMAGES = get_room_images()
 def calculate(data: CalculateRequest):
     total_project_cost = 0
     detailed_rooms = []
-    MARGIN = 1.1 # Запас 10%
+    MARGIN = 1.1 
     
     selected_style = STYLE_CONFIG.get(data.style.lower(), STYLE_CONFIG["minimal"])
 
     for room in data.rooms:
-        # Авто-расчет площадей
+        # 1. Расчет площадей
         f_area = room.width * room.length
         perimeter = 2 * (room.width + room.length)
         w_area = (perimeter * room.height) - room.openings_area
         
-        # Логика: Кафель только в мокрых зонах
+        # Защита: площадь стен не может быть меньше нуля
+        if w_area < 0: w_area = 0
+
+        # 2. Логика материалов (Коридор считаем как жилую зону)
         is_wet = room.type in ["bathroom", "toilet", "kitchen"]
         floor_finishing = WORK_PRICES["floor"]["kafel"] if is_wet else WORK_PRICES["floor"]["tarkett_laminat"]
         wall_finishing = WORK_PRICES["walls"]["kafel"] if is_wet else WORK_PRICES["walls"]["oboi"]
 
-        # Сборка сметы для комнаты (Труд мастера)
+        # 3. Смета (Труд мастера)
         room_work_sum = (
             f_area * (WORK_PRICES["floor"]["styajka"] + floor_finishing) +
             perimeter * WORK_PRICES["floor"]["plintus"] +
@@ -112,7 +116,7 @@ def calculate(data: CalculateRequest):
         
         total_project_cost += room_work_sum
 
-        # Список материалов (Синхронизирован со стилем)
+        # 4. Материалы (Объемы)
         materials = [
             {"name": f"Покрытие пола ({selected_style['floor']})", "quantity": round(f_area * MARGIN, 1), "unit": "м2"},
             {"name": f"Отделка стен ({selected_style['wall']})", "quantity": round(w_area * MARGIN, 1), "unit": "м2"},
@@ -136,7 +140,7 @@ def calculate(data: CalculateRequest):
         "status": "success",
         "style_info": {
             "name": data.style,
-            "description": f"Расчет выполнен в стиле {data.style}. Визуализация соответствует выбранным материалам."
+            "description": f"Расчет выполнен в стиле {data.style}."
         },
         "summary": {
             "total_cost_uzs": f"{round(total_project_cost):,}".replace(",", " "),
