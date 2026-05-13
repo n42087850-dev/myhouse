@@ -1,13 +1,10 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from typing import List, Dict, Optional
-import os
+from typing import List, Optional
 
 app = FastAPI(title="MYHOUSE Full Engine V3.2")
 
-# Разрешаем CORS (критично для GitHub Pages)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,23 +13,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Подключение картинок
-script_dir = os.path.dirname(__file__)
-images_path = os.path.join(script_dir, "images")
-if os.path.exists(images_path):
-    app.mount("/images", StaticFiles(directory=images_path), name="images")
+# ТВОИ ЦЕНЫ ЗА РАБОТУ (UZS)
+WORK_PRICES = {
+    "floor_base": 45000,    # Styajka
+    "floor_finish": 35000,  # Laminat/Tarkett
+    "wall_base": 65000,     # Shtukaturka + Shpatlevka
+    "wall_finish": 20000,   # Oboi/Kraska
+    "ceiling": 45000,       # Natyajnoy
+    "engineering": 110000   # Electro + Santeh (na m2 pola)
+}
 
-# --- КОНФИГУРАЦИЯ СТИЛЕЙ ---
 STYLE_CONFIG = {
-    "japandi": {"floor": "Светлое дерево", "wall": "Матовая эмульсия"},
-    "loft": {"floor": "Бетон / Темный ламинат", "wall": "Кирпич / Декоративный бетон"},
-    "minimal": {"floor": "Светлый ламинат", "wall": "Белая краска"},
-    "neoclassic": {"floor": "Паркет елочкой", "wall": "Обои с молдингами"},
-    "ethnic_modern": {"floor": "Натуральное дерево", "wall": "Текстурная штукатурка"}
+    "japandi": {"floor": "Och yog'och", "wall": "Matovaya emulsiya"},
+    "loft": {"floor": "Beton / To'q laminat", "wall": "G'isht / Beton dekor"},
+    "minimal": {"floor": "Och laminat", "wall": "Oq kraska"},
+    "neoclassic": {"floor": "Parket", "wall": "Oboy + molding"},
+    "ethnic_modern": {"floor": "Tabiiy yog'och", "wall": "Teksturali shtukaturka"}
 }
 
 class Room(BaseModel):
-    type: str  # living_room, bedroom, kitchen, bathroom, toilet, corridor
+    type: str
     style: Optional[str] = "minimal"
     width: float
     length: float
@@ -45,46 +45,40 @@ class CalculateRequest(BaseModel):
 @app.post("/calculate")
 def calculate(data: CalculateRequest):
     detailed_rooms = []
-    MARGIN = 1.1  # Запас 10%
-    
+    total_project_work_cost = 0
+    MARGIN = 1.1
+
     for room in data.rooms:
-        # 1. Расчет площадей
         f_area = room.width * room.length
         perimeter = 2 * (room.width + room.length)
         w_area = (perimeter * room.height) - room.openings_area
         if w_area < 0: w_area = 0
 
-        # 2. Подбор стиля для конкретной комнаты
+        # РАСЧЕТ ТРУДА МАСТЕРА
+        room_work = (
+            f_area * (WORK_PRICES["floor_base"] + WORK_PRICES["floor_finish"]) +
+            w_area * (WORK_PRICES["wall_base"] + WORK_PRICES["wall_finish"]) +
+            f_area * WORK_PRICES["ceiling"] +
+            f_area * WORK_PRICES["engineering"]
+        )
+        total_project_work_cost += room_work
+
         style_key = room.style.lower() if room.style else "minimal"
         selected_style = STYLE_CONFIG.get(style_key, STYLE_CONFIG["minimal"])
 
-        # 3. Материалы (Объемы)
-        # ВАЖНО: Название "Sement" латиницей, чтобы фронтенд поймал фикс мешков
-        materials = [
-            {"name": f"Pol qoplamasi ({selected_style['floor']})", "quantity": round(f_area * MARGIN, 1), "unit": "m2"},
-            {"name": f"Devor pardozi ({selected_style['wall']})", "quantity": round(w_area * MARGIN, 1), "unit": "m2"},
-            {"name": "Sement M-400 (черновой)", "quantity": round(f_area * 15 * MARGIN), "unit": "kg"},
-            {"name": "Shpatlevka (finish)", "quantity": round(w_area * 1.2 * MARGIN), "unit": "kg"},
-            {"name": "Gruntovka", "quantity": round((f_area + w_area) * 0.3, 1), "unit": "l"}
-        ]
-
         detailed_rooms.append({
             "room_type": room.type.replace("_", " ").capitalize(),
-            "floor_area": f_area,
-            "wall_area": w_area,
-            "materials": materials
+            "work_cost_sum": round(room_work),
+            "materials": [
+                {"name": f"Pol ({selected_style['floor']})", "quantity": round(f_area * MARGIN, 1), "unit": "m2"},
+                {"name": f"Devor ({selected_style['wall']})", "quantity": round(w_area * MARGIN, 1), "unit": "m2"},
+                {"name": "Sement M-400", "quantity": round(f_area * 15 * MARGIN), "unit": "kg"},
+                {"name": "Finish shpatlevka", "quantity": round(w_area * 1.2 * MARGIN), "unit": "kg"}
+            ]
         })
 
     return {
         "status": "success",
+        "total_cost": f"{round(total_project_work_cost):,}".replace(",", " "),
         "details": detailed_rooms
     }
-
-@app.get("/design/{room_type}/{style}")
-def get_design(room_type: str, style: str):
-    # Логика заглушки: если картинок нет, фронтенд покажет placeholder
-    return {"image": f"images/{room_type}_{style}.jpg"}
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
