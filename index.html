@@ -61,8 +61,8 @@
             </select>
             <div class="params-grid">
                 <div><label>Eni</label><input class="r-w" type="number" value="4"></div>
-                <div><label>Uzuni</label><input class="r-l" type="number" value="5"></div>
-                <div><label>Baland</label><input class="r-h" type="number" value="3"></div>
+                <div><label>Uzunligi</label><input class="r-l" type="number" value="5"></div>
+                <div><label>Balandligi</label><input class="r-h" type="number" value="3"></div>
             </div>
             <label>Oyna/Eshik (m2)</label><input class="r-o" type="number" value="2">
         `;
@@ -112,5 +112,13 @@
             matDiv.innerHTML = "Xato! Serverga ulanishda muammo.";
         }
     }
-    addRoom();
+    // Ждем, пока весь HTML прогрузится, и только потом создаем первую комнату
+window.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('rooms-container');
+    if (container) {
+        addRoom();
+    } else {
+        console.error("ОШИБКА: Контейнер 'rooms-container' не найден в HTML!");
+    }
+});
 </script>
