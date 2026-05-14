@@ -170,12 +170,19 @@
             const res = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(rooms)
+                // ВОТ ТУТ МЕНЯЕМ: оборачиваем rooms в фигурные скобки
+                body: JSON.stringify({ "rooms": rooms }) 
             });
             
-            if (!res.ok) throw new Error('Server error');
+            if (!res.ok) {
+                // Добавим это, чтобы если что, увидеть реальную причину в консоли
+                const errorData = await res.json();
+                console.log("Детали ошибки от сервера:", errorData);
+                throw new Error('Server error');
+            }
             
             const data = await res.json();
+            // Дальше у тебя идет блок "Материалы" — его не трогай, он верный.
 
             // 1. Материалы
             let matHtml = '<div class="mat-list"><h3>Kerakli materiallar / Материалы:</h3>';
