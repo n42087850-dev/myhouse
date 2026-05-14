@@ -1,93 +1,37 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MYHOUSE PRO | Smart Calculator</title>
-    <style>
-        :root { 
-            --primary: #38bdf8; 
-            --gold: #fbbf24; 
-            --bg: #0f172a; 
-            --card: #1e293b; 
-            --text: #f8fafc; 
-            --subtext: #94a3b8; 
-            --accent: #22c55e;
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            background: var(--bg); 
-            color: var(--text); 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            margin: 0; 
-            padding: 10px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-        }
-        .container { width: 100%; max-width: 500px; padding-bottom: 50px; }
-        header { text-align: center; margin-bottom: 25px; padding-top: 10px; }
-        .logo { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: 3px; margin: 0; }
-        .subtitle { font-size: 10px; color: var(--subtext); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-
-        .tabs { display: flex; gap: 8px; margin-bottom: 20px; background: var(--card); padding: 6px; border-radius: 16px; position: sticky; top: 10px; z-index: 100; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
-        .tab { flex: 1; padding: 12px 5px; text-align: center; cursor: pointer; border-radius: 12px; font-size: 11px; font-weight: 800; transition: 0.3s; color: var(--subtext); border: none; }
-        .tab.active { background: var(--primary); color: #0f172a; }
-
-        .tab-content { display: none; animation: fadeIn 0.4s ease; }
-        .tab-content.active { display: block; }
-
-        .card { background: var(--card); padding: 18px; border-radius: 20px; margin-bottom: 15px; border-left: 5px solid var(--primary); position: relative; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .card-title { color: var(--gold); font-size: 14px; font-weight: 800; margin-bottom: 15px; display: flex; justify-content: space-between; }
-        
-        label { display: block; font-size: 11px; color: var(--subtext); margin-bottom: 6px; font-weight: 600; }
-        input, select { background: #0f172a; color: white; border: 1px solid #334155; padding: 12px; border-radius: 10px; font-size: 14px; width: 100%; margin-bottom: 12px; outline: none; transition: 0.2s; }
-        
-        .params-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        
-        .add-btn { width: 100%; background: transparent; border: 2px dashed #334155; color: var(--subtext); padding: 15px; border-radius: 15px; cursor: pointer; font-weight: 700; font-size: 13px; margin-bottom: 20px; }
-        .main-btn { width: 100%; background: var(--primary); color: #0f172a; padding: 20px; border: none; border-radius: 18px; font-weight: 900; font-size: 16px; cursor: pointer; box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.4); }
-
-        .res-card { background: #020617; border: 1px solid #334155; padding: 20px; border-radius: 20px; margin-top: 20px; }
-        .res-item { border-bottom: 1px solid #1e293b; padding: 12px 0; display: flex; justify-content: space-between; align-items: center; }
-        .res-name { font-size: 13px; color: var(--subtext); }
-        .res-val { font-size: 14px; font-weight: 700; color: var(--text); }
-        .total-price { font-size: 24px; color: var(--gold); font-weight: 900; text-align: center; margin: 15px 0; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <header>
-        <p class="logo">MYHOUSE</p>
-        <p class="subtitle">Smart Renovation System</p>
-    </header>
-
-    <div class="tabs">
-        <button class="tab active" onclick="switchTab(0)">1. MATERIALLAR</button>
-        <button class="tab" onclick="switchTab(1)">2. USTA MEHNATI</button>
-    </div>
-
-    <div id="tab0" class="tab-content active">
-        <div id="rooms-container"></div>
-        <button class="add-btn" onclick="addRoom()">+ YANGI XONA QO'SHISH</button>
-        <button class="main-btn" onclick="calculateAll()">HISOB-KITOBLARNI KO'RISH</button>
-        <div id="res-materials"></div>
-    </div>
-
-    <div id="tab1" class="tab-content">
-        <div id="res-work">
-            <div class="res-card" style="text-align: center; color: var(--subtext);">
-                Avval 1-bo'limda xonalarni hisoblang
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
     let roomCount = 0;
+
+    // База данных стилей и работ (все 5 стилей тут)
+    const STYLE_DATA = {
+        minimal: [
+            {n: "Och laminat", p: 35000, u: "f"},
+            {n: "Oq kraska", p: 20000, u: "w"}
+        ],
+        japandi: [
+            {n: "Och yog'och", p: 45000, u: "f"},
+            {n: "Matovaya emulsiya", p: 25000, u: "w"}
+        ],
+        loft: [
+            {n: "Beton / To'q laminat", p: 40000, u: "f"},
+            {n: "G'isht dekor", p: 35000, u: "w"}
+        ],
+        neoclassic: [
+            {n: "Parket", p: 65000, u: "f"},
+            {n: "Oboy + molding", p: 30000, u: "w"}
+        ],
+        ethnic_modern: [
+            {n: "Tabiiy yog'och", p: 55000, u: "f"},
+            {n: "Teksturali shtukaturka", p: 40000, u: "w"}
+        ]
+    };
+
+    // Базовые работы (обязательные для всех)
+    const BASE_WORKS = [
+        {n: "Styajka", p: 45000, u: "f"},
+        {n: "Shtukaturka", p: 50000, u: "w"},
+        {n: "Potolok", p: 45000, u: "f"},
+        {n: "Engineering", p: 110000, u: "f"}
+    ];
 
     function switchTab(idx) {
         document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
@@ -98,20 +42,14 @@
         roomCount++;
         const div = document.createElement('div');
         div.className = 'card';
-        div.id = `room-${roomCount}`;
         div.innerHTML = `
-            <div class="card-title">
-                <span>${roomCount}-XONA</span>
-                <span style="color:red; cursor:pointer;" onclick="this.parentElement.parentElement.remove()">✕</span>
-            </div>
+            <div class="card-title"><span>${roomCount}-XONA</span><span style="color:red; cursor:pointer;" onclick="this.parentElement.parentElement.remove()">✕</span></div>
             <label>Xona turi</label>
             <select class="r-type">
-                <option value="living_room">Mehmonxona (Гостиная)</option>
-                <option value="bedroom">Yotoqxona (Спальня)</option>
-                <option value="kitchen">Oshxona (Кухня)</option>
-                <option value="bathroom">Vanna (Ванная)</option>
-                <option value="toilet">Hojatxona (Туалет)</option>
-                <option value="corridor">Koridor</option>
+                <option value="living_room">Mehmonxona</option>
+                <option value="bedroom">Yotoqxona</option>
+                <option value="kitchen">Oshxona</option>
+                <option value="bathroom">Vanna</option>
             </select>
             <label>Dizayn uslubi</label>
             <select class="r-style">
@@ -122,12 +60,11 @@
                 <option value="ethnic_modern">Ethnic Modern</option>
             </select>
             <div class="params-grid">
-                <div><label>Eni (m)</label><input class="r-w" type="number" value="4" step="0.1"></div>
-                <div><label>Uzunligi (m)</label><input class="r-l" type="number" value="5" step="0.1"></div>
-                <div><label>Balandligi (m)</label><input class="r-h" type="number" value="3" step="0.1"></div>
+                <div><label>Eni</label><input class="r-w" type="number" value="4"></div>
+                <div><label>Uzuni</label><input class="r-l" type="number" value="5"></div>
+                <div><label>Baland</label><input class="r-h" type="number" value="3"></div>
             </div>
-            <label>Oyna va eshiklar maydoni (m²)</label>
-            <input class="r-o" type="number" value="2" step="0.1">
+            <label>Oyna/Eshik (m2)</label><input class="r-o" type="number" value="2">
         `;
         document.getElementById('rooms-container').appendChild(div);
     }
@@ -135,81 +72,45 @@
     async function calculateAll() {
         const matDiv = document.getElementById('res-materials');
         const workDiv = document.getElementById('res-work');
-        matDiv.innerHTML = "<div class='res-card' style='text-align:center;'>Hisoblanmoqda...</div>";
-        
+        matDiv.innerHTML = "Hisoblanmoqda...";
+
         const rooms = [];
         document.querySelectorAll('.card').forEach(c => {
+            const style = c.querySelector('.r-style').value;
+            // Собираем работы: Базовые + Работы по стилю
+            const allWorks = [...BASE_WORKS, ...STYLE_DATA[style]];
+
             rooms.push({
-                type: c.querySelector('.r-type').value,
-                style: c.querySelector('.r-style').value,
-                width: parseFloat(c.querySelector('.r-w').value) || 0,
-                length: parseFloat(c.querySelector('.r-l').value) || 0,
-                height: parseFloat(c.querySelector('.r-h').value) || 0,
-                openings_area: parseFloat(c.querySelector('.r-o').value) || 0
+                w: parseFloat(c.querySelector('.r-w').value) || 0,
+                l: parseFloat(c.querySelector('.r-l').value) || 0,
+                h: parseFloat(c.querySelector('.r-h').value) || 0,
+                o: parseFloat(c.querySelector('.r-o').value) || 0,
+                works: allWorks // ВОТ ОНИ!
             });
         });
 
-        if(rooms.length === 0) {
-            alert("Kamida bitta xona qo'shing!");
-            return;
-        }
-
         try {
-            // ВОТ ОН, ТОТ САМЫЙ ЗАПРОС!
             const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ rooms: rooms })
+                body: JSON.stringify(rooms) // Отправляем чистый массив
             });
 
-            if (!response.ok) throw new Error("Server xatosi");
             const data = await response.json();
             
-            // ВЫВОД МАТЕРИАЛОВ
-            let matHtml = ``;
-            data.details.forEach(room => {
-                matHtml += `<div class="res-card">
-                    <h3 style="color:var(--primary); margin-top:0;">${room.room_type}</h3>`;
-                room.materials.forEach(m => {
-                    let qty = m.quantity;
-                    let unit = m.unit;
-                    if (m.name.toLowerCase().includes("sement")) {
-                        qty = Math.ceil(qty / 50);
-                        unit = "qop (50kg)";
-                    }
-                    matHtml += `<div class="res-item">
-                        <span class="res-name">${m.name}</span>
-                        <span class="res-val">${qty} ${unit}</span>
-                    </div>`;
-                });
-                matHtml += `</div>`;
-            });
-            matDiv.innerHTML = matHtml;
-
-            // ВЫВОД ТРУДА МАСТЕРА
-            let workHtml = `<div class="res-card">
-                <h3 style="color:var(--gold); text-align:center; margin-top:0;">ISH HAQI (Smeta)</h3>
-                <div class="total-price">${data.total_cost} UZS</div>`;
-            data.details.forEach(room => {
-                workHtml += `<div class="res-item">
-                    <span class="res-name">${room.room_type}</span>
-                    <span class="res-val">${room.work_cost_sum.toLocaleString()} UZS</span>
-                </div>`;
-            });
-            workHtml += `<p style="font-size:10px; color:var(--subtext); text-align:center; margin-top:20px;">
-                * Smeta ichiga: styajka, shtukaturka, shpatlevka, oboi/kafel, potolok va montaj ishlari kiradi.
-            </p></div>`;
-            workDiv.innerHTML = workHtml;
-
-            matDiv.scrollIntoView({behavior: "smooth"});
+            // Вывод результата на "вторую страницу"
+            workDiv.innerHTML = `
+                <div class="res-card">
+                    <h3 style="color:var(--gold); text-align:center;">ISH HAQI SMETASI</h3>
+                    <div class="total-price">${data.total_cost} UZS</div>
+                    <p style="text-align:center; font-size:12px; color:var(--subtext);">Hamma xonalar va tanlangan uslublar hisobga olindi.</p>
+                </div>
+            `;
+            switchTab(1); // Переключаем на вторую вкладку сразу
 
         } catch (e) {
-            matDiv.innerHTML = `<div class="res-card" style="border-color:red; color:red; text-align:center;">
-                Aloqa uzildi! Server uyg'onishini kutib (30 sek) qaytadan tugmani bosing.
-            </div>`;
+            matDiv.innerHTML = "Xato! Serverga ulanishda muammo.";
         }
     }
     addRoom();
 </script>
-</body>
-</html>
