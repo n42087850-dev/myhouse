@@ -165,24 +165,28 @@
         // Показываем лоадер
         document.getElementById('loader').style.display = 'block';
         document.getElementById('calc-btn').disabled = true;
+// ... до этого идет сбор данных в массив rooms ...
 
         try {
             const res = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                // ВОТ ТУТ МЕНЯЕМ: оборачиваем rooms в фигурные скобки
                 body: JSON.stringify({ "rooms": rooms }) 
             });
             
             if (!res.ok) {
-                // Добавим это, чтобы если что, увидеть реальную причину в консоли
-                const errorData = await res.json();
-                console.log("Детали ошибки от сервера:", errorData);
-                throw new Error('Server error');
+                // МЕНЯЕМ ЗДЕСЬ: читаем подробности, если сервер выдал ошибку
+                const errorDetail = await res.json();
+                console.error("SERVER ERROR DETAILS:", errorDetail); 
+                alert("Server xatosi: " + JSON.stringify(errorDetail));
+                return; // Останавливаем выполнение, чтобы не идти к материалам
             }
             
             const data = await res.json();
-            // Дальше у тебя идет блок "Материалы" — его не трогай, он верный.
+
+            // --- ВОТ ЗДЕСЬ НАЧИНАЕТСЯ ТВОЙ БЛОК МАТЕРИАЛОВ (ЕГО НЕ ТРОГАЙ) ---
+            let matHtml = '<div class="mat-list"><h3>Kerakli materiallar / Материалы:</h3>';
+            // ... и так далее ...
 
             // 1. Материалы
             let matHtml = '<div class="mat-list"><h3>Kerakli materiallar / Материалы:</h3>';
