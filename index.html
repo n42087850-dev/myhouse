@@ -162,10 +162,8 @@
             });
         });
 
-        // Показываем лоадер
         document.getElementById('loader').style.display = 'block';
         document.getElementById('calc-btn').disabled = true;
-// ... до этого идет сбор данных в массив rooms ...
 
         try {
             const res = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
@@ -175,28 +173,24 @@
             });
             
             if (!res.ok) {
-                // МЕНЯЕМ ЗДЕСЬ: читаем подробности, если сервер выдал ошибку
                 const errorDetail = await res.json();
                 console.error("SERVER ERROR DETAILS:", errorDetail); 
                 alert("Server xatosi: " + JSON.stringify(errorDetail));
-                return; // Останавливаем выполнение, чтобы не идти к материалам
+                return;
             }
             
             const data = await res.json();
 
-            // --- ВОТ ЗДЕСЬ НАЧИНАЕТСЯ ТВОЙ БЛОК МАТЕРИАЛОВ (ЕГО НЕ ТРОГАЙ) ---
+            // ИСПРАВЛЕНО: Объявляем matHtml только ОДИН раз
             let matHtml = '<div class="mat-list"><h3>Kerakli materiallar / Материалы:</h3>';
-            // ... и так далее ...
-
-            // 1. Материалы
-            let matHtml = '<div class="mat-list"><h3>Kerakli materiallar / Материалы:</h3>';
+            
             data.materials_list.forEach(m => {
                 matHtml += `<div class="mat-item"><span>${m.name}</span><b>${m.amount.toFixed(1)} m²</b></div>`;
             });
             matHtml += '</div>';
+            
             document.getElementById('res-materials-container').innerHTML = matHtml;
 
-            // 2. Смета во второй вкладке
             document.getElementById('res-work').innerHTML = `
                 <div class="card" style="text-align:center;">
                     <h2 style="color:var(--gold); margin-top:0;">ISH HAQI SMETASI / СМЕТА РАБОТ</h2>
@@ -209,15 +203,16 @@
                 </div>
             `;
             
-            // Скролл к результату
             document.getElementById('res-materials-container').scrollIntoView({ behavior: 'smooth' });
 
         } catch (e) {
             console.error(e);
-            alert("Xatolik yuz berdi! Serverni tekshiring. / Произошла ошибка! Проверьте сервер.");
+            alert("Xatolik yuz berdi! Serverni tekshiring.");
         } finally {
             document.getElementById('loader').style.display = 'none';
             document.getElementById('calc-btn').disabled = false;
+        }
+    }
         }
     }
 
