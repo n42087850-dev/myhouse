@@ -12,9 +12,11 @@ class Item(BaseModel):
     u: str # Тип площади (f - пол, w - стены)
 
 class RoomReq(BaseModel):
-    w: float; l: float; h: float; o: float
+    w: float
+    l: float
+    h: float
+    o: float
     works: List[Item] # Список работ и материалов
-
 @app.post("/calculate")
 async def calculate(rooms: List[RoomReq]):
     total_work = 0
