@@ -98,7 +98,8 @@
     function addRoom() {
         roomCount++;
         const div = document.createElement('div');
-        div.className = 'card';
+        // ЗАМЕНИТЬ СТРОКУ В addRoom:
+div.className = 'card room-card';
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <b style="color:var(--primary);">${roomCount}-XONA / КОМНАТА</b>
@@ -139,55 +140,69 @@
     }
 
     async function calculateAll() {
-        const rooms = [];
-        document.querySelectorAll('.card').forEach(c => {
-            const style = c.querySelector('.r-style').value;
-            rooms.push({
-                w: parseFloat(c.querySelector('.r-w').value) || 0,
-                l: parseFloat(c.querySelector('.r-l').value) || 0,
-                h: parseFloat(c.querySelector('.r-h').value) || 0,
-                o: parseFloat(c.querySelector('.r-o').value) || 0,
-                works: [...WORK_LIST, ...STYLE_DATA[style]]
-            });
-        });
-
-        if (rooms.length === 0) return alert("Xona qo'shing! / Добавьте комнату!");
-
-        try {
-            const res = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(rooms)
-            });
-            const data = await res.json();
-
-            // 1. Материалы в БЛОК 1
-            let matHtml = '<div class="mat-list"><h3>Kerakli materiallar / Материалы (m²):</h3>';
-            data.materials_list.forEach(m => {
-                matHtml += `<div class="mat-item"><span>${m.name}</span><b>${m.amount} m²</b></div>`;
-            });
-            matHtml += '</div>';
-            document.getElementById('res-materials-container').innerHTML = matHtml;
-
-            // 2. Смета в БЛОК 2
-            document.getElementById('res-work').innerHTML = `
-                <div class="card" style="text-align:center;">
-                    <h2 style="color:var(--gold); margin-top:0;">ISH HAQI SMETASI / СМЕТА РАБОТ</h2>
-                    <div class="total-price">${data.total_work_cost.toLocaleString().replace(/,/g, ' ')} UZS</div>
-                    <p style="font-size:12px; color:var(--subtext);">
-                        Ushbu summa ustalarning umumiy mehnat haqini o'z ichiga oladi.<br>
-                        Эта сумма включает общую стоимость работ мастеров.
-                    </p>
-                    <button class="main-btn" onclick="switchTab(0)">O'ZGARTIRISH / ИЗМЕНИТЬ</button>
-                </div>
-            `;
-            
-            window.scrollTo({ top: document.getElementById('res-materials-container').offsetTop, behavior: 'smooth' });
-
-        } catch (e) {
-            alert("Server xatosi! / Ошибка сервера!");
-        }
+    const rooms = [];
+    
+    // Ищем только карточки комнат, игнорируя другие блоки .card
+    const roomElements = document.querySelectorAll('.room-card');
+    
+    if (roomElements.length === 0) {
+        return alert("Xona qo'shing! / Добавьте комнату!");
     }
+
+    roomElements.forEach(c => {
+        // Добавлены точки перед именами классов, чтобы querySelector их нашёл
+        const style = c.querySelector('.r-style').value;
+        rooms.push({
+            w: parseFloat(c.querySelector('.r-w').value) || 0,
+            l: parseFloat(c.querySelector('.r-l').value) || 0,
+            h: parseFloat(c.querySelector('.r-h').value) || 0,
+            o: parseFloat(c.querySelector('.r-o').value) || 0,
+            works: [...WORK_LIST, ...STYLE_DATA[style]]
+        });
+    });
+
+    try {
+        const res = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(rooms) // Бэкенд ждет массив объектов напрямую
+        });
+        
+        if (!res.ok) {
+            alert("Server xatosi! / Ошибка сервера!");
+            return;
+        }
+
+        const data = await res.json();
+
+        // 1. Материалы в БЛОК 1
+        let matHtml = '<div class="mat-list"><h3>Kerakli materiallar / Материалы (m²):</h3>';
+        data.materials_list.forEach(m => {
+            matHtml += `<div class="mat-item"><span>${m.name}</span><b>${m.amount} m²</b></div>`;
+        });
+        matHtml += '</div>';
+        document.getElementById('res-materials-container').innerHTML = matHtml;
+
+        // 2. Смета в БЛОК 2
+        document.getElementById('res-work').innerHTML = `
+            <div class="card" style="text-align:center;">
+                <h2 style="color:var(--gold); margin-top:0;">ISH HAQI SMETASI / СМЕТА РАБОТ</h2>
+                <div class="total-price">${data.total_work_cost.toLocaleString().replace(/,/g, ' ')} UZS</div>
+                <p style="font-size:12px; color:var(--subtext);">
+                    Ushbu summa ustalarning umumiy mehnat haqini o'z ichiga oladi.<br>
+                    Эта сумма включает общую стоимость работ мастеров.
+                </p>
+                <button class="main-btn" onclick="switchTab(0)">O'ZGARTIRISH / ИЗМЕНИТЬ</button>
+            </div>
+        `;
+        
+        window.scrollTo({ top: document.getElementById('res-materials-container').offsetTop, behavior: 'smooth' });
+
+    } catch (e) {
+        console.error(e);
+        alert("Server bilan ulanishda xatolik! / Ошибка связи с сервером!");
+    }
+}
 
     window.addEventListener('DOMContentLoaded', addRoom);
 </script>
