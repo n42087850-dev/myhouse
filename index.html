@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MYHOUSE PRO - Nodirjon Sobirov</title>
+    <title>MYHOUSE - Nodirjon Sobirov</title>
     <style>
         :root { --primary: #38bdf8; --gold: #fbbf24; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --subtext: #94a3b8; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
@@ -128,8 +128,8 @@ div.className = 'card room-card';
 
             <div class="params-grid">
                 <div><label>Eni / Ширина (m)</label><input class="r-w" type="number" placeholder="0.0"></div>
-                <div><label>Uzuni / Длина (m)</label><input class="r-l" type="number" placeholder="0.0"></div>
-                <div><label>Baland / Выс (m)</label><input class="r-h" type="number" placeholder="0.0"></div>
+                <div><label>Uzunligi / Длина (m)</label><input class="r-l" type="number" placeholder="0.0"></div>
+                <div><label>Balandligi / Выс (m)</label><input class="r-h" type="number" placeholder="0.0"></div>
             </div>
             
             <label>Eshik va Oyna / Двери и Окна (m²)</label>
@@ -165,8 +165,7 @@ div.className = 'card room-card';
         const res = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(rooms) // Бэкенд ждет массив объектов напрямую
-        });
+           body: JSON.stringify({ rooms: rooms })
         
         if (!res.ok) {
             alert("Server xatosi! / Ошибка сервера!");
