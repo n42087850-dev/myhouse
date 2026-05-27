@@ -4,25 +4,41 @@ from pydantic import BaseModel
 from typing import List
 
 app = FastAPI()
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
+# Надежная настройка CORS, чтобы браузер не блокировал сетевые запросы
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# 1. Модель для элемента работы или материала
 class Item(BaseModel):
-    n: str # Название
-    p: float # Цена
-    u: str # Тип площади (f - пол, w - стены)
+    n: str  # Название
+    p: float  # Цена
+    u: str  # Тип площади (f - пол, w - стены)
 
+# 2. Модель для параметров одной комнаты
 class RoomReq(BaseModel):
-    w: float
-    l: float
-    h: float
-    o: float
-    works: List[Item] # Список работ и материалов
+    w: float  # Ширина
+    l: float  # Длина
+    h: float  # Высота
+    o: float  # Окна и двери (m²)
+    works: List[Item]  # Список работ для этой комнаты
+
+# 3. Главная модель запроса (соответствует объекту { rooms: rooms } во фронтенде)
+class CalculateRequest(BaseModel):
+    rooms: List[RoomReq]
+
 @app.post("/calculate")
-async def calculate(rooms: List[RoomReq]):
+async def calculate(request: CalculateRequest):
     total_work = 0
     materials_summary = []
 
-    for r in rooms:
+    # Разворачиваем список комнат из объекта request
+    for r in request.rooms:
         f_area = r.w * r.l
         w_area = (2 * (r.w + r.l) * r.h) - r.o
         
@@ -31,7 +47,7 @@ async def calculate(rooms: List[RoomReq]):
             cost = item.p * area
             total_work += cost
             
-            # Собираем данные для сводки материалов (пример логики)
+            # Собираем данные для итоговой сводки материалов
             materials_summary.append({
                 "name": item.n,
                 "amount": round(area, 2),
@@ -40,6 +56,8 @@ async def calculate(rooms: List[RoomReq]):
 
     return {
         "total_work_cost": round(total_work),
-        "materials_list": materials_summary, # Список для первого блока
+        "materials_list": materials_summary,
         "status": "success"
     }
+
+   
