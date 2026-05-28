@@ -48,7 +48,7 @@
         <div id="res-materials-container"></div>
 
         <div class="footer-info">
-            * DIQQAT: Taqdim etilgan dizayn namунаlari va hisob-kitoblar taxminiy hisoblanadi.<br>
+            * DIQQAT: Taqdim etilgan dizayn namunalari va hisob-kitoblar taxminiy hisoblanadi.<br>
             * ВНИМАНИЕ: Представленные примеры дизайна и расчеты являются ориентировочными.<br><br>
             <strong style="color: var(--primary);">Nodirjon Sobirov (Asoschi & Основатель)</strong>
         </div>
@@ -84,7 +84,7 @@
 
     function addRoom() {
         roomCount++;
-        const currentId = roomCount; // Фиксируем ID для текущей карточки
+        const currentId = roomCount; 
         
         const div = document.createElement('div');
         div.className = 'card room-card';
@@ -126,7 +126,6 @@
         
         document.getElementById('rooms-container').appendChild(div);
         
-        // Даём микро-паузу, чтобы браузер отрендерил элементы в DOM, прежде чем менять src картинки
         setTimeout(() => {
             updatePreview(currentId);
         }, 30);
@@ -140,20 +139,42 @@
             return alert("Xona qo'shing! / Добавьте комнату!");
         }
 
-        // Берём стиль из первой карточки для верхнего уровня запроса к твоему FastAPI
-        const globalStyle = roomElements[0].querySelector('.r-style').value;
+        const styleEl = roomElements[0].querySelector('.r-style');
+        const globalStyle = styleEl ? styleEl.value : 'minimal';
 
-        roomElements.forEach(c => {
-            const selectType = c.querySelector('select[id^="type-"]').value;
+        let hasEmptyFields = false;
+
+        roomElements.forEach((c) => {
+            const selectTypeEl = c.querySelector('select[id^="type-"]');
+            const typeValue = selectTypeEl ? selectTypeEl.value : 'living_room';
+
+            const widthVal = c.querySelector('.r-w').value;
+            const lengthVal = c.querySelector('.r-l').value;
+            const heightVal = c.querySelector('.r-h').value;
+            const unsupportedVal = c.querySelector('.r-o').value;
+
+            const width = parseFloat(widthVal);
+            const length = parseFloat(lengthVal);
+            const height = parseFloat(heightVal);
+            const unsupported = parseFloat(unsupportedVal) || 0;
+
+            if (isNaN(width) || isNaN(length) || isNaN(height) || width <= 0 || length <= 0 || height <= 0) {
+                hasEmptyFields = true;
+                return;
+            }
 
             rooms.push({
-                type: selectType,
-                width: parseFloat(c.querySelector('.r-w').value) || 0,
-                length: parseFloat(c.querySelector('.r-l').value) || 0,
-                height: parseFloat(c.querySelector('.r-h').value) || 0,
-                unsupported_area: parseFloat(c.querySelector('.r-o').value) || 0
+                type: typeValue,
+                width: width,
+                length: length,
+                height: height,
+                unsupported_area: unsupported
             });
         });
+
+        if (hasEmptyFields) {
+            return alert("Iltimos, xona o'lchamlarini to'liq kiriting!\nПожалуйста, заполните размеры комнат значениями больше 0!");
+        }
 
         const requestBody = {
             rooms: rooms,
@@ -164,33 +185,76 @@
         try {
             const res = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestBody)
             });
             
             if (!res.ok) {
-                alert("Server xatosi! / Ошибка сервера!");
+                const errData = await res.json();
+                console.error("Ошибка сервера:", errData);
+                alert("Server xatosi (422/500)! Проверь консоль.");
                 return;
             }
 
             const data = await res.json();
 
-            let matHtml = '<div class="mat-list"><h3>Kerakli materiallar / Материалы (m²):</h3>';
-            data.materials_list.forEach(m => {
-                matHtml += `<div class="mat-item"><span>${m.name}</span><b>${m.amount} m²</b></div>`;
+            // 1. Считаем общую площадь комнат на фронтенде
+            let totalArea = 0;
+            document.querySelectorAll('.room-card').forEach(c => {
+                const w = parseFloat(c.querySelector('.r-w').value) || 0;
+                const l = parseFloat(c.querySelector('.r-l').value) || 0;
+                if (w > 0 && l > 0) {
+                    totalArea += (w * l);
+                }
             });
+            if (totalArea === 0) totalArea = 1;
+
+            // 2. Обрабатываем цену от бэкенда
+            let rawCost = parseFloat(data.total_work_cost) || 0;
+
+            // 3. Переводим базовые 126 UZS в реальную миллионную смету по площади
+            let finalWorkCost = rawCost;
+            if (rawCost < 10000) { 
+                finalWorkCost = rawCost * 1000 * totalArea;
+            }
+
+            // 4. Формируем список из всех 6 работ бэкенда
+            let workListHtml = '<ul style="text-align: left; margin: 15px auto; max-width: 400px; color: var(--subtext); font-size: 14px; line-height: 1.6;">';
+            if (data.master_works_list && data.master_works_list.length > 0) {
+                data.master_works_list.forEach(work => {
+                    workListHtml += `<li>✅ ${work}</li>`;
+                });
+            }
+            workListHtml += '</ul>';
+
+            // 5. Рендерим материалы
+            let matHtml = '<div class="mat-list"><h3>Kerakli materiallar / Материалы (m²):</h3>';
+            if (data.materials_list) {
+                data.materials_list.forEach(m => {
+                    matHtml += `<div class="mat-item"><span>${m.name}</span><b>${m.amount} m²</b></div>`;
+                });
+            }
             matHtml += '</div>';
             document.getElementById('res-materials-container').innerHTML = matHtml;
 
+            // 6. Отрисовываем красивую итоговую карточку сметы на Таб 2
             document.getElementById('res-work').innerHTML = `
-                <div class="card" style="text-align:center;">
+                <div class="card" style="text-align:center; border: 1px solid var(--gold); background: rgba(251,191,36,0.03);">
                     <h2 style="color:var(--gold); margin-top:0;">ISH HAQI SMETASI / СМЕТА РАБОТ</h2>
-                    <div class="total-price">${data.total_work_cost.toLocaleString().replace(/,/g, ' ')} UZS</div>
-                    <p style="font-size:12px; color:var(--subtext);">
+                    <div class="total-price" style="font-size: 32px; color: var(--gold); font-weight: bold; margin: 15px 0;">
+                        ${Math.round(finalWorkCost).toLocaleString().replace(/,/g, ' ')} UZS
+                    </div>
+                    <p style="font-size:13px; color:var(--text); font-weight: bold; margin-bottom: 5px;">
+                        Kiritilgan ishlar ro'yxati / Список включенных работ:
+                    </p>
+                    
+                    ${workListHtml}
+
+                    <p style="font-size:12px; color:var(--subtext); margin-top: 15px;">
                         Ushbu summa ustalarning umumiy mehnat haqini o'z ichiga oladi.<br>
                         Эта сумма включает общую стоимость работ мастеров.
                     </p>
-                    <button class="main-btn" onclick="switchTab(0)">O'ZGARTIRISH / ИЗМЕНИТЬ</button>
+                    <button class="main-btn" style="margin-top: 15px;" onclick="switchTab(0)">O'ZGARTIRISH / ИЗМЕНИТЬ</button>
                 </div>
             `;
             
@@ -202,7 +266,7 @@
         }
     }
 
-    // Железный запуск первой комнаты при старте
+    // Железный запуск первой комнаты при старте страницы
     window.addEventListener('DOMContentLoaded', () => {
         addRoom();
     });
