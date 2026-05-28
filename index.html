@@ -135,8 +135,7 @@
         document.getElementById('rooms-container').appendChild(div);
         updatePreview(roomCount);
     }
-
-    async function calculateAll() {
+async function calculateAll() {
         const rooms = [];
         const roomElements = document.querySelectorAll('.room-card');
         
@@ -144,22 +143,42 @@
             return alert("Xona qo'shing! / Добавьте комнату!");
         }
 
+        // Проходим по каждой карточке комнаты на экране
         roomElements.forEach(c => {
             const style = c.querySelector('.r-style').value;
+            
+            // Заготавливаем массив работ для этой конкретной комнаты
+            // Склеиваем общий список WORK_LIST и специфичный для стиля из STYLE_DATA
+            const combinedWorks = [...WORK_LIST, ...STYLE_DATA[style]];
+
+            // Превращаем фронтенд-объекты работ в модель Item, которую ждет бэкенд (поля n, p, u)
+            const backendWorks = combinedWorks.map(item => ({
+                n: item.name,    // переименовываем name в n
+                p: item.price,   // переименовываем price в p
+                u: item.unit === "m²" || item.unit === "m2" ? (item.type === "floor" ? "f" : "w") : "w" 
+                // если тип площади пол — ставим "f", если стены — "w"
+            }));
+
+            // Пакуем комнату строго по модели RoomReq (поля w, l, h, o, works)
             rooms.push({
                 w: parseFloat(c.querySelector('.r-w').value) || 0,
                 l: parseFloat(c.querySelector('.r-l').value) || 0,
                 h: parseFloat(c.querySelector('.r-h').value) || 0,
                 o: parseFloat(c.querySelector('.r-o').value) || 0,
-                works: [...WORK_LIST, ...STYLE_DATA[style]]
+                works: backendWorks
             });
-        }); // Цикл комнат закрылся корректно
+        });
+
+        // Главный объект запроса по модели CalculateRequest
+        const requestBody = {
+            rooms: rooms
+        };
 
         try {
             const res = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ rooms: rooms })
+                body: JSON.stringify(requestBody)
             });
             
             if (!res.ok) {
@@ -169,6 +188,7 @@
 
             const data = await res.json();
 
+            // Рендерим полученные от бэкенда материалы
             let matHtml = '<div class="mat-list"><h3>Kerakli materiallar / Материалы (m²):</h3>';
             data.materials_list.forEach(m => {
                 matHtml += `<div class="mat-item"><span>${m.name}</span><b>${m.amount} m²</b></div>`;
@@ -176,6 +196,7 @@
             matHtml += '</div>';
             document.getElementById('res-materials-container').innerHTML = matHtml;
 
+            // Рендерим итоговую сумму работы мастеров
             document.getElementById('res-work').innerHTML = `
                 <div class="card" style="text-align:center;">
                     <h2 style="color:var(--gold); margin-top:0;">ISH HAQI SMETASI / СМЕТА РАБОТ</h2>
@@ -188,59 +209,15 @@
                 </div>
             `;
             
+            // Плавный скролл к результатам расчета
             window.scrollTo({ top: document.getElementById('res-materials-container').offsetTop, behavior: 'smooth' });
 
         } catch (e) {
             console.error(e);
             alert("Server bilan ulanishda xatolik! / Ошибка связи с сервером!");
         }
-    } // Функция calculateAll успешно закрылась здесь
-
-    function addRoom() {
-        roomCount++;
-        const div = document.createElement('div');
-        div.className = 'card room-card';
-        div.innerHTML = `
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <b style="color:var(--primary);">${roomCount}-XONA / КОМНАТА</b>
-                <span style="color:red; cursor:pointer; font-weight:bold;" onclick="this.parentElement.parentElement.remove()">✕</span>
-            </div>
-
-            <label>Xona turi / Тип комнаты</label>
-            <select id="type-${roomCount}" onchange="updatePreview(${roomCount})">
-                <option value="living_room">Mehmonxona / Гостиная</option>
-                <option value="bedroom">Yotoqxona / Спальня</option>
-                <option value="kitchen">Oshxona / Кухня</option>
-                <option value="bathroom">Vanna / Ванная</option>
-                <option value="toilet">Hojatxona / Туалет</option>
-            </select>
-
-            <label>Dizayn uslubi / Стиль дизайна</label>
-            <select id="style-${roomCount}" class="r-style" onchange="updatePreview(${roomCount})">
-                <option value="minimal">Minimalism</option>
-                <option value="japandi">Japandi</option>
-                <option value="loft">Loft</option>
-                <option value="neoclassic">NeoClassic</option>
-                <option value="ethnic_modern">Ethnic Modern</option>
-            </select>
-
-            <img id="img-${roomCount}" class="room-img" src="" alt="Dizayn namuna">
-
-            <div class="params-grid">
-                <div><label>Eni / Ширина (m)</label><input class="r-w" type="number" placeholder="0.0"></div>
-                <div><label>Uzunligi / Длина (m)</label><input class="r-l" type="number" placeholder="0.0"></div>
-                <div><label>Balandligi / Выс (m)</label><input class="r-h" type="number" placeholder="0.0"></div>
-            </div>
-            
-            <label>Eshik va Oyna / Двери и Окна (m²)</label>
-            <input class="r-o" type="number" placeholder="0.0">
-        `;
-        
-        document.getElementById('rooms-container').appendChild(div);
-        updatePreview(roomCount);
-    }
-
-    window.addEventListener('DOMContentLoaded', addRoom);
+}
 </script>
 </body>
 </html>
+    
