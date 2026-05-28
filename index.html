@@ -48,7 +48,7 @@
         <div id="res-materials-container"></div>
 
         <div class="footer-info">
-            * DIQQAT: Taqdim etilgan dizayn namunalari va hisob-kitoblar taxminiy hisoblanadi.<br>
+            * DIQQAT: Taqdim etilgan dizayn namунаlari va hisob-kitoblar taxminiy hisoblanadi.<br>
             * ВНИМАНИЕ: Представленные примеры дизайна и расчеты являются ориентировочными.<br><br>
             <strong style="color: var(--primary);">Nodirjon Sobirov (Asoschi & Основатель)</strong>
         </div>
@@ -67,44 +67,35 @@
 <script>
     let roomCount = 0;
 
-    const STYLE_DATA = {
-        minimal: [{n: "Laminat", p: 120000, u: "f"}, {n: "Kraska", p: 45000, u: "w"}],
-        japandi: [{n: "Yog'och pol", p: 250000, u: "f"}, {n: "Emulsiya", p: 55000, u: "w"}],
-        loft: [{n: "Beton/Laminat", p: 110000, u: "f"}, {n: "G'isht dekor", p: 130000, u: "w"}],
-        neoclassic: [{n: "Parket", p: 450000, u: "f"}, {n: "Oboy/Molding", p: 70000, u: "w"}],
-        ethnic_modern: [{n: "Tabiiy tosh", p: 350000, u: "f"}, {n: "Shtukaturka", p: 80000, u: "w"}]
-    };
-
-    const WORK_LIST = [
-        {n: "Styajka / Стяжка", p: 45000, u: "f"},
-        {n: "Shtukaturka / Штукатурка", p: 40000, u: "w"},
-        {n: "Gipsokarton potolok / Потолок", p: 55000, u: "f"},
-        {n: "Engineering / Электрика и Сантехника", p: 110000, u: "f"}
-    ];
-
     function switchTab(idx) {
         document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
         document.querySelectorAll('.tab-content').forEach((c, i) => c.classList.toggle('active', i === idx));
     }
 
     function updatePreview(id) {
-        const type = document.getElementById(`type-${id}`).value;
-        const style = document.getElementById(`style-${id}`).value;
-        document.getElementById(`img-${id}`).src = `backend/images/${type}_${style}.jpg`;
+        const typeEl = document.getElementById(`type-${id}`);
+        const styleEl = document.getElementById(`style-${id}`);
+        const imgEl = document.getElementById(`img-${id}`);
+        
+        if (typeEl && styleEl && imgEl) {
+            imgEl.src = `backend/images/${typeEl.value}_${styleEl.value}.jpg`;
+        }
     }
 
     function addRoom() {
         roomCount++;
+        const currentId = roomCount; // Фиксируем ID для текущей карточки
+        
         const div = document.createElement('div');
         div.className = 'card room-card';
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <b style="color:var(--primary);">${roomCount}-XONA / КОМНАТА</b>
+                <b style="color:var(--primary);">${currentId}-XONA / КОМНАТА</b>
                 <span style="color:red; cursor:pointer; font-weight:bold;" onclick="this.parentElement.parentElement.remove()">✕</span>
             </div>
 
             <label>Xona turi / Тип комнаты</label>
-            <select id="type-${roomCount}" onchange="updatePreview(${roomCount})">
+            <select id="type-${currentId}" onchange="updatePreview(${currentId})">
                 <option value="living_room">Mehmonxona / Гостиная</option>
                 <option value="bedroom">Yotoqxona / Спальня</option>
                 <option value="kitchen">Oshxona / Кухня</option>
@@ -113,7 +104,7 @@
             </select>
 
             <label>Dizayn uslubi / Стиль дизайна</label>
-            <select id="style-${roomCount}" class="r-style" onchange="updatePreview(${roomCount})">
+            <select id="style-${currentId}" class="r-style" onchange="updatePreview(${currentId})">
                 <option value="minimal">Minimalism</option>
                 <option value="japandi">Japandi</option>
                 <option value="loft">Loft</option>
@@ -121,7 +112,7 @@
                 <option value="ethnic_modern">Ethnic Modern</option>
             </select>
 
-            <img id="img-${roomCount}" class="room-img" src="" alt="Dizayn namuna">
+            <img id="img-${currentId}" class="room-img" src="" alt="Dizayn namuna">
 
             <div class="params-grid">
                 <div><label>Eni / Ширина (m)</label><input class="r-w" type="number" placeholder="0.0"></div>
@@ -132,10 +123,16 @@
             <label>Eshik va Oyna / Двери и Окна (m²)</label>
             <input class="r-o" type="number" placeholder="0.0">
         `;
+        
         document.getElementById('rooms-container').appendChild(div);
-        updatePreview(roomCount);
+        
+        // Даём микро-паузу, чтобы браузер отрендерил элементы в DOM, прежде чем менять src картинки
+        setTimeout(() => {
+            updatePreview(currentId);
+        }, 30);
     }
-async function calculateAll() {
+
+    async function calculateAll() {
         const rooms = [];
         const roomElements = document.querySelectorAll('.room-card');
         
@@ -143,35 +140,25 @@ async function calculateAll() {
             return alert("Xona qo'shing! / Добавьте комнату!");
         }
 
-        // Проходим по каждой карточке комнаты на экране
+        // Берём стиль из первой карточки для верхнего уровня запроса к твоему FastAPI
+        const globalStyle = roomElements[0].querySelector('.r-style').value;
+
         roomElements.forEach(c => {
-            const style = c.querySelector('.r-style').value;
-            
-            // Заготавливаем массив работ для этой конкретной комнаты
-            // Склеиваем общий список WORK_LIST и специфичный для стиля из STYLE_DATA
-            const combinedWorks = [...WORK_LIST, ...STYLE_DATA[style]];
+            const selectType = c.querySelector('select[id^="type-"]').value;
 
-            // Превращаем фронтенд-объекты работ в модель Item, которую ждет бэкенд (поля n, p, u)
-            const backendWorks = combinedWorks.map(item => ({
-                n: item.name,    // переименовываем name в n
-                p: item.price,   // переименовываем price в p
-                u: item.unit === "m²" || item.unit === "m2" ? (item.type === "floor" ? "f" : "w") : "w" 
-                // если тип площади пол — ставим "f", если стены — "w"
-            }));
-
-            // Пакуем комнату строго по модели RoomReq (поля w, l, h, o, works)
             rooms.push({
-                w: parseFloat(c.querySelector('.r-w').value) || 0,
-                l: parseFloat(c.querySelector('.r-l').value) || 0,
-                h: parseFloat(c.querySelector('.r-h').value) || 0,
-                o: parseFloat(c.querySelector('.r-o').value) || 0,
-                works: backendWorks
+                type: selectType,
+                width: parseFloat(c.querySelector('.r-w').value) || 0,
+                length: parseFloat(c.querySelector('.r-l').value) || 0,
+                height: parseFloat(c.querySelector('.r-h').value) || 0,
+                unsupported_area: parseFloat(c.querySelector('.r-o').value) || 0
             });
         });
 
-        // Главный объект запроса по модели CalculateRequest
         const requestBody = {
-            rooms: rooms
+            rooms: rooms,
+            style: globalStyle,
+            master_rate: 1.0
         };
 
         try {
@@ -188,7 +175,6 @@ async function calculateAll() {
 
             const data = await res.json();
 
-            // Рендерим полученные от бэкенда материалы
             let matHtml = '<div class="mat-list"><h3>Kerakli materiallar / Материалы (m²):</h3>';
             data.materials_list.forEach(m => {
                 matHtml += `<div class="mat-item"><span>${m.name}</span><b>${m.amount} m²</b></div>`;
@@ -196,7 +182,6 @@ async function calculateAll() {
             matHtml += '</div>';
             document.getElementById('res-materials-container').innerHTML = matHtml;
 
-            // Рендерим итоговую сумму работы мастеров
             document.getElementById('res-work').innerHTML = `
                 <div class="card" style="text-align:center;">
                     <h2 style="color:var(--gold); margin-top:0;">ISH HAQI SMETASI / СМЕТА РАБОТ</h2>
@@ -209,15 +194,18 @@ async function calculateAll() {
                 </div>
             `;
             
-            // Плавный скролл к результатам расчета
             window.scrollTo({ top: document.getElementById('res-materials-container').offsetTop, behavior: 'smooth' });
 
         } catch (e) {
             console.error(e);
             alert("Server bilan ulanishda xatolik! / Ошибка связи с сервером!");
         }
-}
+    }
+
+    // Железный запуск первой комнаты при старте
+    window.addEventListener('DOMContentLoaded', () => {
+        addRoom();
+    });
 </script>
 </body>
 </html>
-    
