@@ -144,14 +144,43 @@
             gap: 10px;
         }
 
-        /* Картинка превью */
+        /* ФИКС КАРТИНОК: Теперь они отображаются ПОЛНОСТЬЮ без обрезки */
         .room-preview {
             width: 100%;
-            height: 180px;
-            object-fit: cover;
+            height: 200px;
+            object-fit: contain; /* Картинка сжимается пропорционально и влазит целиком */
+            background-color: #090f1a; /* Красивый темный фон по бокам пустых зон */
             border-radius: 10px;
             margin-top: 15px;
             border: 1px solid var(--border);
+            display: block;
+        }
+
+        /* Заголовки секций с объемами */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 5px;
+            margin: 20px 0 10px 0;
+        }
+
+        .section-title {
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .volume-badge {
+            background: var(--border);
+            color: var(--primary);
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: bold;
         }
 
         /* Кнопки */
@@ -190,18 +219,6 @@
         .btn-calc:hover {
             background: #e1b70e;
             color: #000000;
-        }
-
-        /* Списки цен и чекбоксов на 2-й странице */
-        .section-title {
-            color: var(--accent);
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-            margin: 15px 0 10px 0;
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 5px;
         }
 
         .work-item {
@@ -278,7 +295,7 @@
             margin-top: 15px;
         }
 
-        /* Блок новых возможностей (Разрабатывается) */
+        /* Блок новых возможностей */
         .features-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -292,7 +309,7 @@
             border-radius: 12px;
             padding: 12px;
             text-align: center;
-            opacity: 0.4; /* По умолчанию заблокировано до расчета */
+            opacity: 0.4;
             transition: 0.3s;
         }
 
@@ -325,7 +342,6 @@
             font-weight: bold;
         }
 
-        /* Автор подпись */
         .footer-author {
             text-align: center;
             font-size: 11px;
@@ -347,9 +363,9 @@
         <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. Usta Mehnati (m²)</div>
     </div>
 
+    <!-- Страница 1 -->
     <div id="tab1-content" class="tab-content active">
-        <div id="rooms-container">
-            </div>
+        <div id="rooms-container"></div>
 
         <button class="btn" onclick="addRoom()">+ YANGI XONA QO'SHISH / ДОБАВИТЬ КОМНАТУ</button>
         <button class="btn btn-calc" onclick="calculateVolumes()">Hisoblash / Рассчитать объемы</button>
@@ -359,13 +375,19 @@
         </div>
     </div>
 
+    <!-- Страница 2 -->
     <div id="tab2-content" class="tab-content">
         <div class="card" style="padding: 15px 15px 25px 15px;">
             <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; color: var(--text);">
                 USTA ISH HAQI NARXLARI
             </div>
 
-            <div class="section-title">Pol (Полы)</div>
+            <!-- ФИКС ОБЪЕМОВ: Добавлены динамические счетчики площади прямо в заголовки -->
+            <div class="section-header">
+                <span class="section-title">Pol (Полы)</span>
+                <span class="volume-badge" id="lbl-floor-vol">0.00 m²</span>
+            </div>
+            
             <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-styajka" checked>
@@ -402,7 +424,11 @@
                 <input type="number" class="work-price-input" id="price-plintus" value="15000">
             </div>
 
-            <div class="section-title">Devor (Стены)</div>
+            <div class="section-header">
+                <span class="section-title">Devor (Стены)</span>
+                <span class="volume-badge" id="lbl-wall-vol">0.00 m²</span>
+            </div>
+            
             <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" checked>
@@ -439,7 +465,11 @@
                 <input type="number" class="work-price-input" id="price-travertin" value="80000">
             </div>
 
-            <div class="section-title">Potolok & Ingeneriya</div>
+            <div class="section-header">
+                <span class="section-title">Potolok & Ingeneriya</span>
+                <span class="volume-badge" id="lbl-ceiling-vol">0.00 m²</span>
+            </div>
+            
             <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-natyajnoy">
@@ -503,13 +533,11 @@
 <script>
     let roomCount = 0;
 
-    // Глобальные переменные для хранения рассчитанных объемов по всем комнатам
     let totalFloorArea = 0;
     let totalWallArea = 0;
     let totalCeilingArea = 0;
     let totalPerimeter = 0;
 
-    // Функция переключения страниц (Табов)
     function switchTab(tabIndex) {
         if (tabIndex === 1) {
             document.getElementById('tab1-btn').classList.add('active');
@@ -517,19 +545,21 @@
             document.getElementById('tab1-content').classList.add('active');
             document.getElementById('tab2-content').classList.remove('active');
         } else {
+            document.getElementById('tab1-btn').classList.remove('remove');
             document.getElementById('tab1-btn').classList.remove('active');
             document.getElementById('tab2-btn').classList.add('active');
             document.getElementById('tab1-content').classList.remove('active');
             document.getElementById('tab2-content').classList.add('active');
+            
+            // Синхронизируем вывод цифр при ручном переходе на вкладку
+            renderVolumeLabels();
         }
     }
 
-    // Динамическая сборка пути к твоим локальным картинкам по комнатам и стилям
     function getImagePath(roomType, designStyle) {
         return `backend/images/${roomType}_${designStyle}.jpg`;
     }
 
-    // Обновление превью комнаты при смене типа или дизайна
     function updateRoomPreview(id) {
         const roomType = document.getElementById(`type-${id}`).value;
         const designStyle = document.getElementById(`design-${id}`).value;
@@ -540,7 +570,6 @@
         }
     }
 
-    // Добавление новой карточки комнаты
     function addRoom() {
         roomCount++;
         const currentId = roomCount; 
@@ -582,17 +611,22 @@
             <input id="o-${currentId}" type="number" placeholder="0.0" value="12">
         `;
         document.getElementById('rooms-container').appendChild(div);
-        
-        // Сразу выставляем картинку по умолчанию для созданной комнаты
         updateRoomPreview(currentId);
     }
 
     function removeRoomCard(id) {
         const card = document.getElementById(`room-card-${id}`);
         if (card) card.remove();
+        calculateVolumes();
     }
 
-    // Этап 1: Расчет объемов площадей на основе введенных параметров комнат
+    // Обновление текстовых значений объемов на второй странице
+    function renderVolumeLabels() {
+        document.getElementById('lbl-floor-vol').innerText = totalFloorArea.toFixed(2) + " m²";
+        document.getElementById('lbl-wall-vol').innerText = totalWallArea.toFixed(2) + " m²";
+        document.getElementById('lbl-ceiling-vol').innerText = totalCeilingArea.toFixed(2) + " m²";
+    }
+
     function calculateVolumes() {
         totalFloorArea = 0;
         totalWallArea = 0;
@@ -614,27 +648,24 @@
             const h = parseFloat(document.getElementById(`h-${id}`).value) || 0;
             const o = parseFloat(document.getElementById(`o-${id}`).value) || 0;
 
-            // Формулы геометрии комнат
             const floor = w * l;
             const perimeter = 2 * (w + l);
             let walls = (perimeter * h) - o;
-            if (walls < 0) walls = 0; // Защита от избыточной площади окон
+            if (walls < 0) walls = 0;
 
             totalFloorArea += floor;
-            totalCeilingArea += floor; // Потолок равен полу
+            totalCeilingArea += floor; 
             totalWallArea += walls;
-            totalPerimeter += perimeter; // Для расчета плинтусов
+            totalPerimeter += perimeter;
         });
 
-        // Показываем зелёный инфо-бокс с требованием перейти на следующую вкладку
+        renderVolumeLabels();
         document.getElementById('tab1-notice').style.display = 'block';
     }
 
-    // Этап 2: Расчет сметы мастеров по выбранным галочкам и их ценам
     function calculateSmeta() {
         let totalCost = 0;
 
-        // Вспомогательная функция для прибавления стоимости работы
         function addWorkCost(checkboxId, priceInputId, volume) {
             const isChecked = document.getElementById(checkboxId).checked;
             const unitPrice = parseFloat(document.getElementById(priceInputId).value) || 0;
@@ -643,36 +674,29 @@
             }
         }
 
-        // Вычисляем по категориям на основе площадей из Шага 1
-        // ПОЛЫ (Привязаны к площади пола / периметру)
         addWorkCost('chk-styajka', 'price-styajka', totalFloorArea);
         addWorkCost('chk-nalivnoy', 'price-nalivnoy', totalFloorArea);
         addWorkCost('chk-laminat', 'price-laminat', totalFloorArea);
         addWorkCost('chk-kafel-pol', 'price-kafel-pol', totalFloorArea);
-        addWorkCost('chk-plintus', 'price-plintus', totalPerimeter); // Плинтус считается по погонным метрам (периметру)
+        addWorkCost('chk-plintus', 'price-plintus', totalPerimeter);
 
-        // СТЕНЫ (Привязаны к чистой площади стен)
         addWorkCost('chk-shtukaturka', 'price-shtukaturka', totalWallArea);
         addWorkCost('chk-shpatlevka', 'price-shpatlevka', totalWallArea);
         addWorkCost('chk-oboi', 'price-oboi', totalWallArea);
         addWorkCost('chk-boyoq', 'price-boyoq', totalWallArea);
         addWorkCost('chk-travertin', 'price-travertin', totalWallArea);
 
-        // ПОТОЛОК И ИНЖЕНЕРИЯ (Потолок — к площади потолка, инженерия — к общей площади пола)
         addWorkCost('chk-natyajnoy', 'price-natyajnoy', totalCeilingArea);
         addWorkCost('chk-gipsokarton', 'price-gipsokarton', totalCeilingArea);
         addWorkCost('chk-elektro', 'price-elektro', totalFloorArea);
         addWorkCost('chk-santexnika', 'price-santexnika', totalFloorArea);
 
-        // Вывод итоговой суммы с разделением тысяч для красоты
         document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
 
-        // АКТИВАЦИЯ КАРТОЧЕК СТРОЙМАТЕРИАЛОВ И МЕБЕЛИ
         document.getElementById('feat-stroy').classList.add('unlocked');
         document.getElementById('feat-mebel').classList.add('unlocked');
     }
 
-    // Инициализация приложения: добавляем одну пустую карточку при старте
     window.onload = function() {
         addRoom();
     };
