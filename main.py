@@ -15,8 +15,8 @@ app.add_middleware(
 
 # 1. Модель для работы/услуги с фронтенда
 class WorkItem(BaseModel):
-    id: str    # Например: "styajka", "oboi", "kafel-pol"
-    name: str  # Название работы для вывода
+    id: str     # Например: "styajka", "oboi", "kafel-pol"
+    name: str   # Название работы для вывода
     price: float # Цена мастера за 1 м2 или м.п.
     unit_type: str # 'f' - пол, 'w' - стены, 'c' - потолок, 'p' - периметр
 
@@ -80,9 +80,15 @@ async def calculate(request: CalculateRequest):
             "unit": "m" if item.unit_type == "p" else "m2"
         })
 
+    # Возвращаем стоимость, материалы И рассчитанные площади для отображения
     return {
         "total_work_cost": round(total_work_cost),
         "materials_list": materials_summary,
+        "calculated_volumes": {
+            "total_floor_area": round(total_floor_area, 2),
+            "total_wall_area": round(total_wall_area, 2),
+            "total_ceiling_area": round(total_ceiling_area, 2),
+            "total_perimeter": round(total_perimeter, 2)
+        },
         "status": "success"
     }
-   
