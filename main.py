@@ -20,7 +20,7 @@ class WorkItem(BaseModel):
     price: float   # Цена мастера за 1 м2 или м.п.
     unit_type: str # 'f' - пол, 'w' - стены, 'c' - потолок, 'p' - периметр
 
-# 2. Модель для параметров комнат (Страница 1)
+# 2. Модель для параметров комнат
 class RoomDimensions(BaseModel):
     w: float  # Ширина
     l: float  # Длина
@@ -30,7 +30,7 @@ class RoomDimensions(BaseModel):
 # 3. Единая модель запроса
 class CalculateRequest(BaseModel):
     rooms: List[RoomDimensions]
-    selected_works: List[WorkItem] # Список только тех работ, где стоят галочки!
+    selected_works: List[WorkItem] 
 
 @app.post("/calculate")
 async def calculate(request: CalculateRequest):
@@ -48,7 +48,7 @@ async def calculate(request: CalculateRequest):
             w_area = 0
 
         total_floor_area += f_area
-        total_ceiling_area += f_area  # Площадь потолка равна полу
+        total_ceiling_area += f_area  
         total_perimeter += p_meter
         total_wall_area += w_area
 
@@ -69,13 +69,16 @@ async def calculate(request: CalculateRequest):
         else:
             current_volume = 0.0
 
+        # ВАЖНОЕ ИСПРАВЛЕНИЕ: Если это инженерия, объемом работы для мастера считаем общую площадь пола
+        if item.id in ["elektro", "santexnika"]:
+            current_volume = total_floor_area
+
         # Считаем стоимость работы мастера
         cost = item.price * current_volume
         total_work_cost += cost
 
         # ДИНАМИЧЕСКИЙ РАСЧЕТ МАТЕРИАЛОВ СТРОГО ПО КАРТЕ СООТВЕТСТВИЯ (+10% ZAPAS)
         if item.id == "styajka":
-            # Расход пескобетона: 22 кг на 1 м² при слое 1 см. Считаем средний слой 5 см (110 кг/м²)
             weight = (current_volume * 22 * 5) * 1.10
             materials_summary.append({
                 "name": "Цемент М-400 (Пескобетон) / Sement M-400",
@@ -84,7 +87,6 @@ async def calculate(request: CalculateRequest):
             })
         
         elif item.id == "nalivnoy":
-            # Расход: 1.6 кг на 1 м² при слое 1 мм. Средний финишный слой 10 мм (16 кг/м²)
             weight = (current_volume * 1.6 * 10) * 1.10
             materials_summary.append({
                 "name": "Самовыравнивающийся наливной пол / Quyma pol aralashmasi",
@@ -126,7 +128,6 @@ async def calculate(request: CalculateRequest):
             })
             
         elif item.id == "shtukaturka":
-            # Расход: 9 кг на 1 м² при слое 1 см. Берем выравнивающий слой 1.5 см (13.5 кг/м²)
             weight = (current_volume * 9 * 1.5) * 1.10
             materials_summary.append({
                 "name": "Штукатурка гипсовая / Shpatlyovka (suvoq uchun)",
@@ -165,7 +166,7 @@ async def calculate(request: CalculateRequest):
         elif item.id == "travertin":
             weight = (current_volume * 2.5) * 1.10
             materials_summary.append({
-                "name": "Декоративный травертин / Dekorativ travertin (mineral)",
+                "name": "Декоративный travertin / Dekorativ travertin (mineral)",
                 "amount": round(weight),
                 "unit": "kg"
             })
@@ -190,7 +191,6 @@ async def calculate(request: CalculateRequest):
             })
             
         elif item.id == "elektro":
-            # 4.5 погонных метра кабеля на каждый 1м2 пола
             meters = (total_floor_area * 4.5) * 1.10
             materials_summary.append({
                 "name": "Силовой кабель ВВГнг и гофра / Kuchlanish kabeli va gofra",
@@ -199,7 +199,6 @@ async def calculate(request: CalculateRequest):
             })
             
         elif item.id == "santexnika":
-            # 1.2 метра труб водоснабжения на каждый 1м2 пола
             meters = (total_floor_area * 1.2) * 1.10
             materials_summary.append({
                 "name": "Трубы экопластик водопроводные (PPR) / Suv quvurlari (ekoplastik)",
