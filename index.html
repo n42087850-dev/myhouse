@@ -39,7 +39,6 @@
             padding-bottom: 50px;
         }
 
-        /* Хедер */
         header {
             text-align: center;
             margin-bottom: 25px;
@@ -58,7 +57,6 @@
             margin-top: 4px;
         }
 
-        /* Вкладки (Табы) */
         .tabs {
             display: flex;
             background: var(--bg-card);
@@ -85,7 +83,6 @@
             color: var(--text);
         }
 
-        /* Контент вкладок */
         .tab-content {
             display: none;
         }
@@ -94,7 +91,6 @@
             display: block;
         }
 
-        /* Карточки комнат */
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -138,14 +134,12 @@
             border-color: var(--primary);
         }
 
-        /* Сетка параметров комнаты */
         .params-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
 
-        /* ФИКС КАРТИНОК: Свободные пропорции без обрезки и искажений */
         .room-preview {
             width: 100%;
             height: auto; 
@@ -158,7 +152,6 @@
             display: block;
         }
 
-        /* Заголовки секций с объемами */
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -185,7 +178,6 @@
             font-weight: bold;
         }
 
-        /* Кнопки */
         .btn {
             width: 100%;
             background: transparent;
@@ -262,7 +254,6 @@
             color: var(--text);
         }
 
-        /* Итоговый результат */
         .result-box {
             background: var(--bg-card);
             border: 2px solid var(--border);
@@ -283,7 +274,6 @@
             font-size: 11px;
         }
 
-        /* КРУТОЙ ДИНАМИЧЕСКИЙ БЛОК HISOBOT */
         .hisobot-box {
             display: none;
             background: var(--bg-card);
@@ -326,7 +316,6 @@
             font-weight: bold;
         }
 
-        /* Уведомление на 1 странице */
         .notice-box {
             display: none;
             background: #1e3a2f;
@@ -340,7 +329,6 @@
             margin-top: 15px;
         }
 
-        /* Блок новых возможностей */
         .features-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -408,6 +396,7 @@
         <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. Usta Mehnati & Hisobot</div>
     </div>
 
+    <!-- Страница 1 -->
     <div id="tab1-content" class="tab-content active">
         <div id="rooms-container"></div>
 
@@ -419,12 +408,14 @@
         </div>
     </div>
 
+    <!-- Страница 2 -->
     <div id="tab2-content" class="tab-content">
         <div class="card" style="padding: 15px 15px 25px 15px;">
             <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px;">
                 Usta ish haqi narxlari / Расценки мастера
             </div>
 
+            <!-- БЛОК: ПОЛЫ -->
             <div class="section-header">
                 <span class="section-title">Pol / Полы</span>
                 <span class="volume-badge" id="lbl-floor-vol">0.00 m²</span>
@@ -454,7 +445,7 @@
             <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-kafel-pol" data-unit="f">
-                    <span class="work-name">Кафель (пол) / Kafel (pol üçün)</span>
+                    <span class="work-name">Кафель (пол) / Kafel (pol uchun)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-kafel-pol" value="60000">
             </div>
@@ -473,6 +464,7 @@
                 <input type="number" class="work-price-input" id="price-plintus" value="15000">
             </div>
 
+            <!-- БЛОК: СТЕНЫ -->
             <div class="section-header">
                 <span class="section-title">Devor / Стены</span>
                 <span class="volume-badge" id="lbl-wall-vol">0.00 m²</span>
@@ -514,6 +506,7 @@
                 <input type="number" class="work-price-input" id="price-travertin" value="80000">
             </div>
 
+            <!-- БЛОК: ПОТОЛОК -->
             <div class="section-header">
                 <span class="section-title">Potolok / Потолок</span>
                 <span class="volume-badge" id="lbl-ceiling-vol">0.00 m²</span>
@@ -534,6 +527,7 @@
                 <input type="number" class="work-price-input" id="price-gipsokarton" value="60000">
             </div>
 
+            <!-- БЛОК ДЛЯ ИНЖЕНЕРИИ -->
             <div class="section-header">
                 <span class="section-title">Ingeneriya / Инженерия</span>
                 <span class="volume-badge" id="lbl-engineering-vol" style="color:var(--success);">Tizimlar</span>
@@ -561,10 +555,10 @@
             <p>Jami usta mehnati uchun / Итого за работу мастера</p>
         </div>
 
+        <!-- БЛОК HISOBOT -->
         <div class="hisobot-box" id="hisobot-container">
             <div class="hisobot-title">Hisobot / Смета стройматериалов (+10% zapas)</div>
-            <div id="materials-rows-wrapper">
-                </div>
+            <div id="materials-rows-wrapper"></div>
         </div>
 
         <div style="margin-top: 25px; font-weight: bold; font-size: 12px; color: #2ecc71; text-transform: uppercase; letter-spacing: 0.5px;">
@@ -592,7 +586,6 @@
 
 <script>
     let roomCount = 0;
-
     let totalFloorArea = 0;
     let totalWallArea = 0;
     let totalCeilingArea = 0;
@@ -634,7 +627,6 @@
         div.className = 'card room-card';
         div.id = `room-card-${currentId}`;
         
-        // ФИКС: Убраны дефолтные цифры из полей ввода (placeholder="0.0")
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <b style="color:var(--primary);">${currentId}-XONA / КОМНАТА</b>
@@ -694,7 +686,7 @@
         const cards = document.querySelectorAll('.room-card');
         
         if (cards.length === 0) {
-            alert("Илтимос, олдин хона қўшинг! / Пожалуйста, сначала добавьте комнату!");
+            alert("Пожалуйста, сначала добавьте комнату!");
             return;
         }
 
@@ -721,19 +713,17 @@
         document.getElementById('tab1-notice').style.display = 'block';
     }
 
-    // РАБОТА С СЕРВЕРОМ: Отправка выбранных чекбоксов на бэкенд и сбор данных HISOBOT
-    async def calculateSmetaToServer() {
+    async function calculateSmetaToServer() {
         const cards = document.querySelectorAll('.room-card');
         if (cards.length === 0 || totalFloorArea === 0) {
-            alert("Сначала рассчитайте объемы на Шаге 1! / Oldin 1-bosqichda hajmlarni hisoblang!");
+            alert("Oldin 1-bosqichda hajmlarni hisoblang!");
             return;
         }
 
-        // Собираем комнаты
         const roomsPayload = [];
         cards.forEach(card => {
             const id = card.id.replace('room-card-', '');
-            roomsPayload.append({
+            roomsPayload.push({
                 w: parseFloat(document.getElementById(`w-${id}`).value) || 0,
                 l: parseFloat(document.getElementById(`l-${id}`).value) || 0,
                 h: parseFloat(document.getElementById(`h-${id}`).value) || 0,
@@ -741,7 +731,6 @@
             });
         });
 
-        // Собираем строго отмеченные работы
         const selectedWorksPayload = [];
         const checkboxes = document.querySelectorAll('.work-checkbox');
         
@@ -752,7 +741,7 @@
                 const nameText = cb.parentElement.querySelector('.work-name').innerText;
                 const unitType = cb.getAttribute('data-unit');
 
-                selectedWorksPayload.append({
+                selectedWorksPayload.push({
                     id: baseId,
                     name: nameText,
                     price: priceVal,
@@ -767,7 +756,6 @@
         };
 
         try {
-            // Подключение к бэкенду (при необходимости замени на локальный IP или Render url)
             const response = await fetch('http://127.0.0.1:8000/calculate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -777,12 +765,10 @@
             const data = await response.json();
 
             if (data.status === 'success') {
-                // Отображаем стоимость работы мастера
                 document.getElementById('total-price-display').innerText = data.total_work_cost.toLocaleString('ru-RU') + " UZS";
 
-                // Рендерим динамический блок HISOBOT
                 const wrapper = document.getElementById('materials-rows-wrapper');
-                wrapper.innerHTML = ''; // Очищаем старые строчки
+                wrapper.innerHTML = ''; 
 
                 if (data.materials_list.length > 0) {
                     data.materials_list.forEach(mat => {
@@ -803,8 +789,8 @@
                 document.getElementById('feat-mebel').classList.add('unlocked');
             }
         } catch (error) {
-            console.error("Ошибка соединения с бэкендом:", error);
-            alert("Сервер бэкенда не отвечает. Проверьте запуск main.py!");
+            console.error("Ошибка:", error);
+            alert("Бэкенд сервер билан алоқа йўқ. main.py ишга тушганини текширинг!");
         }
     }
 
