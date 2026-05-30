@@ -15,9 +15,9 @@ app.add_middleware(
 
 # 1. Модель для работы/услуги с фронтенда
 class WorkItem(BaseModel):
-    id: str     # Например: "styajka", "oboi", "kafel-pol"
-    name: str   # Название работы для вывода
-    price: float # Цена мастера за 1 м2 или м.п.
+    id: str        # Например: "styajka", "oboi", "kafel-pol"
+    name: str      # Название работы для вывода
+    price: float   # Цена мастера за 1 м2 или м.п.
     unit_type: str # 'f' - пол, 'w' - стены, 'c' - потолок, 'p' - периметр
 
 # 2. Модель для параметров комнат (Страница 1)
@@ -52,7 +52,7 @@ async def calculate(request: CalculateRequest):
         total_perimeter += p_meter
         total_wall_area += w_area
 
-    # Шаг 2: Считаем деньги на основе выбранных работ
+    # Шаг 2: Считаем деньги и материалы на основе выбранных работ
     total_work_cost = 0.0
     materials_summary = []
 
@@ -69,16 +69,143 @@ async def calculate(request: CalculateRequest):
         else:
             current_volume = 0.0
 
-        # Считаем стоимость работы
+        # Считаем стоимость работы мастера
         cost = item.price * current_volume
         total_work_cost += cost
 
-        # Сразу генерируем объемы материалов (чистые объемы без дублей)
-        materials_summary.append({
-            "name": item.name,
-            "amount": round(current_volume, 2),
-            "unit": "m" if item.unit_type == "p" else "m2"
-        })
+        # ДИНАМИЧЕСКИЙ РАСЧЕТ МАТЕРИАЛОВ СТРОГО ПО КАРТЕ СООТВЕТСТВИЯ (+10% ZAPAS)
+        if item.id == "styajka":
+            # Расход пескобетона: 22 кг на 1 м² при слое 1 см. Считаем средний слой 5 см (110 кг/м²)
+            weight = (current_volume * 22 * 5) * 1.10
+            materials_summary.append({
+                "name": "Цемент М-400 (Пескобетон) / Sement M-400",
+                "amount": round(weight),
+                "unit": "kg"
+            })
+        
+        elif item.id == "nalivnoy":
+            # Расход: 1.6 кг на 1 м² при слое 1 мм. Средний финишный слой 10 мм (16 кг/м²)
+            weight = (current_volume * 1.6 * 10) * 1.10
+            materials_summary.append({
+                "name": "Самовыравнивающийся наливной пол / Quyma pol aralashmasi",
+                "amount": round(weight),
+                "unit": "kg"
+            })
+            
+        elif item.id == "laminat":
+            materials_summary.append({
+                "name": "Ламинат и подложка / Laminat va taglik (polizol)",
+                "amount": round(current_volume * 1.10, 2),
+                "unit": "m²"
+            })
+            
+        elif item.id == "kafel-pol":
+            materials_summary.append({
+                "name": "Кафельная плитка (пол) / Kafel (pol uchun)",
+                "amount": round(current_volume * 1.10, 2),
+                "unit": "m²"
+            })
+            materials_summary.append({
+                "name": "Плиточный клей (усиленный) / Plitka yelimi (kley)",
+                "amount": round((current_volume * 4.5) * 1.10),
+                "unit": "kg"
+            })
+            
+        elif item.id == "issiq-pol":
+            materials_summary.append({
+                "name": "Маты и кабель тёплого пола / Issiq pol tizimi (matlar)",
+                "amount": round(current_volume * 1.10, 2),
+                "unit": "m²"
+            })
+            
+        elif item.id == "plintus":
+            materials_summary.append({
+                "name": "Плинтус и крепежи / Plintus va mahkamlagichlar",
+                "amount": round(current_volume * 1.10, 2),
+                "unit": "m.p."
+            })
+            
+        elif item.id == "shtukaturka":
+            # Расход: 9 кг на 1 м² при слое 1 см. Берем выравнивающий слой 1.5 см (13.5 кг/м²)
+            weight = (current_volume * 9 * 1.5) * 1.10
+            materials_summary.append({
+                "name": "Штукатурка гипсовая / Shpatlyovka (suvoq uchun)",
+                "amount": round(weight),
+                "unit": "kg"
+            })
+            
+        elif item.id == "shpatlevka":
+            weight = (current_volume * 1.2) * 1.10
+            materials_summary.append({
+                "name": "Шпатлевка финишная / Finish shpatlyovka",
+                "amount": round(weight),
+                "unit": "kg"
+            })
+            
+        elif item.id == "oboi":
+            materials_summary.append({
+                "name": "Обои (чистовое покрытие) / Oboi",
+                "amount": round(current_volume * 1.10, 2),
+                "unit": "m²"
+            })
+            materials_summary.append({
+                "name": "Клей обойный / Oboi yelimi (kley)",
+                "amount": round((current_volume * 0.05) * 1.10, 2),
+                "unit": "kg"
+            })
+            
+        elif item.id == "boyoq":
+            liters = (current_volume * 0.3) * 1.10
+            materials_summary.append({
+                "name": "Краска интерьерная (2 слоя) / Ichki bo'yoq",
+                "amount": round(liters, 2),
+                "unit": "l"
+            })
+            
+        elif item.id == "travertin":
+            weight = (current_volume * 2.5) * 1.10
+            materials_summary.append({
+                "name": "Декоративный травертин / Dekorativ travertin (mineral)",
+                "amount": round(weight),
+                "unit": "kg"
+            })
+            
+        elif item.id == "natyajnoy":
+            materials_summary.append({
+                "name": "Натяжное ПВХ полотно и багет / Natyajnoy potolok plyonkasi",
+                "amount": round(current_volume * 1.10, 2),
+                "unit": "m²"
+            })
+            
+        elif item.id == "gipsokarton":
+            materials_summary.append({
+                "name": "Листы гипсокартона (ГКЛ) / Gipsokarton varaqlari",
+                "amount": round(current_volume * 1.10, 2),
+                "unit": "m²"
+            })
+            materials_summary.append({
+                "name": "Профиль металлический (CD/UD) / Metall profil",
+                "amount": round((current_volume * 2.2) * 1.10, 2),
+                "unit": "m.p."
+            })
+            
+        elif item.id == "elektro":
+            # 4.5 погонных метра кабеля на каждый 1м2 пола
+            meters = (total_floor_area * 4.5) * 1.10
+            materials_summary.append({
+                "name": "Силовой кабель ВВГнг и гофра / Kuchlanish kabeli va gofra",
+                "amount": round(meters, 2),
+                "unit": "m.p."
+            })
+            
+        elif item.id == "santexnika":
+            # 1.2 метра труб водоснабжения на каждый 1м2 пола
+            meters = (total_floor_area * 1.2) * 1.10
+            materials_summary.append({
+                "name": "Трубы экопластик водопроводные (PPR) / Suv quvurlari (ekoplastik)",
+                "amount": round(meters, 2),
+                "unit": "m.p."
+            })
 
     # Возвращаем стоимость, материалы И рассчитанные площади для отображения
     return {
