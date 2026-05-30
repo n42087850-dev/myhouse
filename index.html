@@ -140,7 +140,6 @@
             gap: 10px;
         }
 
-        /* ОБНОВЛЕНО: Гибкая рамка для картинок без урезания и черного фона */
         .room-preview {
             width: 100%;
             height: auto; 
@@ -287,10 +286,19 @@
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 15px;
+            margin-bottom: 6px;
             text-align: center;
+        }
+
+        /* Стиль для текста дисклеймера */
+        .disclaimer-text {
+            color: var(--text-muted);
+            font-size: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.4;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 8px;
+            padding-bottom: 10px;
         }
 
         .material-row {
@@ -502,7 +510,11 @@
         </div>
 
         <div class="hisobot-box" id="hisobot-container">
-            <div class="hisobot-title">Hisobot / Смета стройматериалов (+10% zapas)</div>
+            <div class="hisobot-title">Smeta стройматериалов</div>
+            <div class="disclaimer-text">
+                * Diqqat: Hisob-kitobga kesish va chiqindilar uchun avtomatik ravishda 10% zaxira qo'shilgan.<br>
+                * Внимание: В расчет автоматически заложен технологический запас 10% на подрезку и отходы.
+            </div>
             <div id="materials-rows-wrapper"></div>
         </div>
 
@@ -708,7 +720,6 @@
         };
 
         try {
-            // DIQQAT: Render ga yuklaganingizda localhost'ni Render sayt manzili bilan almashtiring!
             const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
