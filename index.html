@@ -140,16 +140,14 @@
             gap: 10px;
         }
 
+        /* ОБНОВЛЕНО: Гибкая рамка для картинок без урезания и черного фона */
         .room-preview {
             width: 100%;
             height: auto; 
-            max-height: 280px;
-            object-fit: contain; 
-            background-color: #090f1a; 
+            display: block;
             border-radius: 10px;
             margin-top: 15px;
             border: 1px solid var(--border);
-            display: block;
         }
 
         .section-header {
@@ -329,57 +327,11 @@
             margin-top: 15px;
         }
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .feature-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-            opacity: 0.4;
-            transition: 0.3s;
-        }
-
-        .feature-card.unlocked {
-            opacity: 1;
-        }
-
-        .feature-img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            background: var(--bg-main);
-            display: block;
-        }
-
-        .feature-title {
-            font-size: 11px;
-            font-weight: bold;
-            color: var(--text);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .feature-status {
-            font-size: 10px;
-            color: var(--accent);
-            margin-top: 4px;
-            font-weight: bold;
-        }
-
         .footer-author {
             text-align: center;
             font-size: 11px;
             color: var(--text-muted);
-            margin-top: 20px;
+            margin-top: 30px;
         }
     </style>
 </head>
@@ -396,7 +348,6 @@
         <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. Usta Mehnati & Hisobot</div>
     </div>
 
-    <!-- Страница 1 -->
     <div id="tab1-content" class="tab-content active">
         <div id="rooms-container"></div>
 
@@ -404,18 +355,16 @@
         <button class="btn btn-calc" onclick="calculateVolumes()">Hisoblash / Рассчитать объемы</button>
          
         <div id="tab1-notice" class="notice-box">
-            KATEGORIYALARGA O'TING → / ПЕРЕХОДИТЕ В СЛЕДУЮЩУЮ СТРАНИЦУ →
+            KEYINGI BETGA O'TING → / ПЕРЕХОДИТЕ В СЛЕДУЮЩУЮ СТРАНИЦУ →
         </div>
     </div>
 
-    <!-- Страница 2 -->
     <div id="tab2-content" class="tab-content">
         <div class="card" style="padding: 15px 15px 25px 15px;">
             <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px;">
                 Usta ish haqi narxlari / Расценки мастера
             </div>
 
-            <!-- БЛОК: ПОЛЫ -->
             <div class="section-header">
                 <span class="section-title">Pol / Полы</span>
                 <span class="volume-badge" id="lbl-floor-vol">0.00 m²</span>
@@ -464,7 +413,6 @@
                 <input type="number" class="work-price-input" id="price-plintus" value="15000">
             </div>
 
-            <!-- БЛОК: СТЕНЫ -->
             <div class="section-header">
                 <span class="section-title">Devor / Стены</span>
                 <span class="volume-badge" id="lbl-wall-vol">0.00 m²</span>
@@ -506,7 +454,6 @@
                 <input type="number" class="work-price-input" id="price-travertin" value="80000">
             </div>
 
-            <!-- БЛОК: ПОТОЛОК -->
             <div class="section-header">
                 <span class="section-title">Potolok / Потолок</span>
                 <span class="volume-badge" id="lbl-ceiling-vol">0.00 m²</span>
@@ -527,7 +474,6 @@
                 <input type="number" class="work-price-input" id="price-gipsokarton" value="60000">
             </div>
 
-            <!-- БЛОК ДЛЯ ИНЖЕНЕРИИ -->
             <div class="section-header">
                 <span class="section-title">Ingeneriya / Инженерия</span>
                 <span class="volume-badge" id="lbl-engineering-vol" style="color:var(--success);">Tizimlar</span>
@@ -555,32 +501,38 @@
             <p>Jami usta mehnati uchun / Итого за работу мастера</p>
         </div>
 
-        <!-- БЛОК HISOBOT -->
         <div class="hisobot-box" id="hisobot-container">
             <div class="hisobot-title">Hisobot / Смета стройматериалов (+10% zapas)</div>
             <div id="materials-rows-wrapper"></div>
         </div>
 
-        <div style="margin-top: 25px; font-weight: bold; font-size: 12px; color: #2ecc71; text-transform: uppercase; letter-spacing: 0.5px;">
-            Yangi imkoniyatlar / Новые возможности
-        </div>
-        
-        <div class="features-grid">
-            <div class="feature-card" id="feat-stroy">
-                <img class="feature-img" src="backend/images/stroy_materials.jpg" alt="Stroymateriallar" onerror="this.src='https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=200&q=80'">
-                <div class="feature-title">Stroymateriallar</div>
-                <div class="feature-status">TAYYOR / АКТИВНО</div>
+        <div class="card" style="margin-top: 25px; padding: 15px;">
+            <div style="text-align: center; font-weight: bold; font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px;">
+                Yangi imkoniyatlar / Новые возможности
             </div>
-            <div class="feature-card" id="feat-mebel">
-                <img class="feature-img" src="backend/images/mebellar.jpg" alt="Mebellar" onerror="this.src='https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=200&q=80'">
-                <div class="feature-title">Mebellar / Мебель</div>
-                <div class="feature-status">РАЗРАБАТЫВАЕТСЯ</div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px;">
+                <div style="font-size: 12px; color: var(--text);">
+                    🛒 Stroymateriallar do'konlari integratsiyasi / Интеграция магазинов стройматериалов
+                </div>
+                <span style="background: #3a2a18; color: var(--accent); font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: bold; white-space: nowrap;">
+                    Разрабатывается
+                </span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
+                <div style="font-size: 12px; color: var(--text);">
+                    🛋️ Mebel do'konlari va buyurtma / Мебельные магазины и заказ
+                </div>
+                <span style="background: #3a2a18; color: var(--accent); font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: bold; white-space: nowrap;">
+                    Разрабатывается
+                </span>
             </div>
         </div>
     </div>
 
     <div class="footer-author">
-        Nodirjon Sobirov (Asoschi & Muassis)
+        Nodirjon Sobirov (Asoschi & TATU talabasi)
     </div>
 </div>
 
@@ -686,7 +638,7 @@
         const cards = document.querySelectorAll('.room-card');
         
         if (cards.length === 0) {
-            alert("Пожалуйста, сначала добавьте комнату!");
+            alert("Iltimos, oldin xona qo'shing!");
             return;
         }
 
@@ -756,7 +708,8 @@
         };
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/calculate', {
+            // DIQQAT: Render ga yuklaganingizda localhost'ni Render sayt manzili bilan almashtiring!
+            const response = await fetch('https://myhouse-mc1v.onrender.com', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -784,13 +737,10 @@
                 } else {
                     document.getElementById('hisobot-container').style.display = 'none';
                 }
-
-                document.getElementById('feat-stroy').classList.add('unlocked');
-                document.getElementById('feat-mebel').classList.add('unlocked');
             }
         } catch (error) {
-            console.error("Ошибка:", error);
-            alert("Бэкенд сервер билан алоқа йўқ. main.py ишга тушганини текширинг!");
+            console.error("Xatolik:", error);
+            alert("Backend server bilan aloqa yo'q. main.py ishga tushganini tekshiring!");
         }
     }
 
