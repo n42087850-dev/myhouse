@@ -20,14 +20,14 @@ class WorkItem(BaseModel):
     price: float   # Цена мастера за 1 м2 или м.п.
     unit_type: str # 'f' - пол, 'w' - стены, 'c' - потолок, 'p' - периметр
 
-# 2. Модель для параметров комнат
+# 2. Модель для параметров комнат — ТЕПЕРЬ СТРОГО СОВПАДАЕТ С ФРОНТЕНДОМ (w, l, h, o)
 class RoomDimensions(BaseModel):
     w: float  # Ширина
     l: float  # Длина
     h: float  # Высота
     o: float  # Окна и двери
 
-# 3. Единая модель запроса
+# 3. Единая модель запроса (БЕЗ style и БЕЗ master_rate, так как фронтенд их не шлет)
 class CalculateRequest(BaseModel):
     rooms: List[RoomDimensions]
     selected_works: List[WorkItem] 
@@ -69,7 +69,7 @@ async def calculate(request: CalculateRequest):
         else:
             current_volume = 0.0
 
-        # ВАЖНОЕ ИСПРАВЛЕНИЕ: Если это инженерия, объемом работы для мастера считаем общую площадь пола
+        # Корректно подтягиваем объем для инженерии
         if item.id in ["elektro", "santexnika"]:
             current_volume = total_floor_area
 
@@ -77,7 +77,7 @@ async def calculate(request: CalculateRequest):
         cost = item.price * current_volume
         total_work_cost += cost
 
-        # ДИНАМИЧЕСКИЙ РАСЧЕТ МАТЕРИАЛОВ СТРОГО ПО КАРТЕ СООТВЕТСТВИЯ (+10% ZAPAS)
+        # ДИНАМИЧЕСКИЙ РАСЧЕТ МАТЕРИАЛОВ (+10% ZAPAS)
         if item.id == "styajka":
             weight = (current_volume * 22 * 5) * 1.10
             materials_summary.append({
@@ -166,7 +166,7 @@ async def calculate(request: CalculateRequest):
         elif item.id == "travertin":
             weight = (current_volume * 2.5) * 1.10
             materials_summary.append({
-                "name": "Декоративный travertin / Dekorativ travertin (mineral)",
+                "name": "Декоративный травертин / Dekorativ travertin (mineral)",
                 "amount": round(weight),
                 "unit": "kg"
             })
@@ -206,7 +206,6 @@ async def calculate(request: CalculateRequest):
                 "unit": "m.p."
             })
 
-    # Возвращаем стоимость, материалы И рассчитанные площади для отображения
     return {
         "total_work_cost": round(total_work_cost),
         "materials_list": materials_summary,
