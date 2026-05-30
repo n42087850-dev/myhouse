@@ -363,7 +363,7 @@
         <button class="btn btn-calc" onclick="calculateVolumes()">Hisoblash / Рассчитать объемы</button>
          
         <div id="tab1-notice" class="notice-box">
-            KEYINGI BETGA O'TING → / ПЕРЕХОДИТЕ В СЛЕДУЮЩУЮ СТРАНИЦУ →
+            KEYINGI BOSQICHGA O'TING → / ПЕРЕХОДИТЕ В СЛЕДУЮЩУЮ СТРАНИЦУ →
         </div>
     </div>
 
@@ -678,83 +678,109 @@
     }
 
     async function calculateSmetaToServer() {
-        const cards = document.querySelectorAll('.room-card');
-        if (cards.length === 0 || totalFloorArea === 0) {
-            alert("Oldin 1-bosqichda hajmlarni hisoblang!");
-            return;
-        }
-
-        const roomsPayload = [];
-        cards.forEach(card => {
-            const id = card.id.replace('room-card-', '');
-            roomsPayload.push({
-                w: parseFloat(document.getElementById(`w-${id}`).value) || 0,
-                l: parseFloat(document.getElementById(`l-${id}`).value) || 0,
-                h: parseFloat(document.getElementById(`h-${id}`).value) || 0,
-                o: parseFloat(document.getElementById(`o-${id}`).value) || 0
-            });
-        });
-
-        const selectedWorksPayload = [];
-        const checkboxes = document.querySelectorAll('.work-checkbox');
-        
-        checkboxes.forEach(cb => {
-            if (cb.checked) {
-                const baseId = cb.id.replace('chk-', '');
-                const priceVal = parseFloat(document.getElementById(`price-${baseId}`).value) || 0;
-                const nameText = cb.parentElement.querySelector('.work-name').innerText;
-                const unitType = cb.getAttribute('data-unit');
-
-                selectedWorksPayload.push({
-                    id: baseId,
-                    name: nameText,
-                    price: priceVal,
-                    unit_type: unitType
-                });
-            }
-        });
-
-        const payload = {
-            rooms: roomsPayload,
-            selected_works: selectedWorksPayload
-        };
-
-        try {
-            const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            const data = await response.json();
-
-            if (data.status === 'success') {
-                document.getElementById('total-price-display').innerText = data.total_work_cost.toLocaleString('ru-RU') + " UZS";
-
-                const wrapper = document.getElementById('materials-rows-wrapper');
-                wrapper.innerHTML = ''; 
-
-                if (data.materials_list.length > 0) {
-                    data.materials_list.forEach(mat => {
-                        const row = document.createElement('div');
-                        row.className = 'material-row';
-                        row.innerHTML = `
-                            <span class="material-name">${mat.name}</span>
-                            <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
-                        `;
-                        wrapper.appendChild(row);
-                    });
-                    document.getElementById('hisobot-container').style.display = 'block';
-                } else {
-                    document.getElementById('hisobot-container').style.display = 'none';
-                }
-            }
-        } catch (error) {
-            console.error("Xatolik:", error);
-            alert("Backend server bilan aloqa yo'q. main.py ishga tushganini tekshiring!");
-        }
+    const cards = document.querySelectorAll('.room-card');
+    if (cards.length === 0) {
+        alert("Iltimos, oldin xona qo'shing! / Пожалуйста, сначала добавьте комнату!");
+        return;
     }
 
+    const roomsPayload = [];
+    let isValid = true;
+
+    cards.forEach(card => {
+        const id = card.id.replace('room-card-', '');
+        
+        const w = parseFloat(document.getElementById(`w-${id}`).value);
+        const l = parseFloat(document.getElementById(`l-${id}`).value);
+        const h = parseFloat(document.getElementById(`h-${id}`).value);
+        const o = parseFloat(document.getElementById(`o-${id}`).value);
+
+        // Валидация на фронте: не пускаем пустые поля (NaN) и жесткие нули в размерах
+        if (isNaN(w) || isNaN(l) || isNaN(h) || isNaN(o) || w <= 0 || l <= 0 || h <= 0 || o < 0) {
+            isValid = false;
+        }
+
+        roomsPayload.push({ w: w, l: l, h: h, o: o });
+    });
+
+    if (!isValid) {
+        alert("Iltimos, barcha maydonlarni to'g'ri to'ldiring! / Пожалуйста, заполните все поля корректно (размеры больше 0)!");
+        return;
+    }
+
+    const selectedWorksPayload = [];
+    const checkboxes = document.querySelectorAll('.work-checkbox');
+    
+    checkboxes.forEach(cb => {
+        if (cb.checked) {
+            const baseId = cb.id.replace('chk-', '');
+            const priceVal = parseFloat(document.getElementById(`price-${baseId}`).value) || 0;
+            const nameText = cb.parentElement.querySelector('.work-name').innerText;
+            const unitType = cb.getAttribute('data-unit');
+
+            selectedWorksPayload.push({
+                id: baseId,
+                name: nameText,
+                price: priceVal,
+                unit_type: unitType
+            });
+        }
+    });
+
+    if (selectedWorksPayload.length === 0) {
+        alert("Kamida bitta ishni tanlang! / Выберите хотя бы один вид работы!");
+        return;
+    }
+
+    // Собираем объект в строгом соответствии с CalculateRequest
+    const finalData = {
+        rooms: roomsPayload,
+        selected_works: selectedWorksPayload
+    };
+
+    try {
+        const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(finalData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Отображаем общую стоимость. 
+            // Проверь, чтобы в конце main.py бэкенд возвращал именно ключ "total_work_cost"
+            if (data.total_work_cost !== undefined) {
+                document.getElementById('total-price-display').innerText = data.total_work_cost.toLocaleString('ru-RU') + " UZS";
+            }
+
+            const wrapper = document.getElementById('materials-rows-wrapper');
+            wrapper.innerHTML = ''; 
+
+            // Отображаем материалы, если они есть в ответе бэкенда (materials_list)
+            if (data.materials_list && data.materials_list.length > 0) {
+                data.materials_list.forEach(mat => {
+                    const row = document.createElement('div');
+                    row.className = 'material-row';
+                    row.innerHTML = `
+                        <span class="material-name">${mat.name}</span>
+                        <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
+                    `;
+                    wrapper.appendChild(row);
+                });
+                document.getElementById('hisobot-container').style.display = 'block';
+            } else {
+                document.getElementById('hisobot-container').style.display = 'block'; // Показываем блок, даже если только цена пришла
+            }
+        } else {
+            console.error("Сервер вернул ошибку 422. Вот детали:", data);
+            alert("Ошибка валидации данных. Проверьте консоль браузера (F12)!");
+        }
+    } catch (error) {
+        console.error("Критическая ошибка запроса:", error);
+        alert("Не удалось связаться с сервером MyHouse.");
+    }
+}
     window.onload = function() {
         addRoom();
     };
