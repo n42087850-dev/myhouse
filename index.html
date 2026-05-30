@@ -13,6 +13,7 @@
             --text: #ffffff;
             --text-muted: #8a9cb4;
             --border: #1f3556;
+            --success: #2ecc71;
         }
 
         * {
@@ -144,12 +145,13 @@
             gap: 10px;
         }
 
-        /* ФИКС КАРТИНОК: Теперь они отображаются ПОЛНОСТЬЮ без обрезки */
+        /* ФИКС КАРТИНОК: Свободные пропорции без обрезки и искажений */
         .room-preview {
             width: 100%;
-            height: 200px;
-            object-fit: contain; /* Картинка сжимается пропорционально и влазит целиком */
-            background-color: #090f1a; /* Красивый темный фон по бокам пустых зон */
+            height: auto; 
+            max-height: 280px;
+            object-fit: contain; 
+            background-color: #090f1a; 
             border-radius: 10px;
             margin-top: 15px;
             border: 1px solid var(--border);
@@ -281,6 +283,49 @@
             font-size: 11px;
         }
 
+        /* КРУТОЙ ДИНАМИЧЕСКИЙ БЛОК HISOBOT */
+        .hisobot-box {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .hisobot-title {
+            color: var(--success);
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .material-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .material-row:last-child {
+            border-bottom: none;
+        }
+
+        .material-name {
+            color: var(--text-muted);
+        }
+
+        .material-val {
+            color: var(--text);
+            font-weight: bold;
+        }
+
         /* Уведомление на 1 странице */
         .notice-box {
             display: none;
@@ -359,152 +404,167 @@
     </header>
 
     <div class="tabs">
-        <div class="tab active" id="tab1-btn" onclick="switchTab(1)">1. Material & Dizayn</div>
-        <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. Usta Mehnati (m²)</div>
+        <div class="tab active" id="tab1-btn" onclick="switchTab(1)">1. Xona o'lchamlari / Размеры</div>
+        <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. Usta Mehnati & Hisobot</div>
     </div>
 
-    <!-- Страница 1 -->
     <div id="tab1-content" class="tab-content active">
         <div id="rooms-container"></div>
 
         <button class="btn" onclick="addRoom()">+ YANGI XONA QO'SHISH / ДОБАВИТЬ КОМНАТУ</button>
         <button class="btn btn-calc" onclick="calculateVolumes()">Hisoblash / Рассчитать объемы</button>
-        
+         
         <div id="tab1-notice" class="notice-box">
-            ПЕРЕХОДИТЕ В СЛЕДУЮЩУЮ СТРАНИЦУ →
+            KATEGORIYALARGA O'TING → / ПЕРЕХОДИТЕ В СЛЕДУЮЩУЮ СТРАНИЦУ →
         </div>
     </div>
 
-    <!-- Страница 2 -->
     <div id="tab2-content" class="tab-content">
         <div class="card" style="padding: 15px 15px 25px 15px;">
-            <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; color: var(--text);">
-                USTA ISH HAQI NARXLARI
+            <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px;">
+                Usta ish haqi narxlari / Расценки мастера
             </div>
 
-            <!-- ФИКС ОБЪЕМОВ: Добавлены динамические счетчики площади прямо в заголовки -->
             <div class="section-header">
-                <span class="section-title">Pol (Полы)</span>
+                <span class="section-title">Pol / Полы</span>
                 <span class="volume-badge" id="lbl-floor-vol">0.00 m²</span>
             </div>
             
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-styajka" checked>
-                    <span class="work-name">Styajka (Стяжка)</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-styajka" checked data-unit="f">
+                    <span class="work-name">Стяжка пола / Pol styajkasi</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-styajka" value="45000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-nalivnoy" checked>
-                    <span class="work-name">Nalivnoy pol</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-nalivnoy" checked data-unit="f">
+                    <span class="work-name">Наливной пол / Quyma pol</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-nalivnoy" value="25000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-laminat">
-                    <span class="work-name">Laminat/Tarket</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-laminat" data-unit="f">
+                    <span class="work-name">Ламинат / Tarket</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-laminat" value="35000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-kafel-pol">
-                    <span class="work-name">Kafel (pol)</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-kafel-pol" data-unit="f">
+                    <span class="work-name">Кафель (пол) / Kafel (pol üçün)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-kafel-pol" value="60000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-plintus">
-                    <span class="work-name">Plintus (m.p.)</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-issiq-pol" data-unit="f">
+                    <span class="work-name">Тёплый пол / Issiq pol</span>
+                </div>
+                <input type="number" class="work-price-input" id="price-issiq-pol" value="50000">
+            </div>
+            <div class="work-item">
+                <div class="work-left">
+                    <input type="checkbox" class="work-checkbox" id="chk-plintus" data-unit="p">
+                    <span class="work-name">Плинтус (п.м.) / Plintus (metr)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-plintus" value="15000">
             </div>
 
             <div class="section-header">
-                <span class="section-title">Devor (Стены)</span>
+                <span class="section-title">Devor / Стены</span>
                 <span class="volume-badge" id="lbl-wall-vol">0.00 m²</span>
             </div>
             
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" checked>
-                    <span class="work-name">Shtukaturka</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" checked data-unit="w">
+                    <span class="work-name">Штукатурка / Suvoq ishlari</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-shtukaturka" value="40000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-shpatlevka">
-                    <span class="work-name">Shpatlevka</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-shpatlevka" data-unit="w">
+                    <span class="work-name">Шпатлевка / Shpatlyovka</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-shpatlevka" value="25000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-oboi" checked>
-                    <span class="work-name">Oboi yopishtirish</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-oboi" checked data-unit="w">
+                    <span class="work-name">Поклейка обоев / Oboi yopishtirish</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-oboi" value="25000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-boyoq">
-                    <span class="work-name">Bo'yoq (Покраска)</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-boyoq" data-unit="w">
+                    <span class="work-name">Покраска стен / Devor bo'yash</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-boyoq" value="20000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-travertin">
-                    <span class="work-name">Travertin/Dekor</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-travertin" data-unit="w">
+                    <span class="work-name">Травертин / Dekorativ suvoq</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-travertin" value="80000">
             </div>
 
             <div class="section-header">
-                <span class="section-title">Potolok & Ingeneriya</span>
+                <span class="section-title">Potolok / Потолок</span>
                 <span class="volume-badge" id="lbl-ceiling-vol">0.00 m²</span>
             </div>
             
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-natyajnoy">
-                    <span class="work-name">Natyajnoy potolok</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-natyajnoy" data-unit="c">
+                    <span class="work-name">Натяжной потолок / Natyajnoy potolok</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-natyajnoy" value="50000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-gipsokarton" checked>
-                    <span class="work-name">Gipsokarton</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-gipsokarton" checked data-unit="c">
+                    <span class="work-name">Гипсокартон / Gipsokarton qurish</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-gipsokarton" value="60000">
             </div>
+
+            <div class="section-header">
+                <span class="section-title">Ingeneriya / Инженерия</span>
+                <span class="volume-badge" id="lbl-engineering-vol" style="color:var(--success);">Tizimlar</span>
+            </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-elektro">
-                    <span class="work-name">Elektromontaj (m²)</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-elektro" data-unit="f">
+                    <span class="work-name">Электромонтаж / Elektromontaj (m²)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-elektro" value="110000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-santexnika">
-                    <span class="work-name">Santexnika (m²)</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-santexnika" data-unit="f">
+                    <span class="work-name">Сантехника / Santexnika tizimi (m²)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-santexnika" value="90000">
             </div>
 
-            <button class="btn btn-calc" onclick="calculateSmeta()">Ish haqini hisoblash / Рассчитать смету</button>
+            <button class="btn btn-calc" onclick="calculateSmetaToServer()">Smetani hisoblash / Рассчитать смету</button>
         </div>
 
         <div class="result-box">
             <h3 id="total-price-display">0 UZS</h3>
-            <p>Jami usta mehnati uchun</p>
+            <p>Jami usta mehnati uchun / Итого за работу мастера</p>
+        </div>
+
+        <div class="hisobot-box" id="hisobot-container">
+            <div class="hisobot-title">Hisobot / Смета стройматериалов (+10% zapas)</div>
+            <div id="materials-rows-wrapper">
+                </div>
         </div>
 
         <div style="margin-top: 25px; font-weight: bold; font-size: 12px; color: #2ecc71; text-transform: uppercase; letter-spacing: 0.5px;">
@@ -515,7 +575,7 @@
             <div class="feature-card" id="feat-stroy">
                 <img class="feature-img" src="backend/images/stroy_materials.jpg" alt="Stroymateriallar" onerror="this.src='https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=200&q=80'">
                 <div class="feature-title">Stroymateriallar</div>
-                <div class="feature-status">РАЗРАБАТЫВАЕТСЯ</div>
+                <div class="feature-status">TAYYOR / АКТИВНО</div>
             </div>
             <div class="feature-card" id="feat-mebel">
                 <img class="feature-img" src="backend/images/mebellar.jpg" alt="Mebellar" onerror="this.src='https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=200&q=80'">
@@ -545,13 +605,10 @@
             document.getElementById('tab1-content').classList.add('active');
             document.getElementById('tab2-content').classList.remove('active');
         } else {
-            document.getElementById('tab1-btn').classList.remove('remove');
             document.getElementById('tab1-btn').classList.remove('active');
             document.getElementById('tab2-btn').classList.add('active');
             document.getElementById('tab1-content').classList.remove('active');
             document.getElementById('tab2-content').classList.add('active');
-            
-            // Синхронизируем вывод цифр при ручном переходе на вкладку
             renderVolumeLabels();
         }
     }
@@ -576,6 +633,8 @@
         const div = document.createElement('div');
         div.className = 'card room-card';
         div.id = `room-card-${currentId}`;
+        
+        // ФИКС: Убраны дефолтные цифры из полей ввода (placeholder="0.0")
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <b style="color:var(--primary);">${currentId}-XONA / КОМНАТА</b>
@@ -603,12 +662,12 @@
             <img id="preview-${currentId}" class="room-preview" src="" alt="Room Preview" onerror="this.src='https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=500&q=80'">
 
             <div class="params-grid">
-                <div><label>Eni / Ширина (m)</label><input id="w-${currentId}" type="number" placeholder="0.0" value="5"></div>
-                <div><label>Uzunligi / Длина (m)</label><input id="l-${currentId}" type="number" placeholder="0.0" value="4"></div>
-                <div><label>Balandligi / Выс (m)</label><input id="h-${currentId}" type="number" placeholder="0.0" value="3"></div>
+                <div><label>Eni / Ширина (m)</label><input id="w-${currentId}" type="number" step="0.1" placeholder="0.0"></div>
+                <div><label>Uzunligi / Длина (m)</label><input id="l-${currentId}" type="number" step="0.1" placeholder="0.0"></div>
+                <div><label>Balandligi / Выс (m)</label><input id="h-${currentId}" type="number" step="0.1" placeholder="0.0"></div>
             </div>
             <label>Eshik va Oyna / Двери и Окна (m²)</label>
-            <input id="o-${currentId}" type="number" placeholder="0.0" value="12">
+            <input id="o-${currentId}" type="number" step="0.1" placeholder="0.0">
         `;
         document.getElementById('rooms-container').appendChild(div);
         updateRoomPreview(currentId);
@@ -620,7 +679,6 @@
         calculateVolumes();
     }
 
-    // Обновление текстовых значений объемов на второй странице
     function renderVolumeLabels() {
         document.getElementById('lbl-floor-vol').innerText = totalFloorArea.toFixed(2) + " m²";
         document.getElementById('lbl-wall-vol').innerText = totalWallArea.toFixed(2) + " m²";
@@ -663,38 +721,91 @@
         document.getElementById('tab1-notice').style.display = 'block';
     }
 
-    function calculateSmeta() {
-        let totalCost = 0;
-
-        function addWorkCost(checkboxId, priceInputId, volume) {
-            const isChecked = document.getElementById(checkboxId).checked;
-            const unitPrice = parseFloat(document.getElementById(priceInputId).value) || 0;
-            if (isChecked) {
-                totalCost += volume * unitPrice;
-            }
+    // РАБОТА С СЕРВЕРОМ: Отправка выбранных чекбоксов на бэкенд и сбор данных HISOBOT
+    async def calculateSmetaToServer() {
+        const cards = document.querySelectorAll('.room-card');
+        if (cards.length === 0 || totalFloorArea === 0) {
+            alert("Сначала рассчитайте объемы на Шаге 1! / Oldin 1-bosqichda hajmlarni hisoblang!");
+            return;
         }
 
-        addWorkCost('chk-styajka', 'price-styajka', totalFloorArea);
-        addWorkCost('chk-nalivnoy', 'price-nalivnoy', totalFloorArea);
-        addWorkCost('chk-laminat', 'price-laminat', totalFloorArea);
-        addWorkCost('chk-kafel-pol', 'price-kafel-pol', totalFloorArea);
-        addWorkCost('chk-plintus', 'price-plintus', totalPerimeter);
+        // Собираем комнаты
+        const roomsPayload = [];
+        cards.forEach(card => {
+            const id = card.id.replace('room-card-', '');
+            roomsPayload.append({
+                w: parseFloat(document.getElementById(`w-${id}`).value) || 0,
+                l: parseFloat(document.getElementById(`l-${id}`).value) || 0,
+                h: parseFloat(document.getElementById(`h-${id}`).value) || 0,
+                o: parseFloat(document.getElementById(`o-${id}`).value) || 0
+            });
+        });
 
-        addWorkCost('chk-shtukaturka', 'price-shtukaturka', totalWallArea);
-        addWorkCost('chk-shpatlevka', 'price-shpatlevka', totalWallArea);
-        addWorkCost('chk-oboi', 'price-oboi', totalWallArea);
-        addWorkCost('chk-boyoq', 'price-boyoq', totalWallArea);
-        addWorkCost('chk-travertin', 'price-travertin', totalWallArea);
+        // Собираем строго отмеченные работы
+        const selectedWorksPayload = [];
+        const checkboxes = document.querySelectorAll('.work-checkbox');
+        
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                const baseId = cb.id.replace('chk-', '');
+                const priceVal = parseFloat(document.getElementById(`price-${baseId}`).value) || 0;
+                const nameText = cb.parentElement.querySelector('.work-name').innerText;
+                const unitType = cb.getAttribute('data-unit');
 
-        addWorkCost('chk-natyajnoy', 'price-natyajnoy', totalCeilingArea);
-        addWorkCost('chk-gipsokarton', 'price-gipsokarton', totalCeilingArea);
-        addWorkCost('chk-elektro', 'price-elektro', totalFloorArea);
-        addWorkCost('chk-santexnika', 'price-santexnika', totalFloorArea);
+                selectedWorksPayload.append({
+                    id: baseId,
+                    name: nameText,
+                    price: priceVal,
+                    unit_type: unitType
+                });
+            }
+        });
 
-        document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
+        const payload = {
+            rooms: roomsPayload,
+            selected_works: selectedWorksPayload
+        };
 
-        document.getElementById('feat-stroy').classList.add('unlocked');
-        document.getElementById('feat-mebel').classList.add('unlocked');
+        try {
+            // Подключение к бэкенду (при необходимости замени на локальный IP или Render url)
+            const response = await fetch('http://127.0.0.1:8000/calculate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                // Отображаем стоимость работы мастера
+                document.getElementById('total-price-display').innerText = data.total_work_cost.toLocaleString('ru-RU') + " UZS";
+
+                // Рендерим динамический блок HISOBOT
+                const wrapper = document.getElementById('materials-rows-wrapper');
+                wrapper.innerHTML = ''; // Очищаем старые строчки
+
+                if (data.materials_list.length > 0) {
+                    data.materials_list.forEach(mat => {
+                        const row = document.createElement('div');
+                        row.className = 'material-row';
+                        row.innerHTML = `
+                            <span class="material-name">${mat.name}</span>
+                            <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
+                        `;
+                        wrapper.appendChild(row);
+                    });
+                    document.getElementById('hisobot-container').style.display = 'block';
+                } else {
+                    document.getElementById('hisobot-container').style.display = 'none';
+                }
+
+                document.getElementById('feat-stroy').classList.add('unlocked');
+                document.getElementById('feat-mebel').classList.add('unlocked');
+            }
+        } catch (error) {
+            console.error("Ошибка соединения с бэкендом:", error);
+            alert("Сервер бэкенда не отвечает. Проверьте запуск main.py!");
+        }
     }
 
     window.onload = function() {
