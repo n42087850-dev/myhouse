@@ -676,7 +676,7 @@
         document.getElementById('tab1-notice').style.display = 'block';
     }
 
-  async function calculateSmetaToServer() {
+ async function calculateSmetaToServer() {
     const cards = document.querySelectorAll('.room-card');
     if (cards.length === 0) {
         alert("Пожалуйста, сначала добавьте комнату!");
@@ -698,13 +698,7 @@
             isValid = false;
         }
 
-        roomsPayload.push({ 
-            width: w, 
-            length: l, 
-            height: h, 
-            o: o,
-            type: "room"
-        });
+        roomsPayload.push({ w: w, l: l, h: h, o: o });
     });
 
     if (!isValid) {
@@ -738,9 +732,7 @@
 
     const finalData = {
         rooms: roomsPayload,
-        selected_works: selectedWorksPayload,
-        style: "default",         
-        master_rate: 1.0
+        selected_works: selectedWorksPayload
     };
 
     try {
@@ -753,29 +745,34 @@
         const data = await response.json();
 
         if (response.ok) {
-            let totalCost = data.total_work_cost || data.total_cost || 0;
+            // Выводим стоимость работы мастера
+            let totalCost = data.total_work_cost || 0;
             document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
 
+            // Очищаем старые строки материалов
             const wrapper = document.getElementById('materials-rows-wrapper');
             wrapper.innerHTML = ''; 
 
+            // Отрисовываем новые материалы из ответа Python
             if (data.materials_list && data.materials_list.length > 0) {
                 data.materials_list.forEach(mat => {
                     const row = document.createElement('div');
                     row.className = 'material-row';
-                    row.innerHTML = `<span class="material-name">${mat.name}</span><span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>`;
+                    row.innerHTML = `
+                        <span class="material-name">${mat.name}</span>
+                        <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
+                    `;
                     wrapper.appendChild(row);
                 });
-                document.getElementById('hisobot-container').style.display = 'block';
-            } else {
-                document.getElementById('hisobot-container').style.display = 'block'; 
             }
+            // Показываем блок с отчётом
+            document.getElementById('hisobot-container').style.display = 'block';
         } else {
-            console.error("Ошибки валидации сервера:", data);
-            alert("Ошибка валидации бэкенда.");
+            console.error("Ошибка валидации сервера:", data);
+            alert("Сервер отклонил данные. Проверьте консоль.");
         }
     } catch (error) {
-        console.error("Критическая ошибка:", error);
+        console.error("Критическая ошибка сети:", error);
         alert("Не удалось связаться с сервером.");
     }
 }
