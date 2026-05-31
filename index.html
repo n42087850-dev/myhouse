@@ -699,12 +699,13 @@
             isValid = false;
         }
 
-        // Переименовали ключи в width, length, height, как требует твой бэкенд в логах
+        // ДОБАВИЛИ "type": "room", как просит бэкенд!
         roomsPayload.push({ 
             width: w, 
             length: l, 
             height: h, 
-            o: o 
+            o: o,
+            type: "room" // Заглушка для типа комнаты, чтобы Pydantic был доволен
         });
     });
 
@@ -737,12 +738,12 @@
         return;
     }
 
-    // Собираем объект, добавляя "пропавшие" style и master_rate в качестве заглушек
+    // ИСПРАВИЛИ: Передаем число 1.0 вместо строки "standard"
     const finalData = {
         rooms: roomsPayload,
         selected_works: selectedWorksPayload,
-        style: "default",         // Добавили, чтобы бэкенд не ругался на missing style
-        master_rate: "standard"   // Добавили, чтобы бэкенд не ругался на missing master_rate
+        style: "default",         
+        master_rate: 1.0   // Теперь это валидный float (число), бэкенд не споткнется!
     };
 
     try {
@@ -777,14 +778,14 @@
                 document.getElementById('hisobot-container').style.display = 'block'; 
             }
         } else {
-            console.error("Ошибки от Pydantic:", data);
+            console.error("Ошибки валидации сервера:", data);
             alert("Ошибка валидации. Проверьте консоль!");
         }
     } catch (error) {
-        console.error("Критическая ошибка запроса:", error);
+        console.error("Критическая ошибка:", error);
         alert("Не удалось связаться с сервером.");
     }
-} 
+}    
     window.onload = function() {
         addRoom();
     };
