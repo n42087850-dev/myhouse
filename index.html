@@ -674,105 +674,109 @@
     }
 
     async function calculateSmetaToServer() {
-        const cards = document.querySelectorAll('.room-card');
-        if (cards.length === 0) {
-            alert("Пожалуйста, сначала добавьте комнату!");
-            return;
-        }
-
-        const roomsPayload = [];
-        let isValid = true;
-
-        cards.forEach(card => {
-            const id = card.id.replace('room-card-', '');
-            
-            const w = parseFloat(document.getElementById(`w-${id}`).value);
-            const l = parseFloat(document.getElementById(`l-${id}`).value);
-            const h = parseFloat(document.getElementById(`h-${id}`).value);
-            const o = parseFloat(document.getElementById(`o-${id}`).value) || 0;
-
-            if (isNaN(w) || isNaN(l) || isNaN(h) || w <= 0 || l <= 0 || h <= 0) {
-                isValid = false;
-            } else {
-                // Добавляем в массив ТОЛЬКО если все числа корректны!
-                roomsPayload.push({ w: w, l: l, h: h, o: o });
-            }
-        });
-
-        if (!isValid || roomsPayload.length === 0) {
-            alert("Пожалуйста, заполните размеры всех комнат числами больше 0!");
-            return;
-        }
-
-        const selectedWorksPayload = [];
-        const checkboxes = document.querySelectorAll('.work-checkbox');
-        
-        checkboxes.forEach(cb => {
-            if (cb.checked) {
-                const baseId = cb.id.replace('chk-', '');
-                const priceVal = parseFloat(document.getElementById(`price-${baseId}`).value) || 0;
-                
-                const nameElement = cb.parentElement.querySelector('.work-name');
-                const nameText = nameElement ? nameElement.innerText.trim() : baseId;
-                const unitType = cb.getAttribute('data-unit') || "w";
-
-                selectedWorksPayload.push({
-                    id: baseId,
-                    name: nameText,
-                    price: priceVal,
-                    unit_type: unitType
-                });
-            }
-        });
-
-        if (selectedWorksPayload.length === 0) {
-            alert("Выберите хотя бы один вид работы!");
-            return;
-        }
-
-        const finalData = {
-            rooms: roomsPayload,
-            selected_works: selectedWorksPayload
-        };
-
-        try {
-            const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(finalData)
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                let totalCost = data.total_work_cost || 0;
-                document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
-
-                const wrapper = document.getElementById('materials-rows-wrapper');
-                wrapper.innerHTML = ''; 
-
-                if (data.materials_list && data.materials_list.length > 0) {
-                    data.materials_list.forEach(mat => {
-                        const row = document.createElement('div');
-                        row.className = 'material-row';
-                        row.innerHTML = `
-                            <span class="material-name">${mat.name}</span>
-                            <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
-                        `;
-                        wrapper.appendChild(row);
-                    });
-                }
-                document.getElementById('hisobot-container').style.display = 'block';
-            } else {
-                console.error("Ошибка валидации сервера:", data);
-                alert("Сервер отклонил данные. Пожалуйста, убедитесь, что все поля заполнены.");
-            }
-        } catch (error) {
-            console.error("Критическая ошибка сети:", error);
-            alert("Не удалось связаться с сервером.");
-        }
+    const cards = document.querySelectorAll('.room-card');
+    if (cards.length === 0) {
+        alert("Пожалуйста, сначала добавьте комнату!");
+        return;
     }
 
+    const roomsPayload = [];
+    let isValid = true;
+
+    cards.forEach(card => {
+        const id = card.id.replace('room-card-', '');
+        
+        const w = parseFloat(document.getElementById(`w-${id}`).value);
+        const l = parseFloat(document.getElementById(`l-${id}`).value);
+        const h = parseFloat(document.getElementById(`h-${id}`).value);
+        const o = parseFloat(document.getElementById(`o-${id}`).value) || 0;
+
+        if (isNaN(w) || isNaN(l) || isNaN(h) || w <= 0 || l <= 0 || h <= 0) {
+            isValid = false;
+        } else {
+            roomsPayload.push({ w: w, l: l, h: h, o: o });
+        }
+    });
+
+    if (!isValid || roomsPayload.length === 0) {
+        alert("Пожалуйста, заполните размеры всех комнат числами больше 0!");
+        return;
+    }
+
+    const selectedWorksPayload = [];
+    const checkboxes = document.querySelectorAll('.work-checkbox');
+    
+    checkboxes.forEach(cb => {
+        if (cb.checked) {
+            const baseId = cb.id.replace('chk-', '');
+            const priceVal = parseFloat(document.getElementById(`price-${baseId}`).value) || 0;
+            
+            const nameElement = cb.parentElement.querySelector('.work-name');
+            const nameText = nameElement ? nameElement.innerText.trim() : baseId;
+            const unitType = cb.getAttribute('data-unit') || "w";
+
+            selectedWorksPayload.push({
+                id: baseId,
+                name: nameText,
+                price: priceVal,
+                unit_type: unitType
+            });
+        }
+    });
+
+    if (selectedWorksPayload.length === 0) {
+        alert("Выберите хотя бы один вид работы!");
+        return;
+    }
+
+    const finalData = {
+        rooms: roomsPayload,
+        selected_works: selectedWorksPayload
+    };
+
+    // СВЕРХВАЖНО: Смотрим в консоли браузера, ЧТО именно мы отправляем на Python
+    console.log("ОТПРАВЛЯЕМ НА СЕРВЕР:", JSON.stringify(finalData, null, 2));
+
+    try {
+        const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(finalData)
+        });
+
+        const data = await response.json();
+
+        // СВЕРХВАЖНО: Смотрим в консоли, ОГРЫЗОК КАКОЙ ОШИБКИ прислал нам бэкенд
+        console.log("ОТВЕТ СЕРВЕРА (СТАТУС " + response.status + "):", data);
+
+        if (response.ok) {
+            let totalCost = data.total_work_cost || 0;
+            document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
+
+            const wrapper = document.getElementById('materials-rows-wrapper');
+            wrapper.innerHTML = ''; 
+
+            if (data.materials_list && data.materials_list.length > 0) {
+                data.materials_list.forEach(mat => {
+                    const row = document.createElement('div');
+                    row.className = 'material-row';
+                    row.innerHTML = `
+                        <span class="material-name">${mat.name}</span>
+                        <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
+                    `;
+                    wrapper.appendChild(row);
+                });
+            }
+            document.getElementById('hisobot-container').style.display = 'block';
+        } else {
+            // Если бэкенд ругается, выводим подробности ошибки прямо на экран, чтобы не гадать!
+            alert("Сервер отклонил данные!\n\nДетали ошибки от бэкенда:\n" + JSON.stringify(data.detail || data));
+        }
+    } catch (error) {
+        console.error("Критическая ошибка сети:", error);
+        alert("Не удалось связаться с сервером.");
+    }
+}
     window.onload = function() {
         addRoom();
     };
