@@ -685,7 +685,7 @@
         document.getElementById('tab1-notice').style.display = 'block';
     }
 
-   async function calculateSmetaToServer() {
+  function calculateSmetaToServer() {
     const cards = document.querySelectorAll('.room-card');
     if (cards.length === 0) {
         alert("Пожалуйста, сначала добавьте комнату!");
@@ -757,44 +757,45 @@
 
     console.log("ОТПРАВЛЯЕМ НА СЕРВЕР:", finalData);
 
-    try {
-        const url = 'https://myhouse-mc1v.onrender.com/calculate';
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(finalData)
-        });
-
-        const data = await response.json();
-        console.log("ОТВЕТ СЕРВЕРА:", data);
-
-        if (response.ok) {
-            let totalCost = data.total_work_cost || 0;
-            document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
-
-            const wrapper = document.getElementById('materials-rows-wrapper');
-            wrapper.innerHTML = ''; 
-
-            if (data.materials_list && data.materials_list.length > 0) {
-                data.materials_list.forEach(mat => {
-                    const row = document.createElement('div');
-                    row.className = 'material-row';
-                    row.innerHTML = `
-                        <span class="material-name">${mat.name}</span>
-                        <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
-                    `;
-                    wrapper.appendChild(row);
-                });
-            }
-            document.getElementById('hisobot-container').style.display = 'block';
-        } else {
-            alert("Сервер отклонил данные!\n\nДетали:\n" + JSON.stringify(data.detail || data));
+    // СИНТАКСИС БЕЗ AWAIT — РАБОТАЕТ ВЕЗДЕ
+    fetch('https://myhouse-mc1v.onrender.com/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(finalData)
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            throw new Error("Ошибка сервера: " + response.status);
         }
-    } catch (error) {
-        console.error("Критическая ошибка сети:", error);
-        alert("Не удалось связаться с сервером.");
-    }
-} 
+        return response.json();
+    })
+    .then(function(data) {
+        console.log("ОТВЕТ СЕРВЕРА:", data);
+        
+        let totalCost = data.total_work_cost || 0;
+        document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
+
+        const wrapper = document.getElementById('materials-rows-wrapper');
+        wrapper.innerHTML = ''; 
+
+        if (data.materials_list && data.materials_list.length > 0) {
+            data.materials_list.forEach(mat => {
+                const row = document.createElement('div');
+                row.className = 'material-row';
+                row.innerHTML = `
+                    <span class="material-name">${mat.name}</span>
+                    <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
+                `;
+                wrapper.appendChild(row);
+            });
+        }
+        document.getElementById('hisobot-container').style.display = 'block';
+    })
+    .catch(function(error) {
+        console.error("Критическая ошибка:", error);
+        alert("Произошла ошибка при отправке или обработке данных.");
+    });
+}
 
     window.onload = function() {
         addRoom();
