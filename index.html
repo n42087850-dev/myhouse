@@ -676,7 +676,7 @@
         document.getElementById('tab1-notice').style.display = 'block';
     }
 
-   async function calculateSmetaToServer() {
+  async function calculateSmetaToServer() {
     const cards = document.querySelectorAll('.room-card');
     if (cards.length === 0) {
         alert("Пожалуйста, сначала добавьте комнату!");
@@ -719,7 +719,7 @@
         if (cb.checked) {
             const baseId = cb.id.replace('chk-', '');
             const priceVal = parseFloat(document.getElementById(`price-${baseId}`).value) || 0;
-            const nameText = cb.parentElement.querySelector('.work-name').innerText;
+            const nameText = cb.parentElement.querySelector('.work-name').innerText.trim();
             const unitType = cb.getAttribute('data-unit');
 
             selectedWorksPayload.push({
@@ -756,14 +756,6 @@
             let totalCost = data.total_work_cost || data.total_cost || 0;
             document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
 
-            const disclaimer = document.getElementById('disclaimer-text');
-            if (disclaimer) {
-                disclaimer.innerHTML = `
-                    * Diqqat: Hisob-kitobga avtomatik ravishda 10% zaxira qo'shilgan.<br>
-                    * Внимание: В расчет автоматически заложен технологический запас 10% на подрезку.
-                `;
-            }
-
             const wrapper = document.getElementById('materials-rows-wrapper');
             wrapper.innerHTML = ''; 
 
@@ -771,26 +763,22 @@
                 data.materials_list.forEach(mat => {
                     const row = document.createElement('div');
                     row.className = 'material-row';
-                    row.innerHTML = `
-                        <span class="material-name">${mat.name}</span>
-                        <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
-                    `;
+                    row.innerHTML = `<span class="material-name">${mat.name}</span><span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>`;
                     wrapper.appendChild(row);
                 });
                 document.getElementById('hisobot-container').style.display = 'block';
             } else {
                 document.getElementById('hisobot-container').style.display = 'block'; 
             }
-        }
-        else {
+        } else {
             console.error("Ошибки валидации сервера:", data);
-            alert("Ошибка валидации. Проверьте консоль!");
+            alert("Ошибка валидации бэкенда.");
         }
     } catch (error) {
         console.error("Критическая ошибка:", error);
         alert("Не удалось связаться с сервером.");
     }
-}    
+}
     window.onload = function() {
         addRoom();
     };
