@@ -565,7 +565,7 @@
             document.getElementById('tab2-btn').classList.add('active');
             document.getElementById('tab1-content').classList.remove('active');
             document.getElementById('tab2-content').classList.add('active');
-            renderVolumeLabels();
+            calculateVolumes(); // Пересчитываем объемы автоматически при переходе на 2-ю вкладку
         }
     }
 
@@ -573,13 +573,14 @@
         return `backend/images/${roomType}_${designStyle}.jpg`;
     }
 
+    // Исправлено: безопасное обновление превью
     function updateRoomPreview(id) {
-        const roomType = document.getElementById(`type-${id}`).value;
-        const designStyle = document.getElementById(`design-${id}`).value;
+        const typeEl = document.getElementById(`type-${id}`);
+        const designEl = document.getElementById(`design-${id}`);
         const imgEl = document.getElementById(`preview-${id}`);
         
-        if (imgEl) {
-            imgEl.src = getImagePath(roomType, designStyle);
+        if (typeEl && designEl && imgEl) {
+            imgEl.src = getImagePath(typeEl.value, designEl.value);
         }
     }
 
@@ -617,12 +618,12 @@
             <img id="preview-${currentId}" class="room-preview" src="" alt="Room Preview" onerror="this.src='https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=500&q=80'">
 
             <div class="params-grid">
-                <div><label>Eni / Ширина (m)</label><input id="w-${currentId}" type="number" step="0.1" placeholder="0.0"></div>
-                <div><label>Uzunligi / Длина (m)</label><input id="l-${currentId}" type="number" step="0.1" placeholder="0.0"></div>
-                <div><label>Balandligi / Выс (m)</label><input id="h-${currentId}" type="number" step="0.1" placeholder="0.0"></div>
+                <div><label>Eni / Ширина (m)</label><input id="w-${currentId}" type="number" step="0.1" placeholder="0.0" value="0"></div>
+                <div><label>Uzunligi / Длина (m)</label><input id="l-${currentId}" type="number" step="0.1" placeholder="0.0" value="0"></div>
+                <div><label>Balandligi / Выс (m)</label><input id="h-${currentId}" type="number" step="0.1" placeholder="0.0" value="0"></div>
             </div>
             <label>Eshik va Oyna / Двери и Окна (m²)</label>
-            <input id="o-${currentId}" type="number" step="0.1" placeholder="0.0">
+            <input id="o-${currentId}" type="number" step="0.1" placeholder="0.0" value="0">
         `;
         document.getElementById('rooms-container').appendChild(div);
         updateRoomPreview(currentId);
@@ -647,11 +648,7 @@
         totalPerimeter = 0;
 
         const cards = document.querySelectorAll('.room-card');
-        
-        if (cards.length === 0) {
-            alert("Iltimos, oldin xona qo'shing!");
-            return;
-        }
+        if (cards.length === 0) return;
 
         cards.forEach(card => {
             const id = card.id.replace('room-card-', '');
@@ -676,106 +673,106 @@
         document.getElementById('tab1-notice').style.display = 'block';
     }
 
- async function calculateSmetaToServer() {
-    const cards = document.querySelectorAll('.room-card');
-    if (cards.length === 0) {
-        alert("Пожалуйста, сначала добавьте комнату!");
-        return;
-    }
-
-    const roomsPayload = [];
-    let isValid = true;
-
-    cards.forEach(card => {
-        const id = card.id.replace('room-card-', '');
-        
-        const w = parseFloat(document.getElementById(`w-${id}`).value);
-        const l = parseFloat(document.getElementById(`l-${id}`).value);
-        const h = parseFloat(document.getElementById(`h-${id}`).value);
-        const o = parseFloat(document.getElementById(`o-${id}`).value) || 0;
-
-        if (isNaN(w) || isNaN(l) || isNaN(h) || w <= 0 || l <= 0 || h <= 0) {
-            isValid = false;
+    async function calculateSmetaToServer() {
+        const cards = document.querySelectorAll('.room-card');
+        if (cards.length === 0) {
+            alert("Пожалуйста, сначала добавьте комнату!");
+            return;
         }
 
-        roomsPayload.push({ w: w, l: l, h: h, o: o });
-    });
+        const roomsPayload = [];
+        let isValid = true;
 
-    if (!isValid) {
-        alert("Пожалуйста, заполните все поля корректно!");
-        return;
-    }
+        cards.forEach(card => {
+            const id = card.id.replace('room-card-', '');
+            
+            const w = parseFloat(document.getElementById(`w-${id}`).value);
+            const l = parseFloat(document.getElementById(`l-${id}`).value);
+            const h = parseFloat(document.getElementById(`h-${id}`).value);
+            const o = parseFloat(document.getElementById(`o-${id}`).value) || 0;
 
-    const selectedWorksPayload = [];
-    const checkboxes = document.querySelectorAll('.work-checkbox');
-    
-    checkboxes.forEach(cb => {
-        if (cb.checked) {
-            const baseId = cb.id.replace('chk-', '');
-            const priceVal = parseFloat(document.getElementById(`price-${baseId}`).value) || 0;
-            const nameText = cb.parentElement.querySelector('.work-name').innerText.trim();
-            const unitType = cb.getAttribute('data-unit');
-
-            selectedWorksPayload.push({
-                id: baseId,
-                name: nameText,
-                price: priceVal,
-                unit_type: unitType
-            });
-        }
-    });
-
-    if (selectedWorksPayload.length === 0) {
-        alert("Выберите хотя бы один вид работы!");
-        return;
-    }
-
-    const finalData = {
-        rooms: roomsPayload,
-        selected_works: selectedWorksPayload
-    };
-
-    try {
-        const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(finalData)
+            if (isNaN(w) || isNaN(l) || isNaN(h) || w <= 0 || l <= 0 || h <= 0) {
+                isValid = false;
+            } else {
+                // Добавляем в массив ТОЛЬКО если все числа корректны!
+                roomsPayload.push({ w: w, l: l, h: h, o: o });
+            }
         });
 
-        const data = await response.json();
+        if (!isValid || roomsPayload.length === 0) {
+            alert("Пожалуйста, заполните размеры всех комнат числами больше 0!");
+            return;
+        }
 
-        if (response.ok) {
-            // Выводим стоимость работы мастера
-            let totalCost = data.total_work_cost || 0;
-            document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
+        const selectedWorksPayload = [];
+        const checkboxes = document.querySelectorAll('.work-checkbox');
+        
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                const baseId = cb.id.replace('chk-', '');
+                const priceVal = parseFloat(document.getElementById(`price-${baseId}`).value) || 0;
+                
+                const nameElement = cb.parentElement.querySelector('.work-name');
+                const nameText = nameElement ? nameElement.innerText.trim() : baseId;
+                const unitType = cb.getAttribute('data-unit') || "w";
 
-            // Очищаем старые строки материалов
-            const wrapper = document.getElementById('materials-rows-wrapper');
-            wrapper.innerHTML = ''; 
-
-            // Отрисовываем новые материалы из ответа Python
-            if (data.materials_list && data.materials_list.length > 0) {
-                data.materials_list.forEach(mat => {
-                    const row = document.createElement('div');
-                    row.className = 'material-row';
-                    row.innerHTML = `
-                        <span class="material-name">${mat.name}</span>
-                        <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
-                    `;
-                    wrapper.appendChild(row);
+                selectedWorksPayload.push({
+                    id: baseId,
+                    name: nameText,
+                    price: priceVal,
+                    unit_type: unitType
                 });
             }
-            // Показываем блок с отчётом
-            document.getElementById('hisobot-container').style.display = 'block';
-        } else {
-            console.error("Ошибка валидации сервера:", data);
-            alert("Сервер отклонил данные. Проверьте консоль.");
+        });
+
+        if (selectedWorksPayload.length === 0) {
+            alert("Выберите хотя бы один вид работы!");
+            return;
         }
-    } catch (error) {
-        console.error("Критическая ошибка сети:", error);
-        alert("Не удалось связаться с сервером.");
+
+        const finalData = {
+            rooms: roomsPayload,
+            selected_works: selectedWorksPayload
+        };
+
+        try {
+            const response = await fetch('https://myhouse-mc1v.onrender.com/calculate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(finalData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                let totalCost = data.total_work_cost || 0;
+                document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
+
+                const wrapper = document.getElementById('materials-rows-wrapper');
+                wrapper.innerHTML = ''; 
+
+                if (data.materials_list && data.materials_list.length > 0) {
+                    data.materials_list.forEach(mat => {
+                        const row = document.createElement('div');
+                        row.className = 'material-row';
+                        row.innerHTML = `
+                            <span class="material-name">${mat.name}</span>
+                            <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
+                        `;
+                        wrapper.appendChild(row);
+                    });
+                }
+                document.getElementById('hisobot-container').style.display = 'block';
+            } else {
+                console.error("Ошибка валидации сервера:", data);
+                alert("Сервер отклонил данные. Пожалуйста, убедитесь, что все поля заполнены.");
+            }
+        } catch (error) {
+            console.error("Критическая ошибка сети:", error);
+            alert("Не удалось связаться с сервером.");
+        }
     }
-}
+
     window.onload = function() {
         addRoom();
     };
