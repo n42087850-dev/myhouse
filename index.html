@@ -677,10 +677,10 @@
         document.getElementById('tab1-notice').style.display = 'block';
     }
 
-    async function calculateSmetaToServer() {
+   async function calculateSmetaToServer() {
     const cards = document.querySelectorAll('.room-card');
     if (cards.length === 0) {
-        alert("Iltimos, oldin xona qo'shing! / Пожалуйста, сначала добавьте комнату!");
+        alert("Пожалуйста, сначала добавьте комнату!");
         return;
     }
 
@@ -693,18 +693,23 @@
         const w = parseFloat(document.getElementById(`w-${id}`).value);
         const l = parseFloat(document.getElementById(`l-${id}`).value);
         const h = parseFloat(document.getElementById(`h-${id}`).value);
-        const o = parseFloat(document.getElementById(`o-${id}`).value);
+        const o = parseFloat(document.getElementById(`o-${id}`).value) || 0;
 
-        // Валидация на фронте: не пускаем пустые поля (NaN) и жесткие нули в размерах
-        if (isNaN(w) || isNaN(l) || isNaN(h) || isNaN(o) || w <= 0 || l <= 0 || h <= 0 || o < 0) {
+        if (isNaN(w) || isNaN(l) || isNaN(h) || w <= 0 || l <= 0 || h <= 0) {
             isValid = false;
         }
 
-        roomsPayload.push({ w: w, l: l, h: h, o: o });
+        // Переименовали ключи в width, length, height, как требует твой бэкенд в логах
+        roomsPayload.push({ 
+            width: w, 
+            length: l, 
+            height: h, 
+            o: o 
+        });
     });
 
     if (!isValid) {
-        alert("Iltimos, barcha maydonlarni to'g'ri to'ldiring! / Пожалуйста, заполните все поля корректно (размеры больше 0)!");
+        alert("Пожалуйста, заполните все поля корректно!");
         return;
     }
 
@@ -728,14 +733,16 @@
     });
 
     if (selectedWorksPayload.length === 0) {
-        alert("Kamida bitta ishni tanlang! / Выберите хотя бы один вид работы!");
+        alert("Выберите хотя бы один вид работы!");
         return;
     }
 
-    // Собираем объект в строгом соответствии с CalculateRequest
+    // Собираем объект, добавляя "пропавшие" style и master_rate в качестве заглушек
     const finalData = {
         rooms: roomsPayload,
-        selected_works: selectedWorksPayload
+        selected_works: selectedWorksPayload,
+        style: "default",         // Добавили, чтобы бэкенд не ругался на missing style
+        master_rate: "standard"   // Добавили, чтобы бэкенд не ругался на missing master_rate
     };
 
     try {
@@ -748,8 +755,6 @@
         const data = await response.json();
 
         if (response.ok) {
-            // Отображаем общую стоимость. 
-            // Проверь, чтобы в конце main.py бэкенд возвращал именно ключ "total_work_cost"
             if (data.total_work_cost !== undefined) {
                 document.getElementById('total-price-display').innerText = data.total_work_cost.toLocaleString('ru-RU') + " UZS";
             }
@@ -757,7 +762,6 @@
             const wrapper = document.getElementById('materials-rows-wrapper');
             wrapper.innerHTML = ''; 
 
-            // Отображаем материалы, если они есть в ответе бэкенда (materials_list)
             if (data.materials_list && data.materials_list.length > 0) {
                 data.materials_list.forEach(mat => {
                     const row = document.createElement('div');
@@ -770,17 +774,17 @@
                 });
                 document.getElementById('hisobot-container').style.display = 'block';
             } else {
-                document.getElementById('hisobot-container').style.display = 'block'; // Показываем блок, даже если только цена пришла
+                document.getElementById('hisobot-container').style.display = 'block'; 
             }
         } else {
-            console.error("Сервер вернул ошибку 422. Вот детали:", data);
-            alert("Ошибка валидации данных. Проверьте консоль браузера (F12)!");
+            console.error("Ошибки от Pydantic:", data);
+            alert("Ошибка валидации. Проверьте консоль!");
         }
     } catch (error) {
         console.error("Критическая ошибка запроса:", error);
-        alert("Не удалось связаться с сервером MyHouse.");
+        alert("Не удалось связаться с сервером.");
     }
-}
+} 
     window.onload = function() {
         addRoom();
     };
