@@ -290,7 +290,6 @@
             text-align: center;
         }
 
-        /* Стиль для текста дисклеймера */
         .disclaimer-text {
             color: var(--text-muted);
             font-size: 10px;
@@ -511,9 +510,9 @@
 
         <div class="hisobot-box" id="hisobot-container">
             <div class="hisobot-title">Smeta стройматериалов</div>
-            <div class="disclaimer-text">
-                * Diqqat: Hisob-kitobga kesish va chiqindilar uchun avtomatik ravishda 10% zaxira qo'shilgan.<br>
-                * Внимание: В расчет автоматически заложен технологический запас 10% на подрезку и отходы.
+            <div class="disclaimer-text" id="disclaimer-text">
+                * Diqqat: Hisob-kitobga avtomatik ravishda 10% zaxira qo'shilgan.<br>
+                * Внимание: В расчет автоматически заложен технологический запас 10% на подрезку.
             </div>
             <div id="materials-rows-wrapper"></div>
         </div>
@@ -699,13 +698,12 @@
             isValid = false;
         }
 
-        // ДОБАВИЛИ "type": "room", как просит бэкенд!
         roomsPayload.push({ 
             width: w, 
             length: l, 
             height: h, 
             o: o,
-            type: "room" // Заглушка для типа комнаты, чтобы Pydantic был доволен
+            type: "room"
         });
     });
 
@@ -738,12 +736,11 @@
         return;
     }
 
-    // ИСПРАВИЛИ: Передаем число 1.0 вместо строки "standard"
     const finalData = {
         rooms: roomsPayload,
         selected_works: selectedWorksPayload,
         style: "default",         
-        master_rate: 1.0   // Теперь это валидный float (число), бэкенд не споткнется!
+        master_rate: 1.0
     };
 
     try {
@@ -756,8 +753,15 @@
         const data = await response.json();
 
         if (response.ok) {
-            if (data.total_work_cost !== undefined) {
-                document.getElementById('total-price-display').innerText = data.total_work_cost.toLocaleString('ru-RU') + " UZS";
+            let totalCost = data.total_work_cost || data.total_cost || 0;
+            document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
+
+            const disclaimer = document.getElementById('disclaimer-text');
+            if (disclaimer) {
+                disclaimer.innerHTML = `
+                    * Diqqat: Hisob-kitobga avtomatik ravishda 10% zaxira qo'shilgan.<br>
+                    * Внимание: В расчет автоматически заложен технологический запас 10% на подрезку.
+                `;
             }
 
             const wrapper = document.getElementById('materials-rows-wrapper');
@@ -777,7 +781,8 @@
             } else {
                 document.getElementById('hisobot-container').style.display = 'block'; 
             }
-        } else {
+        }
+        else {
             console.error("Ошибки валидации сервера:", data);
             alert("Ошибка валидации. Проверьте консоль!");
         }
