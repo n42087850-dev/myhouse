@@ -13,7 +13,6 @@
             --text: #ffffff;
             --text-muted: #8a9cb4;
             --border: #1f3556;
-            --success: #2ecc71;
         }
 
         * {
@@ -39,6 +38,7 @@
             padding-bottom: 50px;
         }
 
+        /* Хедер */
         header {
             text-align: center;
             margin-bottom: 25px;
@@ -57,6 +57,7 @@
             margin-top: 4px;
         }
 
+        /* Вкладки (Табы) */
         .tabs {
             display: flex;
             background: var(--bg-card);
@@ -83,6 +84,7 @@
             color: var(--text);
         }
 
+        /* Контент вкладок */
         .tab-content {
             display: none;
         }
@@ -91,6 +93,7 @@
             display: block;
         }
 
+        /* Карточки комнат */
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -134,6 +137,7 @@
             border-color: var(--primary);
         }
 
+        /* Сетка параметров комнаты */
         .params-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -142,13 +146,16 @@
 
         .room-preview {
             width: 100%;
-            height: auto; 
-            display: block;
+            height: 200px;
+            object-fit: contain;
+            background-color: #090f1a;
             border-radius: 10px;
             margin-top: 15px;
             border: 1px solid var(--border);
+            display: block;
         }
 
+        /* Заголовки секций с объемами */
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -175,6 +182,7 @@
             font-weight: bold;
         }
 
+        /* Кнопки */
         .btn {
             width: 100%;
             background: transparent;
@@ -251,6 +259,7 @@
             color: var(--text);
         }
 
+        /* Итоговый результат */
         .result-box {
             background: var(--bg-card);
             border: 2px solid var(--border);
@@ -271,41 +280,31 @@
             font-size: 11px;
         }
 
-        .hisobot-box {
+        /* СТИЛИ ДЛЯ БЛОКА МАТЕРИАЛОВ */
+        .materials-container {
             display: none;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 15px;
             padding: 20px;
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
-        .hisobot-title {
-            color: var(--success);
-            font-size: 13px;
+        .materials-title {
+            text-align: center;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-            text-align: center;
-        }
-
-        .disclaimer-text {
-            color: var(--text-muted);
-            font-size: 10px;
-            text-align: center;
+            font-size: 14px;
+            color: var(--accent);
             margin-bottom: 15px;
-            line-height: 1.4;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
+            text-transform: uppercase;
         }
 
         .material-row {
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
-            font-size: 13px;
             border-bottom: 1px dashed var(--border);
+            font-size: 13px;
         }
 
         .material-row:last-child {
@@ -313,14 +312,15 @@
         }
 
         .material-name {
-            color: var(--text-muted);
+            color: var(--text);
         }
 
         .material-val {
-            color: var(--text);
+            color: #2ecc71;
             font-weight: bold;
         }
 
+        /* Уведомление на 1 странице */
         .notice-box {
             display: none;
             background: #1e3a2f;
@@ -334,11 +334,58 @@
             margin-top: 15px;
         }
 
+        /* Блок новых возможностей */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            opacity: 0.4;
+            transition: 0.3s;
+        }
+
+        .feature-card.unlocked {
+            opacity: 1;
+        }
+
+        .feature-img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: var(--bg-main);
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .feature-status {
+            font-size: 10px;
+            color: var(--accent);
+            margin-top: 4px;
+            font-weight: bold;
+        }
+
         .footer-author {
             text-align: center;
             font-size: 11px;
             color: var(--text-muted);
-            margin-top: 30px;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -351,8 +398,8 @@
     </header>
 
     <div class="tabs">
-        <div class="tab active" id="tab1-btn" onclick="switchTab(1)">1. Xona o'lchamlari / Размеры</div>
-        <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. Usta Mehnati & Hisobot</div>
+        <div class="tab active" id="tab1-btn" onclick="switchTab(1)">1. Material & Dizayn</div>
+        <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. Usta Mehnati (m²)</div>
     </div>
 
     <div id="tab1-content" class="tab-content active">
@@ -360,208 +407,174 @@
 
         <button class="btn" onclick="addRoom()">+ YANGI XONA QO'SHISH / ДОБАВИТЬ КОМНАТУ</button>
         <button class="btn btn-calc" onclick="calculateVolumes()">Hisoblash / Рассчитать объемы</button>
-         
+        
         <div id="tab1-notice" class="notice-box">
-            KEYINGI BOSQICHGA O'TING → / ПЕРЕХОДИТЕ В СЛЕДУЮЩУЮ СТРАНИЦУ →
+            ПЕРЕХОДИТЕ В СЛЕДУЮЩУЮ СТРАНИЦУ →
         </div>
     </div>
 
     <div id="tab2-content" class="tab-content">
         <div class="card" style="padding: 15px 15px 25px 15px;">
-            <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px;">
-                Usta ish haqi narxlari / Расценки мастера
+            <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; color: var(--text);">
+                USTA ISH HAQI NARXLARI
             </div>
 
             <div class="section-header">
-                <span class="section-title">Pol / Полы</span>
+                <span class="section-title">Pol (Полы)</span>
                 <span class="volume-badge" id="lbl-floor-vol">0.00 m²</span>
             </div>
             
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-styajka" checked data-unit="f">
-                    <span class="work-name">Стяжка пола / Pol styajkasi</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-styajka" data-unit="w" checked>
+                    <span class="work-name">Styajka (Стяжка)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-styajka" value="45000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-nalivnoy" checked data-unit="f">
-                    <span class="work-name">Наливной пол / Quyma pol</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-nalivnoy" data-unit="w" checked>
+                    <span class="work-name">Nalivnoy pol</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-nalivnoy" value="25000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-laminat" data-unit="f">
-                    <span class="work-name">Ламинат / Tarket</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-laminat" data-unit="w">
+                    <span class="work-name">Laminat/Tarket</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-laminat" value="35000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-kafel-pol" data-unit="f">
-                    <span class="work-name">Кафель (пол) / Kafel (pol uchun)</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-kafel-pol" data-unit="w">
+                    <span class="work-name">Kafel (pol)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-kafel-pol" value="60000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-issiq-pol" data-unit="f">
-                    <span class="work-name">Тёплый пол / Issiq pol</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-issiq-pol" value="50000">
-            </div>
-            <div class="work-item">
-                <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-plintus" data-unit="p">
-                    <span class="work-name">Плинтус (п.м.) / Plintus (metr)</span>
+                    <span class="work-name">Plintus (m.p.)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-plintus" value="15000">
             </div>
 
             <div class="section-header">
-                <span class="section-title">Devor / Стены</span>
+                <span class="section-title">Devor (Стены)</span>
                 <span class="volume-badge" id="lbl-wall-vol">0.00 m²</span>
             </div>
             
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" checked data-unit="w">
-                    <span class="work-name">Штукатурка / Suvoq ishlari</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" data-unit="w" checked>
+                    <span class="work-name">Shtukaturka</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-shtukaturka" value="40000">
             </div>
             <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-shpatlevka" data-unit="w">
-                    <span class="work-name">Шпатлевка / Shpatlyovka</span>
+                    <span class="work-name">Shpatlevka</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-shpatlevka" value="25000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-oboi" checked data-unit="w">
-                    <span class="work-name">Поклейка обоев / Gulqog'oz yopishtirish</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-oboi" data-unit="w" checked>
+                    <span class="work-name">Oboi yopishtirish</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-oboi" value="25000">
             </div>
             <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-boyoq" data-unit="w">
-                    <span class="work-name">Покраска стен / Devor bo'yash</span>
+                    <span class="work-name">Bo'yoq (Покраска)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-boyoq" value="20000">
             </div>
             <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-travertin" data-unit="w">
-                    <span class="work-name">Травертин / Dekorativ suvoq</span>
+                    <span class="work-name">Travertin/Dekor</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-travertin" value="80000">
             </div>
 
             <div class="section-header">
-                <span class="section-title">Potolok / Потолок</span>
+                <span class="section-title">Potolok & Ingeneriya</span>
                 <span class="volume-badge" id="lbl-ceiling-vol">0.00 m²</span>
             </div>
             
             <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-natyajnoy" data-unit="c">
-                    <span class="work-name">Натяжной потолок / Natyajnoy potolok</span>
+                    <span class="work-name">Natyajnoy potolok</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-natyajnoy" value="50000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-gipsokarton" checked data-unit="c">
-                    <span class="work-name">Гипсокартон / Gipsokarton qurish</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-gipsokarton" data-unit="c" checked>
+                    <span class="work-name">Gipsokarton</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-gipsokarton" value="60000">
-            </div>
-
-            <div class="section-header">
-                <span class="section-title">Ingeneriya / Инженерия</span>
-                <span class="volume-badge" id="lbl-engineering-vol" style="color:var(--success);">Tizimlar</span>
             </div>
             <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-elektro" data-unit="f">
-                    <span class="work-name">Электромонтаж / Elektromontaj (m²)</span>
+                    <span class="work-name">Elektromontaj (m²)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-elektro" value="110000">
             </div>
             <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-santexnika" data-unit="f">
-                    <span class="work-name">Сантехника / Santexnika tizimi (m²)</span>
+                    <span class="work-name">Santexnika (m²)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-santexnika" value="90000">
             </div>
 
-            <button class="btn btn-calc" onclick="calculateSmetaToServer()">Smetani hisoblash / Рассчитать смету</button>
+            <button class="btn btn-calc" onclick="calculateSmeta()">Ish haqini hisoblash / Рассчитать смету</button>
         </div>
 
         <div class="result-box">
             <h3 id="total-price-display">0 UZS</h3>
-            <p>Jami usta mehnati uchun / Итого за работу мастера</p>
+            <p>Jami usta mehnati uchun</p>
         </div>
 
-        <div class="hisobot-box" id="hisobot-container">
-            <div class="hisobot-title">Smeta стройматериалов</div>
-            <div class="disclaimer-text" id="disclaimer-text">
-                * Diqqat: Hisob-kitobga avtomatik ravishda 10% zaxira qo'shilgan.<br>
-                * Внимание: В расчет автоматически заложен технологический запас 10% на подрезку.
-            </div>
-            <div id="materials-rows-wrapper"></div>
+        <div class="materials-container" id="hisobot-container">
+            <div class="materials-title">Zarur stroymateriallar / Необходимые материалы</div>
+            <div id="materials-rows-wrapper">
+                </div>
         </div>
 
-        <div class="card" style="margin-top: 25px; padding: 15px;">
-            <div style="text-align: center; font-weight: bold; font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px;">
-                Yangi imkoniyatlar / Новые возможности
+        <div style="margin-top: 25px; font-weight: bold; font-size: 12px; color: #2ecc71; text-transform: uppercase; letter-spacing: 0.5px;">
+            Yangi imkoniyatlar / Новые возможности
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card" id="feat-stroy">
+                <img class="feature-img" src="backend/images/stroy_materials.jpg" alt="Stroymateriallar" onerror="this.src='https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=200&q=80'">
+                <div class="feature-title">Stroymateriallar</div>
+                <div class="feature-status">РАЗРАБАТЫВАЕТСЯ</div>
             </div>
-            
-            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px;">
-                <div style="font-size: 12px; color: var(--text);">
-                    🛒 Stroymateriallar do'konlari integratsiyasi / Интеграция магазинов стройматериалов
-                </div>
-                <span style="background: #3a2a18; color: var(--accent); font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: bold; white-space: nowrap;">
-                    Разрабатывается
-                </span>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
-                <div style="font-size: 12px; color: var(--text);">
-                    🛋️ Mebel do'konlari va buyurtma / Мебельные магазины и заказ
-                </div>
-                <span style="background: #3a2a18; color: var(--accent); font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: bold; white-space: nowrap;">
-                    Разрабатывается
-                </span>
+            <div class="feature-card" id="feat-mebel">
+                <img class="feature-img" src="backend/images/mebellar.jpg" alt="Mebellar" onerror="this.src='https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=200&q=80'">
+                <div class="feature-title">Mebellar / Мебель</div>
+                <div class="feature-status">РАЗРАБАТЫВАЕТСЯ</div>
             </div>
         </div>
     </div>
 
     <div class="footer-author">
-        Nodirjon Sobirov (Asoschi & TATU talabasi)
+        Nodirjon Sobirov (Asoschi & Muassis)
     </div>
 </div>
 
 <script>
-    // === Вспомогательные функции для автоочистки нулей при клике ===
-    function clearZero(input) {
-        if (input.value === "0" || input.value === "0.0") {
-            input.value = "";
-        }
-    }
-
-    function resetZeroIfEmpty(input) {
-        if (input.value.trim() === "") {
-            input.value = "0";
-        }
-    }
-
     let roomCount = 0;
+
     let totalFloorArea = 0;
     let totalWallArea = 0;
     let totalCeilingArea = 0;
@@ -578,7 +591,7 @@
             document.getElementById('tab2-btn').classList.add('active');
             document.getElementById('tab1-content').classList.remove('active');
             document.getElementById('tab2-content').classList.add('active');
-            calculateVolumes(); // Пересчитываем объемы автоматически при переходе на 2-ю вкладку
+            renderVolumeLabels();
         }
     }
 
@@ -587,12 +600,12 @@
     }
 
     function updateRoomPreview(id) {
-        const typeEl = document.getElementById(`type-${id}`);
-        const designEl = document.getElementById(`design-${id}`);
+        const roomType = document.getElementById(`type-${id}`).value;
+        const designStyle = document.getElementById(`design-${id}`).value;
         const imgEl = document.getElementById(`preview-${id}`);
         
-        if (typeEl && designEl && imgEl) {
-            imgEl.src = getImagePath(typeEl.value, designEl.value);
+        if (imgEl) {
+            imgEl.src = getImagePath(roomType, designStyle);
         }
     }
 
@@ -602,7 +615,6 @@
         const div = document.createElement('div');
         div.className = 'card room-card';
         div.id = `room-card-${currentId}`;
-        
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <b style="color:var(--primary);">${currentId}-XONA / КОМНАТА</b>
@@ -630,12 +642,12 @@
             <img id="preview-${currentId}" class="room-preview" src="" alt="Room Preview" onerror="this.src='https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=500&q=80'">
 
             <div class="params-grid">
-                <div><label>Eni / Ширина (m)</label><input id="w-${currentId}" type="number" step="0.1" placeholder="0.0" value="0" onfocus="clearZero(this)" onblur="resetZeroIfEmpty(this)"></div>
-                <div><label>Uzunligi / Длина (m)</label><input id="l-${currentId}" type="number" step="0.1" placeholder="0.0" value="0" onfocus="clearZero(this)" onblur="resetZeroIfEmpty(this)"></div>
-                <div><label>Balandligi / Выс (m)</label><input id="h-${currentId}" type="number" step="0.1" placeholder="0.0" value="0" onfocus="clearZero(this)" onblur="resetZeroIfEmpty(this)"></div>
+                <div><label>Eni / Ширина (m)</label><input id="w-${currentId}" type="number" placeholder="0.0" value="5"></div>
+                <div><label>Uzunligi / Длина (m)</label><input id="l-${currentId}" type="number" placeholder="0.0" value="4"></div>
+                <div><label>Balandligi / Выс (m)</label><input id="h-${currentId}" type="number" placeholder="0.0" value="3"></div>
             </div>
             <label>Eshik va Oyna / Двери и Окна (m²)</label>
-            <input id="o-${currentId}" type="number" step="0.1" placeholder="0.0" value="0" onfocus="clearZero(this)" onblur="resetZeroIfEmpty(this)">
+            <input id="o-${currentId}" type="number" placeholder="0.0" value="12">
         `;
         document.getElementById('rooms-container').appendChild(div);
         updateRoomPreview(currentId);
@@ -660,7 +672,11 @@
         totalPerimeter = 0;
 
         const cards = document.querySelectorAll('.room-card');
-        if (cards.length === 0) return;
+        
+        if (cards.length === 0) {
+            alert("Илтимос, олдин хона қўшинг! / Пожалуйста, сначала добавьте комнату!");
+            return;
+        }
 
         cards.forEach(card => {
             const id = card.id.replace('room-card-', '');
@@ -685,117 +701,123 @@
         document.getElementById('tab1-notice').style.display = 'block';
     }
 
-  function calculateSmetaToServer() {
-    const cards = document.querySelectorAll('.room-card');
-    if (cards.length === 0) {
-        alert("Пожалуйста, сначала добавьте комнату!");
-        return;
-    }
+    // НАШ ОРИГИНАЛЬНЫЙ СИНХРОННЫЙ РАСЧЕТ И ОТПРАВКА НА СЕРВЕР ЧЕРЕЗ PROMISE (.then)
+    function calculateSmeta() {
+        let totalCost = 0;
+        const selectedWorksPayload = [];
 
-    const roomsPayload = [];
-    let isValid = true;
+        function addWorkCost(checkboxId, priceInputId, volume) {
+            const cb = document.getElementById(checkboxId);
+            const unitPrice = parseFloat(document.getElementById(priceInputId).value) || 0;
+            if (cb && cb.checked) {
+                totalCost += volume * unitPrice;
 
-    cards.forEach(card => {
-        const id = card.id.replace('room-card-', '');
-        
-        const w = parseFloat(document.getElementById(`w-${id}`).value);
-        const l = parseFloat(document.getElementById(`l-${id}`).value);
-        const h = parseFloat(document.getElementById(`h-${id}`).value);
-        const o = parseFloat(document.getElementById(`o-${id}`).value) || 0;
-        const roomType = document.getElementById(`type-${id}`).value || "room";
+                // Собираем чистый массив выбранных работ для отправки на бэкенд
+                const baseId = checkboxId.replace('chk-', '');
+                const unitType = cb.getAttribute('data-unit') || "w";
+                const nameText = cb.parentElement.querySelector('.work-name').innerText;
 
-        if (isNaN(w) || isNaN(l) || isNaN(h) || w <= 0 || l <= 0 || h <= 0) {
-            isValid = false;
-        } else {
-            roomsPayload.push({ 
-                type: roomType, 
-                width: w, 
-                length: l, 
-                height: h, 
-                o: o 
-            });
+                selectedWorksPayload.push({
+                    id: baseId,
+                    name: nameText,
+                    price: unitPrice,
+                    unit_type: unitType
+                });
+            }
         }
-    });
 
-    if (!isValid || roomsPayload.length === 0) {
-        alert("Пожалуйста, заполните размеры всех комнат числами больше 0!");
-        return;
-    }
+        // 1. Считаем локально стоимость работ мастеров
+        addWorkCost('chk-styajka', 'price-styajka', totalFloorArea);
+        addWorkCost('chk-nalivnoy', 'price-nalivnoy', totalFloorArea);
+        addWorkCost('chk-laminat', 'price-laminat', totalFloorArea);
+        addWorkCost('chk-kafel-pol', 'price-kafel-pol', totalFloorArea);
+        addWorkCost('chk-plintus', 'price-plintus', totalPerimeter);
 
-    const selectedWorksPayload = [];
-    const checkboxes = document.querySelectorAll('.work-checkbox');
-    
-    checkboxes.forEach(cb => {
-        if (cb.checked) {
-            const baseId = cb.id.replace('chk-', '');
-            const priceVal = parseFloat(document.getElementById(`price-${baseId}`).value) || 0;
-            
-            const nameElement = cb.parentElement.querySelector('.work-name');
-            const nameText = nameElement ? nameElement.innerText.trim() : baseId;
-            const unitType = cb.getAttribute('data-unit') || "w";
+        addWorkCost('chk-shtukaturka', 'price-shtukaturka', totalWallArea);
+        addWorkCost('chk-shpatlevka', 'price-shpatlevka', totalWallArea);
+        addWorkCost('chk-oboi', 'price-oboi', totalWallArea);
+        addWorkCost('chk-boyoq', 'price-boyoq', totalWallArea);
+        addWorkCost('chk-travertin', 'price-travertin', totalWallArea);
 
-            selectedWorksPayload.push({
-                id: baseId,
-                name: nameText,
-                price: priceVal,
-                unit_type: unitType
-            });
-        }
-    });
+        addWorkCost('chk-natyajnoy', 'price-natyajnoy', totalCeilingArea);
+        addWorkCost('chk-gipsokarton', 'price-gipsokarton', totalCeilingArea);
+        addWorkCost('chk-elektro', 'price-elektro', totalFloorArea);
+        addWorkCost('chk-santexnika', 'price-santexnika', totalFloorArea);
 
-    if (selectedWorksPayload.length === 0) {
-        alert("Выберите хотя бы один вид работы!");
-        return;
-    }
-
-    const finalData = {
-        rooms: roomsPayload,
-        selected_works: selectedWorksPayload,
-        style: "standard",       
-        master_rate: 1.0
-    };
-
-    console.log("ОТПРАВЛЯЕМ НА СЕРВЕР:", finalData);
-
-    // СИНТАКСИС БЕЗ AWAIT — РАБОТАЕТ ВЕЗДЕ
-    fetch('https://myhouse-mc1v.onrender.com/calculate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(finalData)
-    })
-    .then(function(response) {
-        if (!response.ok) {
-            throw new Error("Ошибка сервера: " + response.status);
-        }
-        return response.json();
-    })
-    .then(function(data) {
-        console.log("ОТВЕТ СЕРВЕРА:", data);
-        
-        let totalCost = data.total_work_cost || 0;
+        // Выводим локальную сумму
         document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
 
-        const wrapper = document.getElementById('materials-rows-wrapper');
-        wrapper.innerHTML = ''; 
+        document.getElementById('feat-stroy').classList.add('unlocked');
+        document.getElementById('feat-mebel').classList.add('unlocked');
 
-        if (data.materials_list && data.materials_list.length > 0) {
-            data.materials_list.forEach(mat => {
-                const row = document.createElement('div');
-                row.className = 'material-row';
-                row.innerHTML = `
-                    <span class="material-name">${mat.name}</span>
-                    <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
-                `;
-                wrapper.appendChild(row);
+        // 2. ОТПРАВКА ДАННЫХ НА BACKEND ДЛЯ МАТЕРИАЛОВ
+        const cards = document.querySelectorAll('.room-card');
+        const roomsPayload = [];
+        
+        cards.forEach(card => {
+            const id = card.id.replace('room-card-', '');
+            roomsPayload.push({
+                type: document.getElementById(`type-${id}`).value,
+                width: parseFloat(document.getElementById(`w-${id}`).value) || 0,
+                length: parseFloat(document.getElementById(`l-${id}`).value) || 0,
+                height: parseFloat(document.getElementById(`h-${id}`).value) || 0,
+                o: parseFloat(document.getElementById(`o-${id}`).value) || 0
             });
+        });
+
+        if (selectedWorksPayload.length === 0 || roomsPayload.length === 0) {
+            return; // Если ничего не выбрано, запрос не кидаем
         }
-        document.getElementById('hisobot-container').style.display = 'block';
-    })
-    .catch(function(error) {
-        console.error("Критическая ошибка:", error);
-        alert("Произошла ошибка при отправке или обработке данных.");
-    });
-}
+
+        const finalData = {
+            rooms: roomsPayload,
+            selected_works: selectedWorksPayload,
+            style: "standard",
+            master_rate: 1.0
+        };
+
+        // Твой FETCH без ключевого слова await (работает железно и без синтаксических ошибок)
+        fetch('https://myhouse-mc1v.onrender.com/calculate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(finalData)
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error("Ошибка сервера: " + response.status);
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("ОТВЕТ СЕРВЕРА С МАТЕРИАЛАМИ:", data);
+            
+            const wrapper = document.getElementById('materials-rows-wrapper');
+            const container = document.getElementById('hisobot-container');
+            
+            if (wrapper && container) {
+                wrapper.innerHTML = ''; // Чистим старые материалы перед выводом
+
+                // Если сервер прислал массив материалов, выводим их
+                if (data.materials_list && data.materials_list.length > 0) {
+                    data.materials_list.forEach(mat => {
+                        const row = document.createElement('div');
+                        row.className = 'material-row';
+                        row.innerHTML = `
+                            <span class="material-name">${mat.name}</span>
+                            <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
+                        `;
+                        wrapper.appendChild(row);
+                    });
+                    container.style.display = 'block'; // Показываем блок сметы
+                } else {
+                    container.style.display = 'none'; // Скрываем, если пусто
+                }
+            }
+        })
+        .catch(function(error) {
+            console.error("Ошибка при получении материалов:", error);
+        });
+    }
 
     window.onload = function() {
         addRoom();
