@@ -38,7 +38,6 @@
             padding-bottom: 50px;
         }
 
-        /* Хедер */
         header {
             text-align: center;
             margin-bottom: 25px;
@@ -57,7 +56,6 @@
             margin-top: 4px;
         }
 
-        /* Вкладки (Табы) */
         .tabs {
             display: flex;
             background: var(--bg-card);
@@ -84,7 +82,6 @@
             color: var(--text);
         }
 
-        /* Контент вкладок */
         .tab-content {
             display: none;
         }
@@ -93,7 +90,6 @@
             display: block;
         }
 
-        /* Карточки комнат */
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -137,7 +133,6 @@
             border-color: var(--primary);
         }
 
-        /* Сетка параметров комнаты */
         .params-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -155,7 +150,6 @@
             display: block;
         }
 
-        /* Заголовки секций с объемами */
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -182,7 +176,6 @@
             font-weight: bold;
         }
 
-        /* Кнопки */
         .btn {
             width: 100%;
             background: transparent;
@@ -259,7 +252,6 @@
             color: var(--text);
         }
 
-        /* Итоговый результат */
         .result-box {
             background: var(--bg-card);
             border: 2px solid var(--border);
@@ -280,7 +272,7 @@
             font-size: 11px;
         }
 
-        /* СТИЛИ ДЛЯ БЛОКА МАТЕРИАЛОВ */
+        /* БЛОК ВЫВОДА МАТЕРИАЛОВ */
         .materials-container {
             display: none;
             background: var(--bg-card);
@@ -320,7 +312,6 @@
             font-weight: bold;
         }
 
-        /* Уведомление на 1 странице */
         .notice-box {
             display: none;
             background: #1e3a2f;
@@ -334,7 +325,6 @@
             margin-top: 15px;
         }
 
-        /* Блок новых возможностей */
         .features-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -402,6 +392,7 @@
         <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. Usta Mehnati (m²)</div>
     </div>
 
+    <!-- Страница 1 -->
     <div id="tab1-content" class="tab-content active">
         <div id="rooms-container"></div>
 
@@ -409,10 +400,11 @@
         <button class="btn btn-calc" onclick="calculateVolumes()">Hisoblash / Рассчитать объемы</button>
         
         <div id="tab1-notice" class="notice-box">
-            ПЕРЕХОДИТЕ В СЛЕДУЮЩУЮ СТРАНИЦУ →
+            ПЕРЕХОДИТЕ В СЛЕЛУЮЩУЮ СТРАНИЦУ →
         </div>
     </div>
 
+    <!-- Страница 2 -->
     <div id="tab2-content" class="tab-content">
         <div class="card" style="padding: 15px 15px 25px 15px;">
             <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; color: var(--text);">
@@ -426,35 +418,35 @@
             
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-styajka" data-unit="w" checked>
+                    <input type="checkbox" class="work-checkbox" id="chk-styajka" checked>
                     <span class="work-name">Styajka (Стяжка)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-styajka" value="45000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-nalivnoy" data-unit="w" checked>
+                    <input type="checkbox" class="work-checkbox" id="chk-nalivnoy" checked>
                     <span class="work-name">Nalivnoy pol</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-nalivnoy" value="25000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-laminat" data-unit="w">
+                    <input type="checkbox" class="work-checkbox" id="chk-laminat">
                     <span class="work-name">Laminat/Tarket</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-laminat" value="35000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-kafel-pol" data-unit="w">
+                    <input type="checkbox" class="work-checkbox" id="chk-kafel-pol">
                     <span class="work-name">Kafel (pol)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-kafel-pol" value="60000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-plintus" data-unit="p">
+                    <input type="checkbox" class="work-checkbox" id="chk-plintus">
                     <span class="work-name">Plintus (m.p.)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-plintus" value="15000">
@@ -467,35 +459,35 @@
             
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" data-unit="w" checked>
+                    <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" checked>
                     <span class="work-name">Shtukaturka</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-shtukaturka" value="40000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-shpatlevka" data-unit="w">
+                    <input type="checkbox" class="work-checkbox" id="chk-shpatlevka">
                     <span class="work-name">Shpatlevka</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-shpatlevka" value="25000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-oboi" data-unit="w" checked>
+                    <input type="checkbox" class="work-checkbox" id="chk-oboi" checked>
                     <span class="work-name">Oboi yopishtirish</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-oboi" value="25000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-boyoq" data-unit="w">
+                    <input type="checkbox" class="work-checkbox" id="chk-boyoq">
                     <span class="work-name">Bo'yoq (Покраска)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-boyoq" value="20000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-travertin" data-unit="w">
+                    <input type="checkbox" class="work-checkbox" id="chk-travertin">
                     <span class="work-name">Travertin/Dekor</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-travertin" value="80000">
@@ -508,28 +500,28 @@
             
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-natyajnoy" data-unit="c">
+                    <input type="checkbox" class="work-checkbox" id="chk-natyajnoy">
                     <span class="work-name">Natyajnoy potolok</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-natyajnoy" value="50000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-gipsokarton" data-unit="c" checked>
+                    <input type="checkbox" class="work-checkbox" id="chk-gipsokarton" checked>
                     <span class="work-name">Gipsokarton</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-gipsokarton" value="60000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-elektro" data-unit="f">
+                    <input type="checkbox" class="work-checkbox" id="chk-elektro">
                     <span class="work-name">Elektromontaj (m²)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-elektro" value="110000">
             </div>
             <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-santexnika" data-unit="f">
+                    <input type="checkbox" class="work-checkbox" id="chk-santexnika">
                     <span class="work-name">Santexnika (m²)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-santexnika" value="90000">
@@ -543,10 +535,12 @@
             <p>Jami usta mehnati uchun</p>
         </div>
 
+        <!-- ЛОКАЛЬНЫЙ АВТОНОМНЫЙ ВЫВОД МАТЕРИАЛОВ -->
         <div class="materials-container" id="hisobot-container">
             <div class="materials-title">Zarur stroymateriallar / Необходимые материалы</div>
             <div id="materials-rows-wrapper">
-                </div>
+                <!-- Сюда JS мгновенно выведет расчёты -->
+            </div>
         </div>
 
         <div style="margin-top: 25px; font-weight: bold; font-size: 12px; color: #2ecc71; text-transform: uppercase; letter-spacing: 0.5px;">
@@ -557,7 +551,7 @@
             <div class="feature-card" id="feat-stroy">
                 <img class="feature-img" src="backend/images/stroy_materials.jpg" alt="Stroymateriallar" onerror="this.src='https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=200&q=80'">
                 <div class="feature-title">Stroymateriallar</div>
-                <div class="feature-status">РАЗРАБАТЫВАЕТСЯ</div>
+                <div class="feature-status">БАЗА ОПТИМИЗИРОВАНА</div>
             </div>
             <div class="feature-card" id="feat-mebel">
                 <img class="feature-img" src="backend/images/mebellar.jpg" alt="Mebellar" onerror="this.src='https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=200&q=80'">
@@ -672,9 +666,8 @@
         totalPerimeter = 0;
 
         const cards = document.querySelectorAll('.room-card');
-        
         if (cards.length === 0) {
-            alert("Илтимос, олдин хона қўшинг! / Пожалуйста, сначала добавьте комнату!");
+            alert("Илтимос, олдин хона қўшинг!");
             return;
         }
 
@@ -701,122 +694,97 @@
         document.getElementById('tab1-notice').style.display = 'block';
     }
 
-    // НАШ ОРИГИНАЛЬНЫЙ СИНХРОННЫЙ РАСЧЕТ И ОТПРАВКА НА СЕРВЕР ЧЕРЕЗ PROMISE (.then)
+    // ПОЛНОЦЕННЫЙ ОДНОВРЕМЕННЫЙ РАСЧЕТ И РАБОТ, И МАТЕРИАЛОВ
     function calculateSmeta() {
         let totalCost = 0;
-        const selectedWorksPayload = [];
 
-        function addWorkCost(checkboxId, priceInputId, volume) {
+        // 1. СЧИТАЕМ РАБОТУ МАСТЕРОВ
+        function checkAndSum(checkboxId, priceInputId, volume) {
             const cb = document.getElementById(checkboxId);
-            const unitPrice = parseFloat(document.getElementById(priceInputId).value) || 0;
+            const price = parseFloat(document.getElementById(priceInputId).value) || 0;
             if (cb && cb.checked) {
-                totalCost += volume * unitPrice;
-
-                // Собираем чистый массив выбранных работ для отправки на бэкенд
-                const baseId = checkboxId.replace('chk-', '');
-                const unitType = cb.getAttribute('data-unit') || "w";
-                const nameText = cb.parentElement.querySelector('.work-name').innerText;
-
-                selectedWorksPayload.push({
-                    id: baseId,
-                    name: nameText,
-                    price: unitPrice,
-                    unit_type: unitType
-                });
+                totalCost += volume * price;
+                return true;
             }
+            return false;
         }
 
-        // 1. Считаем локально стоимость работ мастеров
-        addWorkCost('chk-styajka', 'price-styajka', totalFloorArea);
-        addWorkCost('chk-nalivnoy', 'price-nalivnoy', totalFloorArea);
-        addWorkCost('chk-laminat', 'price-laminat', totalFloorArea);
-        addWorkCost('chk-kafel-pol', 'price-kafel-pol', totalFloorArea);
-        addWorkCost('chk-plintus', 'price-plintus', totalPerimeter);
+        const activeWorks = {
+            styajka: checkAndSum('chk-styajka', 'price-styajka', totalFloorArea),
+            nalivnoy: checkAndSum('chk-nalivnoy', 'price-nalivnoy', totalFloorArea),
+            laminat: checkAndSum('chk-laminat', 'price-laminat', totalFloorArea),
+            kafel: checkAndSum('chk-kafel-pol', 'price-kafel-pol', totalFloorArea),
+            plintus: checkAndSum('chk-plintus', 'price-plintus', totalPerimeter),
+            shtukaturka: checkAndSum('chk-shtukaturka', 'price-shtukaturka', totalWallArea),
+            shpatlevka: checkAndSum('chk-shpatlevka', 'price-shpatlevka', totalWallArea),
+            oboi: checkAndSum('chk-oboi', 'price-oboi', totalWallArea),
+            boyoq: checkAndSum('chk-boyoq', 'price-boyoq', totalWallArea),
+            gipsokarton: checkAndSum('chk-gipsokarton', 'price-gipsokarton', totalCeilingArea),
+            natyajnoy: checkAndSum('chk-natyajnoy', 'price-natyajnoy', totalCeilingArea),
+            elektro: checkAndSum('chk-elektro', 'price-elektro', totalFloorArea),
+            santexnika: checkAndSum('chk-santexnika', 'price-santexnika', totalFloorArea)
+        };
 
-        addWorkCost('chk-shtukaturka', 'price-shtukaturka', totalWallArea);
-        addWorkCost('chk-shpatlevka', 'price-shpatlevka', totalWallArea);
-        addWorkCost('chk-oboi', 'price-oboi', totalWallArea);
-        addWorkCost('chk-boyoq', 'price-boyoq', totalWallArea);
-        addWorkCost('chk-travertin', 'price-travertin', totalWallArea);
-
-        addWorkCost('chk-natyajnoy', 'price-natyajnoy', totalCeilingArea);
-        addWorkCost('chk-gipsokarton', 'price-gipsokarton', totalCeilingArea);
-        addWorkCost('chk-elektro', 'price-elektro', totalFloorArea);
-        addWorkCost('chk-santexnika', 'price-santexnika', totalFloorArea);
-
-        // Выводим локальную сумму
         document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
+
+        // 2. ВОССТАНАВЛИВАЕМ ВСТРОЕННЫЙ РАСЧЕТ МАТЕРИАЛОВ (ТВОИ ФОРМУЛЫ)
+        const wrapper = document.getElementById('materials-rows-wrapper');
+        const container = document.getElementById('hisobot-container');
+        wrapper.innerHTML = ''; 
+
+        let hasMaterials = false;
+
+        function appendMaterialRow(name, amount, unit) {
+            if (amount <= 0) return;
+            hasMaterials = true;
+            const row = document.createElement('div');
+            row.className = 'material-row';
+            row.innerHTML = `
+                <span class="material-name">${name}</span>
+                <span class="material-val">${Math.ceil(amount).toLocaleString('ru-RU')} ${unit}</span>
+            `;
+            wrapper.appendChild(row);
+        }
+
+        // Локальные формулы расхода (привязаны к выбранным чекбоксам):
+        if (activeWorks.styajka) {
+            appendMaterialRow("Cement (Цемент M400)", totalFloorArea * 15, "kg");
+            appendMaterialRow("Pesok (Песок просеянный)", totalFloorArea * 0.04, "m³");
+        }
+        if (activeWorks.nalivnoy) {
+            appendMaterialRow("Nalivnoy pol aralashmasi", totalFloorArea * 4, "kg");
+        }
+        if (activeWorks.shtukaturka) {
+            appendMaterialRow("Rotband / Gipsli shtukaturka", totalWallArea * 9, "kg");
+            appendMaterialRow("Gruntoffka (Грунтовка)", totalWallArea * 0.2, "L");
+        }
+        if (activeWorks.shpatlevka) {
+            appendMaterialRow("Finiş shpatlevka", totalWallArea * 1.2, "kg");
+        }
+        if (activeWorks.oboi) {
+            appendMaterialRow("Oboi (рулон 1.06m x 10m)", totalWallArea / 10, "rulon");
+            appendMaterialRow("Oboi yelimi (Клей)", totalWallArea * 0.05, "pachka");
+        }
+        if (activeWorks.laminat) {
+            appendMaterialRow("Laminat (Podlozka bilan)", totalFloorArea * 1.05, "m²");
+        }
+        if (activeWorks.kafel) {
+            appendMaterialRow("Kafel yelimi (Клей для кафеля)", totalFloorArea * 5, "kg");
+        }
+        if (activeWorks.gipsokarton) {
+            appendMaterialRow("Gipsokarton listlari (9.5mm)", totalCeilingArea / 3, "ta (list)");
+            appendMaterialRow("Profil CD-60", totalCeilingArea * 2, "ta");
+        }
+
+        // Показываем блок, если хоть один материал посчитался
+        if (hasMaterials) {
+            container.style.display = 'block';
+        } else {
+            container.style.display = 'none';
+        }
 
         document.getElementById('feat-stroy').classList.add('unlocked');
         document.getElementById('feat-mebel').classList.add('unlocked');
-
-        // 2. ОТПРАВКА ДАННЫХ НА BACKEND ДЛЯ МАТЕРИАЛОВ
-        const cards = document.querySelectorAll('.room-card');
-        const roomsPayload = [];
-        
-        cards.forEach(card => {
-            const id = card.id.replace('room-card-', '');
-            roomsPayload.push({
-                type: document.getElementById(`type-${id}`).value,
-                width: parseFloat(document.getElementById(`w-${id}`).value) || 0,
-                length: parseFloat(document.getElementById(`l-${id}`).value) || 0,
-                height: parseFloat(document.getElementById(`h-${id}`).value) || 0,
-                o: parseFloat(document.getElementById(`o-${id}`).value) || 0
-            });
-        });
-
-        if (selectedWorksPayload.length === 0 || roomsPayload.length === 0) {
-            return; // Если ничего не выбрано, запрос не кидаем
-        }
-
-        const finalData = {
-            rooms: roomsPayload,
-            selected_works: selectedWorksPayload,
-            style: "standard",
-            master_rate: 1.0
-        };
-
-        // Твой FETCH без ключевого слова await (работает железно и без синтаксических ошибок)
-        fetch('https://myhouse-mc1v.onrender.com/calculate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(finalData)
-        })
-        .then(function(response) {
-            if (!response.ok) {
-                throw new Error("Ошибка сервера: " + response.status);
-            }
-            return response.json();
-        })
-        .then(function(data) {
-            console.log("ОТВЕТ СЕРВЕРА С МАТЕРИАЛАМИ:", data);
-            
-            const wrapper = document.getElementById('materials-rows-wrapper');
-            const container = document.getElementById('hisobot-container');
-            
-            if (wrapper && container) {
-                wrapper.innerHTML = ''; // Чистим старые материалы перед выводом
-
-                // Если сервер прислал массив материалов, выводим их
-                if (data.materials_list && data.materials_list.length > 0) {
-                    data.materials_list.forEach(mat => {
-                        const row = document.createElement('div');
-                        row.className = 'material-row';
-                        row.innerHTML = `
-                            <span class="material-name">${mat.name}</span>
-                            <span class="material-val">${mat.amount.toLocaleString('ru-RU')} ${mat.unit}</span>
-                        `;
-                        wrapper.appendChild(row);
-                    });
-                    container.style.display = 'block'; // Показываем блок сметы
-                } else {
-                    container.style.display = 'none'; // Скрываем, если пусто
-                }
-            }
-        })
-        .catch(function(error) {
-            console.error("Ошибка при получении материалов:", error);
-        });
     }
 
     window.onload = function() {
