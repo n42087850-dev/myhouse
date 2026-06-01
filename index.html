@@ -331,7 +331,6 @@
             margin-top: 20px;
         }
 
-        /* ПОЛНАЯ СВОБОДА КАРТИНКАМ: УБРАЛИ OPACITY 0.4 */
         .feature-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -361,9 +360,10 @@
 
         .feature-status {
             font-size: 10px;
-            color: var(--accent);
-            margin-top: 4px;
+            color: var(--text-muted);
+            margin-top: 6px;
             font-weight: bold;
+            letter-spacing: 0.5px;
         }
 
         .footer-author {
@@ -535,20 +535,20 @@
             <div id="materials-rows-wrapper"></div>
         </div>
 
-        <div style="margin-top: 25px; font-weight: bold; font-size: 12px; color: #2ecc71; text-transform: uppercase; letter-spacing: 0.5px;">
+        <div style="margin-top: 25px; font-weight: bold; font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px;">
             Yangi imkoniyatlar / Новые возможности
         </div>
         
         <div class="features-grid">
             <div class="feature-card" id="feat-stroy">
                 <img class="feature-img" src="backend/images/stroy_materials.jpg" alt="Stroymateriallar" onerror="this.src='https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=200&q=80'">
-                <div class="feature-title">Stroymateriallar</div>
-                <div class="feature-status">БАЗА ОПТИМИЗИРОВАНА</div>
+                <div class="feature-title">Stroymateriallar buyurtmasi / Заказ стройматериалов</div>
+                <div class="feature-status">ISHLAB CHIQILMOQDA / РАЗРАБАТЫВАЕТСЯ</div>
             </div>
             <div class="feature-card" id="feat-mebel">
                 <img class="feature-img" src="backend/images/mebellar.jpg" alt="Mebellar" onerror="this.src='https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=200&q=80'">
-                <div class="feature-title">Mebellar / Мебель</div>
-                <div class="feature-status">РАЗРАБАТЫВАЕТСЯ</div>
+                <div class="feature-title">Mebellar buyurtmasi / Заказ мебели</div>
+                <div class="feature-status">ISHLAB CHIQILMOQDA / РАЗРАБАТЫВАЕТСЯ</div>
             </div>
         </div>
     </div>
@@ -595,7 +595,6 @@
         }
     }
 
-    // ИСПРАВЛЕНО: УБРАНЫ ГОТОВЫЕ ЗНАЧЕНИЯ VALUE ДЛЯ СВОБОДНОГО ВВОДА С НУЛЯ
     function addRoom() {
         roomCount++;
         const currentId = roomCount; 
@@ -724,13 +723,12 @@
 
         let hasMaterials = false;
 
-        // Новая функция с поддержкой подсказок (hint)
         function appendMaterialRow(name, amount, unit, hint = "") {
             if (amount <= 0) return;
             hasMaterials = true;
             const row = document.createElement('div');
             row.className = 'material-row';
-            row.style.flexDirection = 'column'; // Делаем в две строки для красивого вывода подсказки
+            row.style.flexDirection = 'column';
             row.style.alignItems = 'flex-start';
             
             row.innerHTML = `
@@ -743,7 +741,6 @@
             wrapper.appendChild(row);
         }
 
-        // Добавляем логику и расшифровку для каждой позиции:
         if (activeWorks.styajka) {
             appendMaterialRow("Cement (Цемент M400)", totalFloorArea * 15, "kg", "Sarfi: 15 kg/m² (Smit sm)");
             appendMaterialRow("Pesok (Песок просеянный)", totalFloorArea * 0.04, "m³", "Sarfi: 0.04 m³/m²");
