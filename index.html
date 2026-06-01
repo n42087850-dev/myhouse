@@ -407,116 +407,127 @@
                 <span class="volume-badge" id="lbl-floor-vol">0.00 m²</span>
             </div>
             
-            <div class="work-item">
+            <label class="work-item" for="chk-styajka">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-styajka" checked>
+                    <input type="checkbox" class="work-checkbox" id="chk-styajka" checked onclick="event.stopPropagation();">
                     <span class="work-name">Styajka (Стяжка)</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-styajka" value="45000">
-            </div>
-            <div class="work-item">
+                <input type="number" class="work-price-input" id="price-styajka" value="45000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
+            
+            <label class="work-item" for="chk-nalivnoy">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-nalivnoy" checked>
+                    <input type="checkbox" class="work-checkbox" id="chk-nalivnoy" checked onclick="event.stopPropagation();">
                     <span class="work-name">Nalivnoy pol</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-nalivnoy" value="25000">
-            </div>
-            <div class="work-item">
+                <input type="number" class="work-price-input" id="price-nalivnoy" value="25000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
+            
+            <label class="work-item" for="chk-laminat">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-laminat">
+                    <input type="checkbox" class="work-checkbox" id="chk-laminat" onclick="event.stopPropagation();">
                     <span class="work-name">Laminat/Tarket</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-laminat" value="35000">
-            </div>
-            <div class="work-item">
+                <input type="number" class="work-price-input" id="price-laminat" value="35000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
+            
+            <label class="work-item" for="chk-kafel-pol">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-kafel-pol">
+                    <input type="checkbox" class="work-checkbox" id="chk-kafel-pol" onclick="event.stopPropagation();">
                     <span class="work-name">Kafel (pol)</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-kafel-pol" value="60000">
-            </div>
-            <div class="work-item">
+                <input type="number" class="work-price-input" id="price-kafel-pol" value="60000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
+            
+            <label class="work-item" for="chk-plintus">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-plintus">
+                    <input type="checkbox" class="work-checkbox" id="chk-plintus" onclick="event.stopPropagation();">
                     <span class="work-name">Plintus (m.p.)</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-plintus" value="15000">
-            </div>
+                <input type="number" class="work-price-input" id="price-plintus" value="15000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
 
             <div class="section-header">
                 <span class="section-title">Devor (Стены)</span>
                 <span class="volume-badge" id="lbl-wall-vol">0.00 m²</span>
             </div>
             
-            <div class="work-item">
+            <label class="work-item" for="chk-shtukaturka">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" checked>
+                    <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" checked onclick="event.stopPropagation();">
                     <span class="work-name">Shtukaturka</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-shtukaturka" value="40000">
-            </div>
-            <div class="work-item">
+                <input type="number" class="work-price-input" id="price-shtukaturka" value="40000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
+            
+            <label class="work-item" for="chk-shpatlevka">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-shpatlevka">
+                    <input type="checkbox" class="work-checkbox" id="chk-shpatlevka" onclick="event.stopPropagation();">
                     <span class="work-name">Shpatlevka</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-shpatlevka" value="25000">
-            </div>
-            <div class="work-item">
+                <input type="number" class="work-price-input" id="price-shpatlevka" value="25000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
+            
+            <label class="work-item" for="chk-oboi">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-oboi" checked>
-                    <span class="work-name">Oboi yopishtirish</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-oboi" checked onclick="event.stopPropagation();">
+                    <span class="work-name">Gulqog'oz yopishtirish</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-oboi" value="25000">
-            </div>
-            <div class="work-item">
+                <input type="number" class="work-price-input" id="price-oboi" value="25000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
+            
+            <label class="work-item" for="chk-boyoq">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-boyoq">
+                    <input type="checkbox" class="work-checkbox" id="chk-boyoq" onclick="event.stopPropagation();">
                     <span class="work-name">Bo'yoq (Покраска)</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-boyoq" value="20000">
-            </div>
-            <div class="work-item">
+                <input type="number" class="work-price-input" id="price-boyoq" value="20000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
+            
+            <label class="work-item" for="chk-travertin">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-travertin">
+                    <input type="checkbox" class="work-checkbox" id="chk-travertin" onclick="event.stopPropagation();">
                     <span class="work-name">Travertin/Dekor</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-travertin" value="80000">
-            </div>
+                <input type="number" class="work-price-input" id="price-travertin" value="80000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
 
             <div class="section-header">
                 <span class="section-title">Potolok & Injeneriya</span>
                 <span class="volume-badge" id="lbl-ceiling-vol">0.00 m²</span>
             </div>
             
-            <div class="work-item">
+            <label class="work-item" for="chk-natyajnoy">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-natyajnoy">
+                    <input type="checkbox" class="work-checkbox" id="chk-natyajnoy" onclick="event.stopPropagation();">
                     <span class="work-name">Natyajnoy potolok</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-natyajnoy" value="50000">
-            </div>
-            <div class="work-item">
+                <input type="number" class="work-price-input" id="price-natyajnoy" value="50000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
+            
+            <label class="work-item" for="chk-gipsokarton">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-gipsokarton" checked>
+                    <input type="checkbox" class="work-checkbox" id="chk-gipsokarton" checked onclick="event.stopPropagation();">
                     <span class="work-name">Gipsokarton</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-gipsokarton" value="60000">
-            </div>
-            <div class="work-item">
+                <input type="number" class="work-price-input" id="price-gipsokarton" value="60000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
+            
+            <label class="work-item" for="chk-elektro">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-elektro">
+                    <input type="checkbox" class="work-checkbox" id="chk-elektro" onclick="event.stopPropagation();">
                     <span class="work-name">Elektromontaj (m²)</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-elektro" value="110000">
-            </div>
-            <div class="work-item">
+                <input type="number" class="work-price-input" id="price-elektro" value="110000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
+            
+            <label class="work-item" for="chk-santexnika">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-santexnika">
+                    <input type="checkbox" class="work-checkbox" id="chk-santexnika" onclick="event.stopPropagation();">
                     <span class="work-name">Santexnika (m²)</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-santexnika" value="90000">
-            </div>
+                <input type="number" class="work-price-input" id="price-santexnika" value="90000" onclick="event.preventDefault(); event.stopPropagation();">
+            </label>
 
             <button class="btn btn-calc" onclick="calculateSmeta()">Ish haqini hisoblash / Рассчитать смету</button>
         </div>
@@ -530,32 +541,10 @@
             <div class="materials-title">Zarur stroymateriallar / Необходимые материалы</div>
             <div id="materials-rows-wrapper"></div>
         </div>
-
-        <div style="margin-top: 25px; font-weight: bold; font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px;">
-            Yangi imkoniyatlar / Новые возможности
-        </div>
-        
-        <div class="features-grid">
-            <div class="feature-card" id="feat-stroy">
-                <img class="feature-img" src="backend/images/stroy_materials.jpg" alt="Stroymateriallar" onerror="this.src='https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=200&q=80'">
-                <div class="feature-title">Stroymateriallar buyurtmasi / Заказ стройматериалов</div>
-                <div class="feature-status">ISHLAB CHIQILMOQDA / РАЗРАБАТЫВАЕТСЯ</div>
-            </div>
-            <div class="feature-card" id="feat-mebel">
-                <img class="feature-img" src="backend/images/mebellar.jpg" alt="Mebellar" onerror="this.src='https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=200&q=80'">
-                <div class="feature-title">Mebellar buyurtmasi / Заказ мебели</div>
-                <div class="feature-status">ISHLAB CHIQILMOQDA / РАЗРАБАТЫВАЕТСЯ</div>
-            </div>
-        </div>
     </div>
-
-    <div class="footer-author">
-        Nodirjon Sobirov (Asoschi & TATU talabasi)
-    </div>
-</div>
 
 <script>
-let roomCount = 0;
+    let roomCount = 0;
 
     let totalFloorArea = 0;
     let totalWallArea = 0;
@@ -680,7 +669,7 @@ let roomCount = 0;
 
         renderVolumeLabels();
 
-        // Меняем текст на кнопке перехода к следующему шагу (Узбекский теперь первый)
+        // Исправлено: Узбекский язык теперь идет первым!
         const nextBtn = document.getElementById('tab1-notice');
         if (nextBtn) {
             nextBtn.innerHTML = `<strong>KEYINGI BOSQICHGA O'TING / ПЕРЕЙДИТЕ НА СЛЕДУЮЩУЮ СТРАНИЦУ</strong>`;
@@ -709,7 +698,7 @@ let roomCount = 0;
             plintus: checkAndSum('chk-plintus', 'price-plintus', totalPerimeter),
             shtukaturka: checkAndSum('chk-shtukaturka', 'price-shtukaturka', totalWallArea),
             shpatlevka: checkAndSum('chk-shpatlevka', 'price-shpatlevka', totalWallArea),
-            oboi: checkAndSum('chk-oboi', 'price-oboi', totalWallArea), // Расчет для гулкогоз
+            oboi: checkAndSum('chk-oboi', 'price-oboi', totalWallArea),
             boyoq: checkAndSum('chk-boyoq', 'price-boyoq', totalWallArea),
             gipsokarton: checkAndSum('chk-gipsokarton', 'price-gipsokarton', totalCeilingArea),
             natyajnoy: checkAndSum('chk-natyajnoy', 'price-natyajnoy', totalCeilingArea),
@@ -742,7 +731,7 @@ let roomCount = 0;
                     <span class="material-name">${name} <small style="color:var(--text-muted); font-size:10px;">(+10% zaxira)</small></span>
                     <span class="material-val">${Math.ceil(grossAmount).toLocaleString('ru-RU')} ${unit}</span>
                 </div>
-                ${hint ? `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${hint} (Asl ehtiyoj: ${Math.ceil(netAmount)} ${unit})</div>` : ''}
+                ${hint ? `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${hint} (Asl ehtiyoj: ${Math.ceil(netAmount).toLocaleString('ru-RU')} ${unit})</div>` : ''}
             `;
             wrapper.appendChild(row);
         }
@@ -762,8 +751,9 @@ let roomCount = 0;
             appendMaterialRow("Finiş shpatlevka", totalWallArea * 1.2, "kg", "Sarfi: 1.2 kg/m² (2 qatlam)");
         }
         if (activeWorks.oboi) {
-            appendMaterialRow("Gulqog'oz (рулон 1.06m x 10m)", totalWallArea / 10, "rulon", "1 ta rulon = ~10.6 m² devor"); // Исправлено на Gulqog'oz
-            appendMaterialRow("Gulqog'oz yelimi (Клей)", totalWallArea * 0.05, "pachka", "1 ta pachka = ~20 m² uchun"); // Исправлено на Gulqog'oz
+            // Исправленная точная формула для рулонов (1 рулон перекрывает ~8.5 кв.м реальной стены с учетом подрезок)
+            appendMaterialRow("Gulqog'oz (рулон 1.06m x 10m)", totalWallArea / 8.5, "rulon", "1 ta rulon = ~8.5 m² real devor maydoni (qirqimlar bilan)"); 
+            appendMaterialRow("Gulqog'oz yelimi (Клей)", totalWallArea * 0.05, "pachka", "1 ta pachka = ~20 m² uchun");
         }
         if (activeWorks.laminat) {
             appendMaterialRow("Laminat (Podlozka bilan)", totalFloorArea * 1.05, "m²", "Pol maydoni + qirqimlar xarajati");
@@ -801,10 +791,7 @@ let roomCount = 0;
 
     window.onload = function() {
         addRoom();
-    };    
-
-    
+    };
 </script>
-
 </body>
 </html>
