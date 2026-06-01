@@ -272,7 +272,6 @@
             font-size: 11px;
         }
 
-        /* БЛОК ВЫВОДА МАТЕРИАЛОВ */
         .materials-container {
             display: none;
             background: var(--bg-card);
@@ -332,18 +331,14 @@
             margin-top: 20px;
         }
 
+        /* ПОЛНАЯ СВОБОДА КАРТИНКАМ: УБРАЛИ OPACITY 0.4 */
         .feature-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 12px;
             text-align: center;
-            opacity: 0.4;
             transition: 0.3s;
-        }
-
-        .feature-card.unlocked {
-            opacity: 1;
         }
 
         .feature-img {
@@ -400,7 +395,7 @@
         <button class="btn btn-calc" onclick="calculateVolumes()">Hisoblash / Рассчитать объемы</button>
         
         <div id="tab1-notice" class="notice-box">
-            ПЕРЕХОДИТЕ В СЛЕЛУЮЩУЮ СТРАНИЦУ →
+            ПЕРЕХОДИТЕ В СЛЕДУЮЩУЮ СТРАНИЦУ →
         </div>
     </div>
 
@@ -494,7 +489,7 @@
             </div>
 
             <div class="section-header">
-                <span class="section-title">Potolok & Ingeneriya</span>
+                <span class="section-title">Potolok & Injeneriya</span>
                 <span class="volume-badge" id="lbl-ceiling-vol">0.00 m²</span>
             </div>
             
@@ -535,12 +530,9 @@
             <p>Jami usta mehnati uchun</p>
         </div>
 
-        <!-- ЛОКАЛЬНЫЙ АВТОНОМНЫЙ ВЫВОД МАТЕРИАЛОВ -->
         <div class="materials-container" id="hisobot-container">
             <div class="materials-title">Zarur stroymateriallar / Необходимые материалы</div>
-            <div id="materials-rows-wrapper">
-                <!-- Сюда JS мгновенно выведет расчёты -->
-            </div>
+            <div id="materials-rows-wrapper"></div>
         </div>
 
         <div style="margin-top: 25px; font-weight: bold; font-size: 12px; color: #2ecc71; text-transform: uppercase; letter-spacing: 0.5px;">
@@ -562,7 +554,7 @@
     </div>
 
     <div class="footer-author">
-        Nodirjon Sobirov (Asoschi & Muassis)
+        Nodirjon Sobirov (Asoschi & TATU talabasi)
     </div>
 </div>
 
@@ -603,6 +595,7 @@
         }
     }
 
+    // ИСПРАВЛЕНО: УБРАНЫ ГОТОВЫЕ ЗНАЧЕНИЯ VALUE ДЛЯ СВОБОДНОГО ВВОДА С НУЛЯ
     function addRoom() {
         roomCount++;
         const currentId = roomCount; 
@@ -636,12 +629,12 @@
             <img id="preview-${currentId}" class="room-preview" src="" alt="Room Preview" onerror="this.src='https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=500&q=80'">
 
             <div class="params-grid">
-                <div><label>Eni / Ширина (m)</label><input id="w-${currentId}" type="number" placeholder="0.0" value="5"></div>
-                <div><label>Uzunligi / Длина (m)</label><input id="l-${currentId}" type="number" placeholder="0.0" value="4"></div>
-                <div><label>Balandligi / Выс (m)</label><input id="h-${currentId}" type="number" placeholder="0.0" value="3"></div>
+                <div><label>Eni / Ширина (m)</label><input id="w-${currentId}" type="number" placeholder="0.0"></div>
+                <div><label>Uzunligi / Длина (m)</label><input id="l-${currentId}" type="number" placeholder="0.0"></div>
+                <div><label>Balandligi / Выс (m)</label><input id="h-${currentId}" type="number" placeholder="0.0"></div>
             </div>
             <label>Eshik va Oyna / Двери и Окна (m²)</label>
-            <input id="o-${currentId}" type="number" placeholder="0.0" value="12">
+            <input id="o-${currentId}" type="number" placeholder="0.0">
         `;
         document.getElementById('rooms-container').appendChild(div);
         updateRoomPreview(currentId);
@@ -694,11 +687,9 @@
         document.getElementById('tab1-notice').style.display = 'block';
     }
 
-    // ПОЛНОЦЕННЫЙ ОДНОВРЕМЕННЫЙ РАСЧЕТ И РАБОТ, И МАТЕРИАЛОВ
     function calculateSmeta() {
         let totalCost = 0;
 
-        // 1. СЧИТАЕМ РАБОТУ МАСТЕРОВ
         function checkAndSum(checkboxId, priceInputId, volume) {
             const cb = document.getElementById(checkboxId);
             const price = parseFloat(document.getElementById(priceInputId).value) || 0;
@@ -727,64 +718,66 @@
 
         document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
 
-        // 2. ВОССТАНАВЛИВАЕМ ВСТРОЕННЫЙ РАСЧЕТ МАТЕРИАЛОВ (ТВОИ ФОРМУЛЫ)
         const wrapper = document.getElementById('materials-rows-wrapper');
         const container = document.getElementById('hisobot-container');
         wrapper.innerHTML = ''; 
 
         let hasMaterials = false;
 
-        function appendMaterialRow(name, amount, unit) {
+        // Новая функция с поддержкой подсказок (hint)
+        function appendMaterialRow(name, amount, unit, hint = "") {
             if (amount <= 0) return;
             hasMaterials = true;
             const row = document.createElement('div');
             row.className = 'material-row';
+            row.style.flexDirection = 'column'; // Делаем в две строки для красивого вывода подсказки
+            row.style.alignItems = 'flex-start';
+            
             row.innerHTML = `
-                <span class="material-name">${name}</span>
-                <span class="material-val">${Math.ceil(amount).toLocaleString('ru-RU')} ${unit}</span>
+                <div style="display: flex; justify-content: space-between; width: 100%;">
+                    <span class="material-name">${name}</span>
+                    <span class="material-val">${Math.ceil(amount).toLocaleString('ru-RU')} ${unit}</span>
+                </div>
+                ${hint ? `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${hint}</div>` : ''}
             `;
             wrapper.appendChild(row);
         }
 
-        // Локальные формулы расхода (привязаны к выбранным чекбоксам):
+        // Добавляем логику и расшифровку для каждой позиции:
         if (activeWorks.styajka) {
-            appendMaterialRow("Cement (Цемент M400)", totalFloorArea * 15, "kg");
-            appendMaterialRow("Pesok (Песок просеянный)", totalFloorArea * 0.04, "m³");
+            appendMaterialRow("Cement (Цемент M400)", totalFloorArea * 15, "kg", "Sarfi: 15 kg/m² (Smit sm)");
+            appendMaterialRow("Pesok (Песок просеянный)", totalFloorArea * 0.04, "m³", "Sarfi: 0.04 m³/m²");
         }
         if (activeWorks.nalivnoy) {
-            appendMaterialRow("Nalivnoy pol aralashmasi", totalFloorArea * 4, "kg");
+            appendMaterialRow("Nalivnoy pol aralashmasi", totalFloorArea * 4, "kg", "Sarfi: ~4 kg/m²");
         }
         if (activeWorks.shtukaturka) {
-            appendMaterialRow("Rotband / Gipsli shtukaturka", totalWallArea * 9, "kg");
-            appendMaterialRow("Gruntoffka (Грунтовка)", totalWallArea * 0.2, "L");
+            appendMaterialRow("Rotband / Gipsli shtukaturka", totalWallArea * 9, "kg", "Qalinligi 10mm uchun: 9 kg/m²");
+            appendMaterialRow("Gruntoffka (Грунтовка)", totalWallArea * 0.2, "L", "Sarfi: 0.2 litr/m²");
         }
         if (activeWorks.shpatlevka) {
-            appendMaterialRow("Finiş shpatlevka", totalWallArea * 1.2, "kg");
+            appendMaterialRow("Finiş shpatlevka", totalWallArea * 1.2, "kg", "Sarfi: 1.2 kg/m² (2 qatlam)");
         }
         if (activeWorks.oboi) {
-            appendMaterialRow("Oboi (рулон 1.06m x 10m)", totalWallArea / 10, "rulon");
-            appendMaterialRow("Oboi yelimi (Клей)", totalWallArea * 0.05, "pachka");
+            appendMaterialRow("Oboi (рулон 1.06m x 10m)", totalWallArea / 10, "rulon", "1 ta rulon = ~10.6 m² devorni yopadi");
+            appendMaterialRow("Oboi yelimi (Клей)", totalWallArea * 0.05, "pachka", "1 ta pachka yelim = ~20 m² (yoki 4-5 rulon uchun)");
         }
         if (activeWorks.laminat) {
-            appendMaterialRow("Laminat (Podlozka bilan)", totalFloorArea * 1.05, "m²");
+            appendMaterialRow("Laminat (Podlozka bilan)", totalFloorArea * 1.05, "m²", "Zaxira bilan: pol maydoni + 5% qirqimlar uchun");
         }
         if (activeWorks.kafel) {
-            appendMaterialRow("Kafel yelimi (Клей для кафеля)", totalFloorArea * 5, "kg");
+            appendMaterialRow("Kafel yelimi (Клей для кафеля)", totalFloorArea * 5, "kg", "O'rtacha sarfi: 5 kg/m²");
         }
         if (activeWorks.gipsokarton) {
-            appendMaterialRow("Gipsokarton listlari (9.5mm)", totalCeilingArea / 3, "ta (list)");
-            appendMaterialRow("Profil CD-60", totalCeilingArea * 2, "ta");
+            appendMaterialRow("Gipsokarton listlari (9.5mm)", totalCeilingArea / 3, "ta (list)", "1 ta standart list = 3 m² (1.2m x 2.5m)");
+            appendMaterialRow("Profil CD-60 (3m)", totalCeilingArea * 2, "ta", "Profil xamda qirqim zaxirasi uchun: Maydon x 2 (3 metrlik reykalar)");
         }
 
-        // Показываем блок, если хоть один материал посчитался
         if (hasMaterials) {
             container.style.display = 'block';
         } else {
             container.style.display = 'none';
         }
-
-        document.getElementById('feat-stroy').classList.add('unlocked');
-        document.getElementById('feat-mebel').classList.add('unlocked');
     }
 
     window.onload = function() {
