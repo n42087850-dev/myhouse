@@ -555,7 +555,7 @@
 </div>
 
 <script>
-    let roomCount = 0;
+let roomCount = 0;
 
     let totalFloorArea = 0;
     let totalWallArea = 0;
@@ -655,7 +655,7 @@
 
         const cards = document.querySelectorAll('.room-card');
         if (cards.length === 0) {
-            alert("Илтимос, олдин хона қўшинг!");
+            alert("Iltimos, oldin xona qo'shing! / Пожалуйста, сначала добавьте комнату!");
             return;
         }
 
@@ -679,7 +679,13 @@
         });
 
         renderVolumeLabels();
-        document.getElementById('tab1-notice').style.display = 'block';
+
+        // Меняем текст на кнопке перехода к следующему шагу (Узбекский теперь первый)
+        const nextBtn = document.getElementById('tab1-notice');
+        if (nextBtn) {
+            nextBtn.innerHTML = `<strong>KEYINGI BOSQICHGA O'TING / ПЕРЕЙДИТЕ НА СЛЕДУЮЩУЮ СТРАНИЦУ</strong>`;
+            nextBtn.style.display = 'block';
+        }
     }
 
     function calculateSmeta() {
@@ -703,7 +709,7 @@
             plintus: checkAndSum('chk-plintus', 'price-plintus', totalPerimeter),
             shtukaturka: checkAndSum('chk-shtukaturka', 'price-shtukaturka', totalWallArea),
             shpatlevka: checkAndSum('chk-shpatlevka', 'price-shpatlevka', totalWallArea),
-            oboi: checkAndSum('chk-oboi', 'price-oboi', totalWallArea),
+            oboi: checkAndSum('chk-oboi', 'price-oboi', totalWallArea), // Расчет для гулкогоз
             boyoq: checkAndSum('chk-boyoq', 'price-boyoq', totalWallArea),
             gipsokarton: checkAndSum('chk-gipsokarton', 'price-gipsokarton', totalCeilingArea),
             natyajnoy: checkAndSum('chk-natyajnoy', 'price-natyajnoy', totalCeilingArea),
@@ -722,6 +728,10 @@
         function appendMaterialRow(name, amount, unit, hint = "") {
             if (amount <= 0) return;
             hasMaterials = true;
+            
+            const netAmount = amount;
+            const grossAmount = netAmount * 1.10; 
+
             const row = document.createElement('div');
             row.className = 'material-row';
             row.style.flexDirection = 'column';
@@ -729,16 +739,16 @@
             
             row.innerHTML = `
                 <div style="display: flex; justify-content: space-between; width: 100%;">
-                    <span class="material-name">${name}</span>
-                    <span class="material-val">${Math.ceil(amount).toLocaleString('ru-RU')} ${unit}</span>
+                    <span class="material-name">${name} <small style="color:var(--text-muted); font-size:10px;">(+10% zaxira)</small></span>
+                    <span class="material-val">${Math.ceil(grossAmount).toLocaleString('ru-RU')} ${unit}</span>
                 </div>
-                ${hint ? `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${hint}</div>` : ''}
+                ${hint ? `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${hint} (Asl ehtiyoj: ${Math.ceil(netAmount)} ${unit})</div>` : ''}
             `;
             wrapper.appendChild(row);
         }
 
         if (activeWorks.styajka) {
-            appendMaterialRow("Cement (Цемент M400)", totalFloorArea * 15, "kg", "Sarfi: 15 kg/m² (Smit sm)");
+            appendMaterialRow("Cement (Цемент M400)", totalFloorArea * 15, "kg", "Sarfi: 15 kg/m²");
             appendMaterialRow("Pesok (Песок просеянный)", totalFloorArea * 0.04, "m³", "Sarfi: 0.04 m³/m²");
         }
         if (activeWorks.nalivnoy) {
@@ -746,27 +756,43 @@
         }
         if (activeWorks.shtukaturka) {
             appendMaterialRow("Rotband / Gipsli shtukaturka", totalWallArea * 9, "kg", "Qalinligi 10mm uchun: 9 kg/m²");
-            appendMaterialRow("Gruntoffka (Грунтовка)", totalWallArea * 0.2, "L", "Sarfi: 0.2 litr/m²");
+            appendMaterialRow("Gruntovka", totalWallArea * 0.2, "L", "Sarfi: 0.2 litr/m²"); // Исправлено на латиницу Gruntovka
         }
         if (activeWorks.shpatlevka) {
             appendMaterialRow("Finiş shpatlevka", totalWallArea * 1.2, "kg", "Sarfi: 1.2 kg/m² (2 qatlam)");
         }
         if (activeWorks.oboi) {
-            appendMaterialRow("Oboi (рулон 1.06m x 10m)", totalWallArea / 10, "rulon", "1 ta rulon = ~10.6 m² devorni yopadi");
-            appendMaterialRow("Oboi yelimi (Клей)", totalWallArea * 0.05, "pachka", "1 ta pachka yelim = ~20 m² (yoki 4-5 rulon uchun)");
+            appendMaterialRow("Gulqog'oz (рулон 1.06m x 10m)", totalWallArea / 10, "rulon", "1 ta rulon = ~10.6 m² devor"); // Исправлено на Gulqog'oz
+            appendMaterialRow("Gulqog'oz yelimi (Клей)", totalWallArea * 0.05, "pachka", "1 ta pachka = ~20 m² uchun"); // Исправлено на Gulqog'oz
         }
         if (activeWorks.laminat) {
-            appendMaterialRow("Laminat (Podlozka bilan)", totalFloorArea * 1.05, "m²", "Zaxira bilan: pol maydoni + 5% qirqimlar uchun");
+            appendMaterialRow("Laminat (Podlozka bilan)", totalFloorArea * 1.05, "m²", "Pol maydoni + qirqimlar xarajati");
         }
         if (activeWorks.kafel) {
             appendMaterialRow("Kafel yelimi (Клей для кафеля)", totalFloorArea * 5, "kg", "O'rtacha sarfi: 5 kg/m²");
         }
         if (activeWorks.gipsokarton) {
-            appendMaterialRow("Gipsokarton listlari (9.5mm)", totalCeilingArea / 3, "ta (list)", "1 ta standart list = 3 m² (1.2m x 2.5m)");
-            appendMaterialRow("Profil CD-60 (3m)", totalCeilingArea * 2, "ta", "Profil xamda qirqim zaxirasi uchun: Maydon x 2 (3 metrlik reykalar)");
+            appendMaterialRow("Gipsokarton listlari (9.5mm)", totalCeilingArea / 3, "ta (list)", "1 ta standart list = 3 m²");
+            appendMaterialRow("Profil CD-60 (3m)", totalCeilingArea * 2, "ta", "Profil zaxirasi uchun");
         }
 
         if (hasMaterials) {
+            const disclaimer = document.createElement('div');
+            disclaimer.style.marginTop = '15px';
+            disclaimer.style.padding = '10px';
+            disclaimer.style.background = '#291a1a';
+            disclaimer.style.border = '1px dashed #e74c3c';
+            disclaimer.style.borderRadius = '8px';
+            disclaimer.style.color = '#ff6b6b';
+            disclaimer.style.fontSize = '11px';
+            disclaimer.style.textAlign = 'center';
+            disclaimer.style.lineHeight = '1.4';
+            disclaimer.innerHTML = `
+                <strong>DIQQAT (DISCLAIMER):</strong> Barcha hisoblangan qurilish materiallari hajmiga avtomatik ravishda 
+                <strong>10% texnologik zaxira xarajati</strong> (qirqimlar, usta xatolari va transport yo'qotishlari uchun) qo'shilgan. 
+                Ushbu me'yoriy ko'rsatkich real qurilish standartlariga to'liq mos keladi.
+            `;
+            wrapper.appendChild(disclaimer);
             container.style.display = 'block';
         } else {
             container.style.display = 'none';
@@ -775,7 +801,9 @@
 
     window.onload = function() {
         addRoom();
-    };
+    };    
+
+    
 </script>
 
 </body>
