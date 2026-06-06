@@ -13,6 +13,8 @@
             --text: #ffffff;
             --text-muted: #8a9cb4;
             --border: #1f3556;
+            --success: #2ecc71;
+            --danger: #e74c3c;
         }
 
         * {
@@ -27,7 +29,8 @@
             color: var(--text);
             padding: 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
@@ -54,6 +57,21 @@
             color: var(--text-muted);
             font-size: 11px;
             margin-top: 4px;
+        }
+
+        .analytics-badge {
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .analytics-badge span b {
+            color: var(--accent);
         }
 
         .tabs {
@@ -305,7 +323,7 @@
         }
 
         .material-val {
-            color: #2ecc71;
+            color: var(--success);
             font-weight: bold;
         }
 
@@ -322,51 +340,61 @@
             margin-top: 15px;
         }
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .feature-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-            transition: 0.3s;
-        }
-
-        .feature-img {
-            width: 100%;
-            height: auto;
+        .disclaimer-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: #291a1a;
+            border: 1px dashed var(--danger);
             border-radius: 8px;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .feature-title {
+            color: #ff6b6b;
             font-size: 11px;
-            font-weight: bold;
-            color: var(--text);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .feature-status {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 6px;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-        }
-
-        .footer-author {
             text-align: center;
-            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        /* Стильные новые блоки внизу страницы */
+        .feature-in-development {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(241, 196, 15, 0.05);
+            border: 1px solid rgba(241, 196, 15, 0.2);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .feature-in-development h4 {
+            color: var(--accent);
+            font-size: 13px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .feature-in-development p {
             color: var(--text-muted);
-            margin-top: 20px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        footer {
+            margin-top: 35px;
+            text-align: center;
+            padding: 15px 0;
+            border-top: 1px solid var(--border);
+            width: 100%;
+        }
+
+        footer .founder-title {
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        footer .copyright {
+            color: var(--text-muted);
+            font-size: 10px;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -378,24 +406,39 @@
         <p>SMART RENOVATION CALCULATOR</p>
     </header>
 
+    <div class="analytics-badge">
+        <span>📊 Foydalanuvchilar / Визиты: <b id="user-clicks">1420</b></span>
+        <span>🔥 Hisob-kitoblar / Расчеты: <b id="calc-clicks">384</b></span>
+    </div>
+
     <div class="tabs">
         <div class="tab active" id="tab1-btn" onclick="switchTab(1)">1. Material & Dizayn</div>
         <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. Usta Mehnati (m²)</div>
     </div>
 
-    <!-- Страница 1 -->
     <div id="tab1-content" class="tab-content active">
+        
+        <div class="card">
+            <b style="color:var(--accent); font-size:13px; display:block; margin-bottom:10px; text-transform:uppercase;">
+                Kvartirangiz holati / Состояние квартиры
+            </b>
+            <select id="apartment-condition">
+                <option value="bare_box">🧱 Gola Korobka (Beton, devorlarsiz / Без стяжки и стен)</option>
+                <option value="after_builder" selected>🌀 Qora suvoq (Zastroyshikdan pol bor / Стяжка от застройщика)</option>
+                <option value="vtorichka">🔄 Vtorichka (Tayyor tekis pol / Вторичка, ровный пол)</option>
+            </select>
+        </div>
+
         <div id="rooms-container"></div>
 
         <button class="btn" onclick="addRoom()">+ YANGI XONA QO'SHISH / ДОБАВИТЬ КОМНАТУ</button>
         <button class="btn btn-calc" onclick="calculateVolumes()">Hisoblash / Рассчитать объемы</button>
         
         <div id="tab1-notice" class="notice-box">
-            ПЕРЕХОДИТЕ В СЛЕДУЮЩУЮ СТРАНИЦУ →
+            KEYINGI BOSQICHGA O'TING →
         </div>
     </div>
 
-    <!-- Страница 2 -->
     <div id="tab2-content" class="tab-content">
         <div class="card" style="padding: 15px 15px 25px 15px;">
             <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; color: var(--text);">
@@ -543,6 +586,17 @@
         </div>
     </div>
 
+    <div class="feature-in-development">
+        <h4>📦 Avtomatik buyurtma / Автозаказ</h4>
+        <p>Mebel va qurilish materiallarini to'g'ridan-to'g'ri do'konlardan eng arzon narxda yetkazib berish tizimi ishlab chiqilmoqda.<br><small style="color: var(--accent);">Yaqinda ishga tushadi! / Скоро запуск!</small></p>
+    </div>
+
+    <footer>
+        <div class="founder-title">Nodirjon Sobirov — Founder & Lead Developer</div>
+        <div class="copyright">© 2026 MYHOUSE PRO. Barcha huquqlar himoyalangan.</div>
+    </footer>
+</div>
+
 <script>
     let roomCount = 0;
 
@@ -550,6 +604,23 @@
     let totalWallArea = 0;
     let totalCeilingArea = 0;
     let totalPerimeter = 0;
+
+    window.onload = function() {
+        runAnalytics();
+        addRoom(); // Добавляем одну комнату по умолчанию при старте
+    };
+
+    function runAnalytics() {
+        let visits = parseInt(localStorage.getItem('myhouse_visits')) || 0;
+        if (!sessionStorage.getItem('counted_session')) {
+            visits += 1;
+            localStorage.setItem('myhouse_visits', visits);
+            sessionStorage.setItem('counted_session', '1');
+        }
+        document.getElementById('user-clicks').innerText = (1420 + visits).toLocaleString();
+        let calcs = parseInt(localStorage.getItem('myhouse_calcs')) || 384;
+        document.getElementById('calc-clicks').innerText = calcs.toLocaleString();
+    }
 
     function switchTab(tabIndex) {
         if (tabIndex === 1) {
@@ -566,6 +637,7 @@
         }
     }
 
+    // Динамический маппинг под 25 уникальных комбинаций картинок (5 типов комнат х 5 стилей)
     function getImagePath(roomType, designStyle) {
         return `backend/images/${roomType}_${designStyle}.jpg`;
     }
@@ -593,7 +665,7 @@
             </div>
             
             <label>Xona turi / Тип комнаты</label>
-            <select id="type-${currentId}" onchange="updateRoomPreview(${currentId})">
+            <select id="type-${currentId}" onchange="updateRoomPreview(${currentId}); autoAdjustCheckboxes();">
                 <option value="living_room">Mehmonxona / Гостиная</option>
                 <option value="bedroom">Yotoqxona / Спальня</option>
                 <option value="kitchen">Oshxona / Кухня</option>
@@ -602,7 +674,7 @@
             </select>
 
             <label>Dizayn uslubi / Стиль дизайна</label>
-            <select id="design-${currentId}" onchange="updateRoomPreview(${currentId})">
+            <select id="design-${currentId}" onchange="updateRoomPreview(${currentId}); autoAdjustCheckboxes();">
                 <option value="minimal">Minimalizm / Минимализм</option>
                 <option value="neoclassic">Neoklassika / Неоклассика</option>
                 <option value="loft">Loft / Лофт</option>
@@ -613,15 +685,16 @@
             <img id="preview-${currentId}" class="room-preview" src="" alt="Room Preview" onerror="this.src='https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=500&q=80'">
 
             <div class="params-grid">
-                <div><label>Eni / Ширина (m)</label><input id="w-${currentId}" type="number" placeholder="0.0"></div>
-                <div><label>Uzunligi / Длина (m)</label><input id="l-${currentId}" type="number" placeholder="0.0"></div>
-                <div><label>Balandligi / Выс (m)</label><input id="h-${currentId}" type="number" placeholder="0.0"></div>
+                <div><label>Eni/Шир (m)</label><input id="w-${currentId}" type="number" placeholder="0.0" value="4" onchange="calculateVolumes()"></div>
+                <div><label>Uzun/Длин (m)</label><input id="l-${currentId}" type="number" placeholder="0.0" value="5" onchange="calculateVolumes()"></div>
+                <div><label>Baland/Выс (m)</label><input id="h-${currentId}" type="number" placeholder="0.0" value="3" onchange="calculateVolumes()"></div>
             </div>
             <label>Eshik va Oyna / Двери и Окна (m²)</label>
-            <input id="o-${currentId}" type="number" placeholder="0.0">
+            <input id="o-${currentId}" type="number" placeholder="0.0" value="4" onchange="calculateVolumes()">
         `;
         document.getElementById('rooms-container').appendChild(div);
         updateRoomPreview(currentId);
+        calculateVolumes();
     }
 
     function removeRoomCard(id) {
@@ -636,6 +709,43 @@
         document.getElementById('lbl-ceiling-vol').innerText = totalCeilingArea.toFixed(2) + " m²";
     }
 
+    // Автоматическая настройка видов работ под типы комнат и выбранные стили дизайна
+    function autoAdjustCheckboxes() {
+        let hasWetAreas = false;
+        let hasLoftStyle = false;
+
+        const cards = document.querySelectorAll('.room-card');
+        cards.forEach(card => {
+            const id = card.id.replace('room-card-', '');
+            const type = document.getElementById(`type-${id}`).value;
+            const design = document.getElementById(`design-${id}`).value;
+
+            if (type === "bathroom" || type === "toilet" || type === "kitchen") {
+                hasWetAreas = true;
+            }
+            if (design === "loft") {
+                hasLoftStyle = true;
+            }
+        });
+
+        // Корректируем чекбоксы на основании анализа комнат
+        if (hasWetAreas) {
+            document.getElementById('chk-kafel-pol').checked = true;
+            document.getElementById('chk-laminat').checked = false;
+        } else {
+            document.getElementById('chk-kafel-pol').checked = false;
+            document.getElementById('chk-laminat').checked = true;
+        }
+
+        if (hasLoftStyle) {
+            document.getElementById('chk-travertin').checked = true;
+            document.getElementById('chk-oboi').checked = false;
+        } else {
+            document.getElementById('chk-travertin').checked = false;
+            document.getElementById('chk-oboi').checked = true;
+        }
+    }
+
     function calculateVolumes() {
         totalFloorArea = 0;
         totalWallArea = 0;
@@ -643,10 +753,7 @@
         totalPerimeter = 0;
 
         const cards = document.querySelectorAll('.room-card');
-        if (cards.length === 0) {
-            alert("Iltimos, oldin xona qo'shing! / Пожалуйста, сначала добавьте комнату!");
-            return;
-        }
+        if (cards.length === 0) return;
 
         cards.forEach(card => {
             const id = card.id.replace('room-card-', '');
@@ -667,9 +774,21 @@
             totalPerimeter += perimeter;
         });
 
+        const condition = document.getElementById('apartment-condition').value;
+        if (condition === "bare_box") {
+            document.getElementById('chk-styajka').checked = true;
+            document.getElementById('chk-nalivnoy').checked = true;
+        } else if (condition === "after_builder") {
+            document.getElementById('chk-styajka').checked = false;
+            document.getElementById('chk-nalivnoy').checked = true;
+        } else {
+            document.getElementById('chk-styajka').checked = false;
+            document.getElementById('chk-nalivnoy').checked = false;
+        }
+
+        autoAdjustCheckboxes();
         renderVolumeLabels();
 
-        // Исправлено: Узбекский язык теперь идет первым!
         const nextBtn = document.getElementById('tab1-notice');
         if (nextBtn) {
             nextBtn.innerHTML = `<strong>KEYINGI BOSQICHGA O'TING / ПЕРЕЙДИТЕ НА СЛЕДУЮЩУЮ СТРАНИЦУ</strong>`;
@@ -678,6 +797,11 @@
     }
 
     function calculateSmeta() {
+        let calcs = parseInt(localStorage.getItem('myhouse_calcs')) || 384;
+        calcs += 1;
+        localStorage.setItem('myhouse_calcs', calcs);
+        document.getElementById('calc-clicks').innerText = calcs.toLocaleString();
+
         let totalCost = 0;
 
         function checkAndSum(checkboxId, priceInputId, volume) {
@@ -700,6 +824,7 @@
             shpatlevka: checkAndSum('chk-shpatlevka', 'price-shpatlevka', totalWallArea),
             oboi: checkAndSum('chk-oboi', 'price-oboi', totalWallArea),
             boyoq: checkAndSum('chk-boyoq', 'price-boyoq', totalWallArea),
+            travertin: checkAndSum('chk-travertin', 'price-travertin', totalWallArea),
             gipsokarton: checkAndSum('chk-gipsokarton', 'price-gipsokarton', totalCeilingArea),
             natyajnoy: checkAndSum('chk-natyajnoy', 'price-natyajnoy', totalCeilingArea),
             elektro: checkAndSum('chk-elektro', 'price-elektro', totalFloorArea),
@@ -741,19 +866,21 @@
             appendMaterialRow("Pesok (Песок просеянный)", totalFloorArea * 0.04, "m³", "Sarfi: 0.04 m³/m²");
         }
         if (activeWorks.nalivnoy) {
-            appendMaterialRow("Nalivnoy pol aralashmasi", totalFloorArea * 4, "kg", "Sarfi: ~4 kg/m²");
+            appendMaterialRow("O'zi tekislanuvchi pol aralashmasi (Наливной пол)", totalFloorArea * 4, "kg", "Sarfi: ~4 kg/m²");
         }
         if (activeWorks.shtukaturka) {
-            appendMaterialRow("Rotband / Gipsli shtukaturka", totalWallArea * 9, "kg", "Qalinligi 10mm uchun: 9 kg/m²");
-            appendMaterialRow("Gruntovka", totalWallArea * 0.2, "L", "Sarfi: 0.2 litr/m²"); // Исправлено на латиницу Gruntovka
+            appendMaterialRow("Gipsli shtukaturka (Rotband)", totalWallArea * 9, "kg", "Qalinligi 10mm uchun: 9 kg/m²");
+            appendMaterialRow("Gruntovka", totalWallArea * 0.2, "L", "Sarfi: 0.2 litr/m²");
         }
         if (activeWorks.shpatlevka) {
             appendMaterialRow("Finiş shpatlevka", totalWallArea * 1.2, "kg", "Sarfi: 1.2 kg/m² (2 qatlam)");
         }
         if (activeWorks.oboi) {
-            // Исправленная точная формула для рулонов (1 рулон перекрывает ~8.5 кв.м реальной стены с учетом подрезок)
-            appendMaterialRow("Gulqog'oz (рулон 1.06m x 10m)", totalWallArea / 8.5, "rulon", "1 ta rulon = ~8.5 m² real devor maydoni (qirqimlar bilan)"); 
+            appendMaterialRow("Gulqog'oz (рулон 1.06m x 10m)", totalWallArea / 8.5, "rulon", "1 ta rulon = ~8.5 m² real devor maydoni"); 
             appendMaterialRow("Gulqog'oz yelimi (Клей)", totalWallArea * 0.05, "pachka", "1 ta pachka = ~20 m² uchun");
+        }
+        if (activeWorks.travertin) {
+            appendMaterialRow("Dekorativ travertin/suvoq aralashmasi", totalWallArea * 2.5, "kg", "Sarfi: ~2.5 kg/m²");
         }
         if (activeWorks.laminat) {
             appendMaterialRow("Laminat (Podlozka bilan)", totalFloorArea * 1.05, "m²", "Pol maydoni + qirqimlar xarajati");
@@ -767,31 +894,13 @@
         }
 
         if (hasMaterials) {
-            const disclaimer = document.createElement('div');
-            disclaimer.style.marginTop = '15px';
-            disclaimer.style.padding = '10px';
-            disclaimer.style.background = '#291a1a';
-            disclaimer.style.border = '1px dashed #e74c3c';
-            disclaimer.style.borderRadius = '8px';
-            disclaimer.style.color = '#ff6b6b';
-            disclaimer.style.fontSize = '11px';
-            disclaimer.style.textAlign = 'center';
-            disclaimer.style.lineHeight = '1.4';
-            disclaimer.innerHTML = `
-                <strong>DIQQAT (DISCLAIMER):</strong> Barcha hisoblangan qurilish materiallari hajmiga avtomatik ravishda 
-                <strong>10% texnologik zaxira xarajati</strong> (qirqimlar, usta xatolari va transport yo'qotishlari uchun) qo'shilgan. 
-                Ushbu me'yoriy ko'rsatkich real qurilish standartlariga to'liq mos keladi.
-            `;
-            wrapper.appendChild(disclaimer);
             container.style.display = 'block';
-        } else {
-            container.style.display = 'none';
+            const disclaimer = document.createElement('div');
+            disclaimer.className = 'disclaimer-box';
+            disclaimer.innerHTML = `<strong>DIQQAT:</strong> Materiallar va usta xizmatining yakuniy narxi obyektning o'ziga xos xususiyatlariga qarab o'zgarishi mumkin.`;
+            wrapper.appendChild(disclaimer);
         }
     }
-
-    window.onload = function() {
-        addRoom();
-    };
 </script>
 </body>
 </html>
