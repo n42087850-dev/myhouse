@@ -59,21 +59,6 @@
             margin-top: 4px;
         }
 
-        .analytics-badge {
-            background: rgba(52, 152, 219, 0.1);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px;
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .analytics-badge span b {
-            color: var(--accent);
-        }
-
         .tabs {
             display: flex;
             background: var(--bg-card);
@@ -352,7 +337,6 @@
             line-height: 1.4;
         }
 
-        /* Стильные новые блоки внизу страницы */
         .feature-in-development {
             margin-top: 25px;
             padding: 15px;
@@ -406,29 +390,12 @@
         <p>SMART RENOVATION CALCULATOR</p>
     </header>
 
-    <div class="analytics-badge">
-        <span>📊 Foydalanuvchilar / Визиты: <b id="user-clicks">1420</b></span>
-        <span>🔥 Hisob-kitoblar / Расчеты: <b id="calc-clicks">384</b></span>
-    </div>
-
     <div class="tabs">
         <div class="tab active" id="tab1-btn" onclick="switchTab(1)">1. Material & Dizayn</div>
         <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. Usta Mehnati (m²)</div>
     </div>
 
     <div id="tab1-content" class="tab-content active">
-        
-        <div class="card">
-            <b style="color:var(--accent); font-size:13px; display:block; margin-bottom:10px; text-transform:uppercase;">
-                Kvartirangiz holati / Состояние квартиры
-            </b>
-            <select id="apartment-condition">
-                <option value="bare_box">🧱 Gola Korobka (Beton, devorlarsiz / Без стяжки и стен)</option>
-                <option value="after_builder" selected>🌀 Qora suvoq (Zastroyshikdan pol bor / Стяжка от застройщика)</option>
-                <option value="vtorichka">🔄 Vtorichka (Tayyor tekis pol / Вторичка, ровный пол)</option>
-            </select>
-        </div>
-
         <div id="rooms-container"></div>
 
         <button class="btn" onclick="addRoom()">+ YANGI XONA QO'SHISH / ДОБАВИТЬ КОМНАТУ</button>
@@ -588,7 +555,7 @@
 
     <div class="feature-in-development">
         <h4>📦 Avtomatik buyurtma / Автозаказ</h4>
-        <p>Mebel va qurilish materiallarini to'g'ridan-to'g'ri do'konlardan eng arzon narxda yetkazib berish tizimi ishlab chiqilmoqda.<br><small style="color: var(--accent);">Yaqinda ishga tushadi! / Скоро запуск!</small></p>
+        <p>Mebel va qurilish materiallarini to'g'ridan-to'g'ri do'konlardan eng arzon narxda yetkazib berish tizimi ishlab chiqлmoqda.<br><small style="color: var(--accent);">Yaqinda ishga tushadi! / Скоро запуск!</small></p>
     </div>
 
     <footer>
@@ -604,23 +571,11 @@
     let totalWallArea = 0;
     let totalCeilingArea = 0;
     let totalPerimeter = 0;
+    let hasMaterials = false;
 
     window.onload = function() {
-        runAnalytics();
-        addRoom(); // Добавляем одну комнату по умолчанию при старте
+        addRoom(); 
     };
-
-    function runAnalytics() {
-        let visits = parseInt(localStorage.getItem('myhouse_visits')) || 0;
-        if (!sessionStorage.getItem('counted_session')) {
-            visits += 1;
-            localStorage.setItem('myhouse_visits', visits);
-            sessionStorage.setItem('counted_session', '1');
-        }
-        document.getElementById('user-clicks').innerText = (1420 + visits).toLocaleString();
-        let calcs = parseInt(localStorage.getItem('myhouse_calcs')) || 384;
-        document.getElementById('calc-clicks').innerText = calcs.toLocaleString();
-    }
 
     function switchTab(tabIndex) {
         if (tabIndex === 1) {
@@ -637,18 +592,32 @@
         }
     }
 
-    // Динамический маппинг под 25 уникальных комбинаций картинок (5 типов комнат х 5 стилей)
-    function getImagePath(roomType, designStyle) {
-        return `backend/images/${roomType}_${designStyle}.jpg`;
+    function getAdvancedImagePath(roomType, designStyle, activeZone, materialValue) {
+        if (!activeZone || !materialValue) {
+            return "backend/images/living_room_loft.jpg"; 
+        }
+        return `backend/images/${roomType}_${designStyle}_${activeZone}_${materialValue}.jpg`;
     }
 
-    function updateRoomPreview(id) {
+    function updateAdvancedPreview(id, changedZone = null, materialValue = null) {
         const roomType = document.getElementById(`type-${id}`).value;
         const designStyle = document.getElementById(`design-${id}`).value;
         const imgEl = document.getElementById(`preview-${id}`);
         
-        if (imgEl) {
-            imgEl.src = getImagePath(roomType, designStyle);
+        if (!imgEl) return;
+
+        if (changedZone && materialValue) {
+            imgEl.src = getAdvancedImagePath(roomType, designStyle, changedZone, materialValue);
+        } else {
+            imgEl.src = "backend/images/living_room_loft.jpg";
+            
+            const floorSelect = document.getElementById(`floor-mat-${id}`);
+            if (designStyle === 'loft' && roomType === 'living_room') {
+                if (floorSelect) {
+                    floorSelect.value = 'parket'; 
+                    imgEl.src = getAdvancedImagePath(roomType, designStyle, 'floor', 'parket');
+                }
+            }
         }
     }
 
@@ -658,6 +627,7 @@
         const div = document.createElement('div');
         div.className = 'card room-card';
         div.id = `room-card-${currentId}`;
+        
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <b style="color:var(--primary);">${currentId}-XONA / КОМНАТА</b>
@@ -665,7 +635,7 @@
             </div>
             
             <label>Xona turi / Тип комнаты</label>
-            <select id="type-${currentId}" onchange="updateRoomPreview(${currentId}); autoAdjustCheckboxes();">
+            <select id="type-${currentId}" onchange="updateAdvancedPreview(${currentId}); autoAdjustCheckboxes(); calculateVolumes();">
                 <option value="living_room">Mehmonxona / Гостиная</option>
                 <option value="bedroom">Yotoqxona / Спальня</option>
                 <option value="kitchen">Oshxona / Кухня</option>
@@ -674,26 +644,58 @@
             </select>
 
             <label>Dizayn uslubi / Стиль дизайна</label>
-            <select id="design-${currentId}" onchange="updateRoomPreview(${currentId}); autoAdjustCheckboxes();">
+            <select id="design-${currentId}" onchange="updateAdvancedPreview(${currentId}); autoAdjustCheckboxes(); calculateVolumes();">
                 <option value="minimal">Minimalizm / Минимализм</option>
                 <option value="neoclassic">Neoklassika / Неоклассика</option>
-                <option value="loft">Loft / Лофт</option>
+                <option value="loft" selected>Loft / Лофт</option>
                 <option value="japandi">Japandi / Джапанди</option>
                 <option value="ethnic_modern">Etnik Modern / Этник Модерн</option>
             </select>
 
-            <img id="preview-${currentId}" class="room-preview" src="" alt="Room Preview" onerror="this.src='https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=500&q=80'">
+            <div style="position: relative; margin-top: 15px;">
+                <img id="preview-${currentId}" class="room-preview" src="backend/images/living_room_loft.jpg" alt="Room Preview">
+            </div>
 
-            <div class="params-grid">
-                <div><label>Eni/Шир (m)</label><input id="w-${currentId}" type="number" placeholder="0.0" value="4" onchange="calculateVolumes()"></div>
-                <div><label>Uzun/Длин (m)</label><input id="l-${currentId}" type="number" placeholder="0.0" value="5" onchange="calculateVolumes()"></div>
-                <div><label>Baland/Выс (m)</label><input id="h-${currentId}" type="number" placeholder="0.0" value="3" onchange="calculateVolumes()"></div>
+            <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-top: 12px; border: 1px dashed var(--border);">
+                <span style="font-size: 11px; color: var(--accent); font-weight: bold; display: block; margin-bottom: 8px; text-transform: uppercase;">
+                    🎯 Sirtlarni tanlash / Покрытия зон
+                </span>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label style="margin-top:0;">👇 Pol zonasi (Пол)</label>
+                        <select id="floor-mat-${currentId}" onchange="updateAdvancedPreview(${currentId}, 'floor', this.value)">
+                            <option value="">-- Tanlash / Выбрать --</option>
+                            <option value="parket" selected>Паркет (Parket)</option>
+                            <option value="laminat">Laminat</option>
+                            <option value="kafel">Kafel</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="margin-top:0;">👈 Devorlar (Стены)</label>
+                        <select id="wall-mat-${currentId}" onchange="updateAdvancedPreview(${currentId}, 'walls', this.value)">
+                            <option value="">-- Tanlash / Выбрать --</option>
+                            <option value="oboi1">Обои 1</option>
+                            <option value="oboi2">Обои 2</option>
+                            <option value="oboi3">Обои 3</option>
+                            <option value="ottachento">Оттаченто (Ottachento)</option>
+                            <option value="kraska">Краска стены</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="params-grid" style="margin-top: 12px;">
+                <div><label>Eni / Ширина (m)</label><input id="w-${currentId}" type="number" placeholder="0.0" value="" onchange="calculateVolumes()"></div>
+                <div><label>Uzunligi / Длина (m)</label><input id="l-${currentId}" type="number" placeholder="0.0" value="" onchange="calculateVolumes()"></div>
+                <div><label>Balandligi / Высота (m)</label><input id="h-${currentId}" type="number" placeholder="0.0" value="" onchange="calculateVolumes()"></div>
             </div>
             <label>Eshik va Oyna / Двери и Окна (m²)</label>
-            <input id="o-${currentId}" type="number" placeholder="0.0" value="4" onchange="calculateVolumes()">
+            <input id="o-${currentId}" type="number" placeholder="0.0" value="" onchange="calculateVolumes()">
         `;
+        
         document.getElementById('rooms-container').appendChild(div);
-        updateRoomPreview(currentId);
+        autoAdjustCheckboxes();
         calculateVolumes();
     }
 
@@ -709,7 +711,6 @@
         document.getElementById('lbl-ceiling-vol').innerText = totalCeilingArea.toFixed(2) + " m²";
     }
 
-    // Автоматическая настройка видов работ под типы комнат и выбранные стили дизайна
     function autoAdjustCheckboxes() {
         let hasWetAreas = false;
         let hasLoftStyle = false;
@@ -728,7 +729,6 @@
             }
         });
 
-        // Корректируем чекбоксы на основании анализа комнат
         if (hasWetAreas) {
             document.getElementById('chk-kafel-pol').checked = true;
             document.getElementById('chk-laminat').checked = false;
@@ -774,18 +774,6 @@
             totalPerimeter += perimeter;
         });
 
-        const condition = document.getElementById('apartment-condition').value;
-        if (condition === "bare_box") {
-            document.getElementById('chk-styajka').checked = true;
-            document.getElementById('chk-nalivnoy').checked = true;
-        } else if (condition === "after_builder") {
-            document.getElementById('chk-styajka').checked = false;
-            document.getElementById('chk-nalivnoy').checked = true;
-        } else {
-            document.getElementById('chk-styajka').checked = false;
-            document.getElementById('chk-nalivnoy').checked = false;
-        }
-
         autoAdjustCheckboxes();
         renderVolumeLabels();
 
@@ -797,11 +785,6 @@
     }
 
     function calculateSmeta() {
-        let calcs = parseInt(localStorage.getItem('myhouse_calcs')) || 384;
-        calcs += 1;
-        localStorage.setItem('myhouse_calcs', calcs);
-        document.getElementById('calc-clicks').innerText = calcs.toLocaleString();
-
         let totalCost = 0;
 
         function checkAndSum(checkboxId, priceInputId, volume) {
@@ -837,7 +820,7 @@
         const container = document.getElementById('hisobot-container');
         wrapper.innerHTML = ''; 
 
-        let hasMaterials = false;
+        hasMaterials = false;
 
         function appendMaterialRow(name, amount, unit, hint = "") {
             if (amount <= 0) return;
