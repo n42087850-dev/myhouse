@@ -142,13 +142,55 @@
             gap: 10px;
         }
 
-        .room-preview {
+        .preview-container {
+            position: relative;
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #000;
+        }
+
+        .room-preview-svg {
             width: 100%;
             height: auto;
-            border-radius: 10px;
-            margin-top: 15px;
-            border: 1px solid var(--border);
             display: block;
+        }
+
+        .clickable-zone {
+            fill: transparent;
+            cursor: pointer;
+            transition: fill 0.2s ease, opacity 0.2s ease;
+        }
+
+        .clickable-zone:hover {
+            fill: rgba(52, 152, 219, 0.25);
+        }
+
+        .svg-context-menu {
+            position: absolute;
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            padding: 5px;
+            width: 160px;
+        }
+
+        .svg-context-menu option {
+            padding: 8px;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 12px;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .svg-context-menu option:hover {
+            background: var(--primary);
         }
 
         .section-header {
@@ -555,7 +597,7 @@
 
     <div class="feature-in-development">
         <h4>📦 Avtomatik buyurtma / Автозаказ</h4>
-        <p>Mebel va qurilish materiallarini to'g'ridan-to'g'ri do'konlardan eng arzon narxda yetkazib berish tizimi ishlab chiqлmoqda.<br><small style="color: var(--accent);">Yaqinda ishga tushadi! / Скоро запуск!</small></p>
+        <p>Mebel va qurilish materiallarini to'g'ridan-to'g'ri do'konlardan eng arzon narxda yetkazib berish tizimi ishlab chiqilmoqda.<br><small style="color: var(--accent);">Yaqinda ishga tushadi! / Скоро запуск!</small></p>
     </div>
 
     <footer>
@@ -592,34 +634,117 @@
         }
     }
 
+    // Маршрутизация путей для 25 основных картинок и 6 кастомных текстур
     function getAdvancedImagePath(roomType, designStyle, activeZone, materialValue) {
-        if (!activeZone || !materialValue) {
-            return "backend/images/living_room_loft.jpg"; 
+        if (roomType === 'living_room' && designStyle === 'loft' && activeZone && materialValue) {
+            if (activeZone === 'floor' && materialValue === 'parket') {
+                return "backend/images/texture_floor_parquet_herringbone.jpg";
+            }
+            if (activeZone === 'walls') {
+                if (materialValue === 'oboi1') return "backend/images/texture_wall_wallpaper_1.jpg";
+                if (materialValue === 'oboi2') return "backend/images/texture_wall_wallpaper_2.jpg";
+                if (materialValue === 'oboi3') return "backend/images/texture_wall_wallpaper_3.jpg";
+                if (materialValue === 'ottachento') return "backend/images/texture_wall_ottocento.jpg";
+                if (materialValue === 'kraska') return "backend/images/texture_wall_paint_white.jpg";
+            }
         }
-        return `backend/images/${roomType}_${designStyle}_${activeZone}_${materialValue}.jpg`;
+        return `backend/images/${roomType}_${designStyle}.jpg`;
     }
 
+    // Переключение рендеров и блокировка SVG на не-Лофт комнатах
     function updateAdvancedPreview(id, changedZone = null, materialValue = null) {
         const roomType = document.getElementById(`type-${id}`).value;
         const designStyle = document.getElementById(`design-${id}`).value;
-        const imgEl = document.getElementById(`preview-${id}`);
+        const bgImg = document.getElementById(`svg-bg-${id}`);
+        const svgContainer = document.getElementById(`room-card-${id}`).querySelector('.room-preview-svg');
         
-        if (!imgEl) return;
+        if (!bgImg) return;
+
+        const zones = svgContainer.querySelectorAll('.clickable-zone');
+        if (roomType === 'living_room' && designStyle === 'loft') {
+            zones.forEach(z => z.style.pointerEvents = 'auto');
+        } else {
+            zones.forEach(z => z.style.pointerEvents = 'none');
+            document.getElementById(`floor-mat-${id}`).value = "";
+            document.getElementById(`wall-mat-${id}`).value = "";
+        }
 
         if (changedZone && materialValue) {
-            imgEl.src = getAdvancedImagePath(roomType, designStyle, changedZone, materialValue);
+            bgImg.setAttribute('href', getAdvancedImagePath(roomType, designStyle, changedZone, materialValue));
         } else {
-            imgEl.src = "backend/images/living_room_loft.jpg";
-            
-            const floorSelect = document.getElementById(`floor-mat-${id}`);
+            bgImg.setAttribute('href', getAdvancedImagePath(roomType, designStyle));
             if (designStyle === 'loft' && roomType === 'living_room') {
-                if (floorSelect) {
-                    floorSelect.value = 'parket'; 
-                    imgEl.src = getAdvancedImagePath(roomType, designStyle, 'floor', 'parket');
-                }
+                document.getElementById(`floor-mat-${id}`).value = "parket";
+                bgImg.setAttribute('href', "backend/images/living_room_loft.jpg");
             }
         }
     }
+
+    // Контекстное меню строго по ТЗ (Пол - 1 вариант, Стены - 5 вариантов, Потолок - 0)
+    function openSvgMenu(event, roomId, zone) {
+        event.preventDefault();
+        
+        const roomType = document.getElementById(`type-${roomId}`).value;
+        const designStyle = document.getElementById(`design-${roomId}`).value;
+        
+        if (roomType !== 'living_room' || designStyle !== 'loft') return;
+
+        const menu = document.getElementById(`svg-menu-${roomId}`);
+        menu.innerHTML = ''; 
+
+        let options = [];
+        if (zone === 'walls') {
+            options = [
+                { text: 'Обои 1', value: 'oboi1', chk: 'chk-oboi' },
+                { text: 'Обои 2', value: 'oboi2', chk: 'chk-oboi' },
+                { text: 'Обои 3', value: 'oboi3', chk: 'chk-oboi' },
+                { text: 'Оттаченто', value: 'ottachento', chk: 'chk-travertin' },
+                { text: 'Краска (Белая)', value: 'kraska', chk: 'chk-boyoq' }
+            ];
+        } else if (zone === 'floor') {
+            options = [
+                { text: 'Ёлочный паркет', value: 'parket', chk: 'chk-laminat' }
+            ];
+        } else if (zone === 'ceiling') {
+            return; 
+        }
+
+        options.forEach(opt => {
+            const el = document.createElement('option');
+            el.textContent = opt.text;
+            el.onclick = function() {
+                document.getElementById(`${zone}-mat-${roomId}`).value = opt.value;
+                updateAdvancedPreview(roomId, zone, opt.value);
+                
+                document.querySelectorAll('.work-checkbox').forEach(c => {
+                    if(c.id === opt.chk) {
+                        c.checked = true;
+                    } else if (opt.chk === 'chk-oboi' && (c.id === 'chk-travertin' || c.id === 'chk-boyoq')) {
+                        c.checked = false;
+                    } else if (opt.chk === 'chk-travertin' && (c.id === 'chk-oboi' || c.id === 'chk-boyoq')) {
+                        c.checked = false;
+                    } else if (opt.chk === 'chk-boyoq' && (c.id === 'chk-oboi' || c.id === 'chk-travertin')) {
+                        c.checked = false;
+                    }
+                });
+                
+                calculateVolumes();
+                menu.style.display = 'none';
+            };
+            menu.appendChild(el);
+        });
+
+        const parentRect = event.currentTarget.parentElement.getBoundingClientRect();
+        menu.style.left = (event.clientX - parentRect.left) + 'px';
+        menu.style.top = (event.clientY - parentRect.top) + 'px';
+        menu.style.display = 'block';
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.classList.contains('clickable-zone')) {
+            document.querySelectorAll('.svg-context-menu').forEach(m => m.style.display = 'none');
+        }
+    });
 
     function addRoom() {
         roomCount++;
@@ -652,13 +777,22 @@
                 <option value="ethnic_modern">Etnik Modern / Этник Модерн</option>
             </select>
 
-            <div style="position: relative; margin-top: 15px;">
-                <img id="preview-${currentId}" class="room-preview" src="backend/images/living_room_loft.jpg" alt="Room Preview">
+            <div class="preview-container">
+                <div class="svg-context-menu" id="svg-menu-${currentId}"></div>
+                <svg class="room-preview-svg" viewBox="0 0 1170 690" xmlns="http://www.w3.org/2000/svg">
+                    <image id="svg-bg-${currentId}" href="backend/images/living_room_loft.jpg" x="0" y="0" width="1170" height="690" />
+                    
+                    <path class="clickable-zone" data-zone="ceiling" onclick="openSvgMenu(event, ${currentId}, 'ceiling')" d="M2,3 L1169,3 L1169,76 L964,233 L208,233 L2,76 Z" />
+                    
+                    <path class="clickable-zone" data-zone="walls" onclick="openSvgMenu(event, ${currentId}, 'walls')" d="M2,76 L208,233 L208,460 L2,612 Z M1169,76 L964,233 L964,460 L1169,612 Z M208,233 L964,233 L964,460 L208,460 Z" />
+                    
+                    <path class="clickable-zone" data-zone="floor" onclick="openSvgMenu(event, ${currentId}, 'floor')" d="M2,612 L208,460 L964,460 L1169,612 L1169,688 L2,688 Z" />
+                </svg>
             </div>
 
             <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-top: 12px; border: 1px dashed var(--border);">
                 <span style="font-size: 11px; color: var(--accent); font-weight: bold; display: block; margin-bottom: 8px; text-transform: uppercase;">
-                    🎯 Sirtlarni tanlash / Покрытия зон
+                    🎯 Sirtlarni tanlash / Покрытия зон (Или кликайте прямо по картинке)
                 </span>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -856,7 +990,7 @@
             appendMaterialRow("Gruntovka", totalWallArea * 0.2, "L", "Sarfi: 0.2 litr/m²");
         }
         if (activeWorks.shpatlevka) {
-            appendMaterialRow("Finiş shpatlevka", totalWallArea * 1.2, "kg", "Sarfi: 1.2 kg/m² (2 qatlam)");
+            appendMaterialRow("Finiş shpatlevka", totalWallArea * 1.2, "kg", "Sarfi: 1.2 kg/m² (2 qatлам)");
         }
         if (activeWorks.oboi) {
             appendMaterialRow("Gulqog'oz (рулон 1.06m x 10m)", totalWallArea / 8.5, "rulon", "1 ta rulon = ~8.5 m² real devor maydoni"); 
@@ -879,6 +1013,7 @@
         if (hasMaterials) {
             container.style.display = 'block';
             const disclaimer = document.createElement('div');
+            document.querySelectorAll('.disclaimer-box').forEach(el => el.remove());
             disclaimer.className = 'disclaimer-box';
             disclaimer.innerHTML = `<strong>DIQQAT:</strong> Materiallar va usta xizmatining yakuniy narxi obyektning o'ziga xos xususiyatlariga qarab o'zgarishi mumkin.`;
             wrapper.appendChild(disclaimer);
