@@ -149,13 +149,17 @@
             border-radius: 10px;
             overflow: hidden;
             border: 1px solid var(--border);
-            background: #000;
+            background: transparent; /* Убрали черный фон, чтобы ничего не зажимало */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .room-preview-svg {
             width: 100%;
-            height: auto;
+            height: auto; /* Высота теперь адаптивная и зависит от длины картинки */
             display: block;
+            object-fit: contain; /* Картинка заполняет пространство свободно, без сдавливания */
         }
 
         .clickable-zone {
@@ -177,7 +181,7 @@
             z-index: 100;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             padding: 5px;
-            width: 160px;
+            width: 220px;
         }
 
         .svg-context-menu option {
@@ -597,7 +601,7 @@
 
     <div class="feature-in-development">
         <h4>📦 Avtomatik buyurtma / Автозаказ</h4>
-        <p>Mebel va qurilish materiallarini to'g'ridan-to'g'ri do'konlardan eng arzon narxda yetkazib berish tizimi ishlab chiqilmoqda.<br><small style="color: var(--accent);">Yaqinda ishga tushadi! / Скоро запуск!</small></p>
+        <p>Mebel va qurilish materiallarini to'g'diran-to'g'ri do'konlardan eng arzon narxda yetkazib berish tizimi ishlab chiqilmoqda.<br><small style="color: var(--accent);">Yaqinda ishga tushadi! / Скоро запуск!</small></p>
     </div>
 
     <footer>
@@ -634,9 +638,10 @@
         }
     }
 
-    // Маршрутизация путей для 25 основных картинок и 6 кастомных текстур
+    // Универсальный менеджер путей для всех 25 комбинаций рендеров
     function getAdvancedImagePath(roomType, designStyle, activeZone, materialValue) {
-        if (roomType === 'living_room' && designStyle === 'loft' && activeZone && materialValue) {
+        // 1. Если выбрана интерактивная Неоклассика в Гостиной И кликнули по зоне — отдаем текстуру
+        if (roomType === 'living_room' && designStyle === 'neoclassic' && activeZone && materialValue) {
             if (activeZone === 'floor' && materialValue === 'parket') {
                 return "backend/images/texture_floor_parquet_herringbone.jpg";
             }
@@ -648,10 +653,12 @@
                 if (materialValue === 'kraska') return "backend/images/texture_wall_paint_white.jpg";
             }
         }
+        
+        // 2. Для ВСЕХ остальных случаев (все 24 комбинации комнат и стилей) 
+        // динамически собираем имя файла, например: "kitchen_minimal.jpg", "bedroom_japandi.jpg" и т.д.
         return `backend/images/${roomType}_${designStyle}.jpg`;
     }
 
-    // Переключение рендеров и блокировка SVG на не-Лофт комнатах
     function updateAdvancedPreview(id, changedZone = null, materialValue = null) {
         const roomType = document.getElementById(`type-${id}`).value;
         const designStyle = document.getElementById(`design-${id}`).value;
@@ -661,7 +668,8 @@
         if (!bgImg) return;
 
         const zones = svgContainer.querySelectorAll('.clickable-zone');
-        if (roomType === 'living_room' && designStyle === 'loft') {
+        // Интерактив теперь "оживает" строго на комбинации Гостиная + Неоклассика
+        if (roomType === 'living_room' && designStyle === 'neoclassic') {
             zones.forEach(z => z.style.pointerEvents = 'auto');
         } else {
             zones.forEach(z => z.style.pointerEvents = 'none');
@@ -673,21 +681,20 @@
             bgImg.setAttribute('href', getAdvancedImagePath(roomType, designStyle, changedZone, materialValue));
         } else {
             bgImg.setAttribute('href', getAdvancedImagePath(roomType, designStyle));
-            if (designStyle === 'loft' && roomType === 'living_room') {
+            if (designStyle === 'neoclassic' && roomType === 'living_room') {
                 document.getElementById(`floor-mat-${id}`).value = "parket";
-                bgImg.setAttribute('href', "backend/images/living_room_loft.jpg");
+                bgImg.setAttribute('href', "backend/images/living_room_neoclassic.jpg");
             }
         }
     }
 
-    // Контекстное меню строго по ТЗ (Пол - 1 вариант, Стены - 5 вариантов, Потолок - 0)
     function openSvgMenu(event, roomId, zone) {
         event.preventDefault();
         
         const roomType = document.getElementById(`type-${roomId}`).value;
         const designStyle = document.getElementById(`design-${roomId}`).value;
         
-        if (roomType !== 'living_room' || designStyle !== 'loft') return;
+        if (roomType !== 'living_room' || designStyle !== 'neoclassic') return;
 
         const menu = document.getElementById(`svg-menu-${roomId}`);
         menu.innerHTML = ''; 
@@ -695,15 +702,15 @@
         let options = [];
         if (zone === 'walls') {
             options = [
-                { text: 'Обои 1', value: 'oboi1', chk: 'chk-oboi' },
-                { text: 'Обои 2', value: 'oboi2', chk: 'chk-oboi' },
-                { text: 'Обои 3', value: 'oboi3', chk: 'chk-oboi' },
-                { text: 'Оттаченто', value: 'ottachento', chk: 'chk-travertin' },
-                { text: 'Краска (Белая)', value: 'kraska', chk: 'chk-boyoq' }
+                { text: 'Oboi Neoklassik (Oboi 1)', value: 'oboi1', chk: 'chk-oboi' },
+                { text: 'Oboi Elegant (Oboi 2)', value: 'oboi2', chk: 'chk-oboi' },
+                { text: 'Oboi Royal (Oboi 3)', value: 'oboi3', chk: 'chk-oboi' },
+                { text: 'Ottachento (Textured)', value: 'ottachento', chk: 'chk-travertin' },
+                { text: 'Kraska (Neoklassik White)', value: 'kraska', chk: 'chk-boyoq' }
             ];
         } else if (zone === 'floor') {
             options = [
-                { text: 'Ёлочный паркет', value: 'parket', chk: 'chk-laminat' }
+                { text: 'Parket Neoklassik (Ёлочный паркет)', value: 'parket', chk: 'chk-laminat' }
             ];
         } else if (zone === 'ceiling') {
             return; 
@@ -761,7 +768,7 @@
             
             <label>Xona turi / Тип комнаты</label>
             <select id="type-${currentId}" onchange="updateAdvancedPreview(${currentId}); autoAdjustCheckboxes(); calculateVolumes();">
-                <option value="living_room">Mehmonxona / Гостиная</option>
+                <option value="living_room" selected>Mehmonxona / Гостиная</option>
                 <option value="bedroom">Yotoqxona / Спальня</option>
                 <option value="kitchen">Oshxona / Кухня</option>
                 <option value="bathroom">Yuvinish xonasi / Ванная</option>
@@ -771,8 +778,8 @@
             <label>Dizayn uslubi / Стиль дизайна</label>
             <select id="design-${currentId}" onchange="updateAdvancedPreview(${currentId}); autoAdjustCheckboxes(); calculateVolumes();">
                 <option value="minimal">Minimalizm / Минимализм</option>
-                <option value="neoclassic">Neoklassika / Неоклассика</option>
-                <option value="loft" selected>Loft / Лофт</option>
+                <option value="neoclassic" selected>Neoklassika / Неоклассика</option>
+                <option value="loft">Loft / Лофт</option>
                 <option value="japandi">Japandi / Джапанди</option>
                 <option value="ethnic_modern">Etnik Modern / Этник Модерн</option>
             </select>
@@ -780,7 +787,7 @@
             <div class="preview-container">
                 <div class="svg-context-menu" id="svg-menu-${currentId}"></div>
                 <svg class="room-preview-svg" viewBox="0 0 1170 690" xmlns="http://www.w3.org/2000/svg">
-                    <image id="svg-bg-${currentId}" href="backend/images/living_room_loft.jpg" x="0" y="0" width="1170" height="690" />
+                    <image id="svg-bg-${currentId}" href="backend/images/living_room_neoclassic.jpg" x="0" y="0" width="1170" height="690" />
                     
                     <path class="clickable-zone" data-zone="ceiling" onclick="openSvgMenu(event, ${currentId}, 'ceiling')" d="M2,3 L1169,3 L1169,76 L964,233 L208,233 L2,76 Z" />
                     
@@ -847,7 +854,7 @@
 
     function autoAdjustCheckboxes() {
         let hasWetAreas = false;
-        let hasLoftStyle = false;
+        let hasNeoStyle = false;
 
         const cards = document.querySelectorAll('.room-card');
         cards.forEach(card => {
@@ -858,8 +865,8 @@
             if (type === "bathroom" || type === "toilet" || type === "kitchen") {
                 hasWetAreas = true;
             }
-            if (design === "loft") {
-                hasLoftStyle = true;
+            if (design === "neoclassic") {
+                hasNeoStyle = true;
             }
         });
 
@@ -871,12 +878,10 @@
             document.getElementById('chk-laminat').checked = true;
         }
 
-        if (hasLoftStyle) {
-            document.getElementById('chk-travertin').checked = true;
-            document.getElementById('chk-oboi').checked = false;
-        } else {
-            document.getElementById('chk-travertin').checked = false;
+        // Авточекбоксы под Неоклассику
+        if (hasNeoStyle) {
             document.getElementById('chk-oboi').checked = true;
+            document.getElementById('chk-travertin').checked = false;
         }
     }
 
