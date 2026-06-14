@@ -151,7 +151,6 @@
     padding-bottom: 50px;
 }
 
-/* НОВЫЙ КОД: Освобождаем рамку вокруг картинки */
 .preview-container {
     position: relative;
     width: 100%;
@@ -159,14 +158,19 @@
     border-radius: 10px;
     overflow: hidden;
     border: 1px solid var(--border);
-    background: transparent; /* Никаких черных зажимающих полос */
+    background: transparent;
+    /* Возвращаем flex, чтобы аккуратно центрировать вертикальную картинку */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* НОВЫЙ КОД: Заставляем SVG и картинку дышать свободно, сохраняя сетку */
 .room-preview-svg {
-    width: 100%;
-    height: auto; /* Высота подстраивается под ширину экрана смартфона автоматически */
+    width: auto; /* Ширина больше не 100%, она зависит от высоты */
+    height: 100%; /* Занимаем всю высоту контейнера */
+    max-height: 480px; /* Ограничиваем высоту, чтобы она не была слишком огромной на телефоне */
     display: block;
+    object-fit: contain; /* Картинка сохраняет пропорции без искажений */
 }
         .clickable-zone {
             fill: transparent;
@@ -790,16 +794,16 @@ function addRoom() {
                 <option value="ethnic_modern">Etnik Modern / Этник Модерн</option>
             </select>
 
-            <div class="preview-container">
-                <div class="svg-context-menu" id="svg-menu-${currentId}"></div>
-                <svg class="room-preview-svg" viewBox="0 0 1170 690" xmlns="http://www.w3.org/2000/svg">
-                    <image id="svg-bg-${currentId}" href="backend/images/living_room_neoclassic.jpg" x="0" y="0" width="1170" height="690" preserveAspectRatio="none" />
-                    
-                    <path class="clickable-zone" data-zone="ceiling" onclick="openSvgMenu(event, ${currentId}, 'ceiling')" d="M2,3 L1169,3 L1169,76 L964,233 L208,233 L2,76 Z" />
-                    <path class="clickable-zone" data-zone="walls" onclick="openSvgMenu(event, ${currentId}, 'walls')" d="M2,76 L208,233 L208,460 L2,612 Z M1169,76 L964,233 L964,460 L1169,612 Z M208,233 L964,233 L964,460 L208,460 Z" />
-                    <path class="clickable-zone" data-zone="floor" onclick="openSvgMenu(event, ${currentId}, 'floor')" d="M2,612 L208,460 L964,460 L1169,612 L1169,688 L2,688 Z" />
-                </svg>
-            </div>
+           <div class="preview-container">
+    <div class="svg-context-menu" id="svg-menu-${currentId}"></div>
+    <svg class="room-preview-svg" viewBox="0 0 1170 690" xmlns="http://www.w3.org/2000/svg">
+        <image id="svg-bg-${currentId}" href="backend/images/living_room_neoclassic.jpg" x="0" y="0" width="1170" height="690" preserveAspectRatio="xMidYMid meet" />
+        
+        <path class="clickable-zone" data-zone="ceiling" onclick="openSvgMenu(event, ${currentId}, 'ceiling')" d="M2,3 L1169,3 L1169,76 L964,233 L208,233 L2,76 Z" />
+        <path class="clickable-zone" data-zone="walls" onclick="openSvgMenu(event, ${currentId}, 'walls')" d="M2,76 L208,233 L208,460 L2,612 Z M1169,76 L964,233 L964,460 L1169,612 Z M208,233 L964,233 L964,460 L208,460 Z" />
+        <path class="clickable-zone" data-zone="floor" onclick="openSvgMenu(event, ${currentId}, 'floor')" d="M2,612 L208,460 L964,460 L1169,612 L1169,688 L2,688 Z" />
+    </svg>
+</div>
 
             <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-top: 12px; border: 1px dashed var(--border);">
                 <span style="font-size: 11px; color: var(--accent); font-weight: bold; display: block; margin-bottom: 8px; text-transform: uppercase;">
