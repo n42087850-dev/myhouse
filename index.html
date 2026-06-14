@@ -142,26 +142,32 @@
             gap: 10px;
         }
 
-        .preview-container {
-            position: relative;
-            width: 100%;
-            margin-top: 15px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            background: transparent; /* Убрали черный фон, чтобы ничего не зажимало */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+     /* Старый контейнер оставляем — он держит форму мобильного приложения */
+.container {
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg-main);
+    min-height: 100vh;
+    padding-bottom: 50px;
+}
 
-        .room-preview-svg {
-            width: 100%;
-            height: auto; /* Высота теперь адаптивная и зависит от длины картинки */
-            display: block;
-            object-fit: contain; /* Картинка заполняет пространство свободно, без сдавливания */
-        }
+/* НОВЫЙ КОД: Освобождаем рамку вокруг картинки */
+.preview-container {
+    position: relative;
+    width: 100%;
+    margin-top: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: transparent; /* Никаких черных зажимающих полос */
+}
 
+/* НОВЫЙ КОД: Заставляем SVG и картинку дышать свободно, сохраняя сетку */
+.room-preview-svg {
+    width: 100%;
+    height: auto; /* Высота подстраивается под ширину экрана смартфона автоматически */
+    display: block;
+}
         .clickable-zone {
             fill: transparent;
             cursor: pointer;
@@ -753,7 +759,7 @@
         }
     });
 
-    function addRoom() {
+function addRoom() {
         roomCount++;
         const currentId = roomCount; 
         const div = document.createElement('div');
@@ -787,12 +793,10 @@
             <div class="preview-container">
                 <div class="svg-context-menu" id="svg-menu-${currentId}"></div>
                 <svg class="room-preview-svg" viewBox="0 0 1170 690" xmlns="http://www.w3.org/2000/svg">
-                    <image id="svg-bg-${currentId}" href="backend/images/living_room_neoclassic.jpg" x="0" y="0" width="1170" height="690" />
+                    <image id="svg-bg-${currentId}" href="backend/images/living_room_neoclassic.jpg" x="0" y="0" width="1170" height="690" preserveAspectRatio="none" />
                     
                     <path class="clickable-zone" data-zone="ceiling" onclick="openSvgMenu(event, ${currentId}, 'ceiling')" d="M2,3 L1169,3 L1169,76 L964,233 L208,233 L2,76 Z" />
-                    
                     <path class="clickable-zone" data-zone="walls" onclick="openSvgMenu(event, ${currentId}, 'walls')" d="M2,76 L208,233 L208,460 L2,612 Z M1169,76 L964,233 L964,460 L1169,612 Z M208,233 L964,233 L964,460 L208,460 Z" />
-                    
                     <path class="clickable-zone" data-zone="floor" onclick="openSvgMenu(event, ${currentId}, 'floor')" d="M2,612 L208,460 L964,460 L1169,612 L1169,688 L2,688 Z" />
                 </svg>
             </div>
@@ -838,7 +842,8 @@
         document.getElementById('rooms-container').appendChild(div);
         autoAdjustCheckboxes();
         calculateVolumes();
-    }
+    }    
+    
 
     function removeRoomCard(id) {
         const card = document.getElementById(`room-card-${id}`);
