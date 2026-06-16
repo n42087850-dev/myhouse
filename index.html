@@ -152,26 +152,26 @@
 }
 
 .preview-container {
-            position: relative;
-            width: 100%;
-            margin-top: 15px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            background: transparent;
-            display: block;
-        }
+    position: relative;
+    width: 100%;
+    margin-top: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: transparent;
+    display: block;
+}
 
-        .room-preview-svg {
-            width: 100%;
-            height: auto; /* Высота подстраивается сама, никаких рамок по бокам! */
-            display: block;
-        }
-        .clickable-zone {
-            fill: transparent;
-            cursor: pointer;
-            transition: fill 0.2s ease, opacity 0.2s ease;
-        }
+.room-preview-svg {
+    width: 100%;
+    height: auto; /* Картинка сама выбирает высоту по своим пропорциям */
+    display: block;
+}
+
+/* Стили для того, чтобы наложенная текстура выглядела реалистично с тенями */
+.clickable-zone {
+    fill: transparent;
+    transition: fill 0.3s ease;
+}
 
         .clickable-zone:hover {
             fill: rgba(52, 152, 219, 0.25);
@@ -694,153 +694,135 @@
     }
 
     function openSvgMenu(event, roomId, zone) {
-        event.preventDefault();
-        
-        const roomType = document.getElementById(`type-${roomId}`).value;
-        const designStyle = document.getElementById(`design-${roomId}`).value;
-        
-        if (roomType !== 'living_room' || designStyle !== 'neoclassic') return;
+    event.preventDefault();
+    
+    const roomType = document.getElementById(`type-${roomId}`).value;
+    const designStyle = document.getElementById(`design-${roomId}`).value;
+    
+    // Интерактив работает только для Неоклассики в Гостиной
+    if (roomType !== 'living_room' || designStyle !== 'neoclassic') return;
 
-        const menu = document.getElementById(`svg-menu-${roomId}`);
-        menu.innerHTML = ''; 
+    const menu = document.getElementById(`svg-menu-${roomId}`);
+    menu.innerHTML = ''; 
 
-        let options = [];
-        if (zone === 'walls') {
-            options = [
-                { text: 'Oboi Neoklassik (Oboi 1)', value: 'oboi1', chk: 'chk-oboi' },
-                { text: 'Oboi Elegant (Oboi 2)', value: 'oboi2', chk: 'chk-oboi' },
-                { text: 'Oboi Royal (Oboi 3)', value: 'oboi3', chk: 'chk-oboi' },
-                { text: 'Ottachento (Textured)', value: 'ottachento', chk: 'chk-travertin' },
-                { text: 'Kraska (Neoklassik White)', value: 'kraska', chk: 'chk-boyoq' }
-            ];
-        } else if (zone === 'floor') {
-            options = [
-                { text: 'Parket Neoklassik (Ёлочный паркет)', value: 'parket', chk: 'chk-laminat' }
-            ];
-        } else if (zone === 'ceiling') {
-            return; 
-        }
-
-        options.forEach(opt => {
-            const el = document.createElement('option');
-            el.textContent = opt.text;
-            el.onclick = function() {
-                document.getElementById(`${zone}-mat-${roomId}`).value = opt.value;
-                updateAdvancedPreview(roomId, zone, opt.value);
-                
-                document.querySelectorAll('.work-checkbox').forEach(c => {
-                    if(c.id === opt.chk) {
-                        c.checked = true;
-                    } else if (opt.chk === 'chk-oboi' && (c.id === 'chk-travertin' || c.id === 'chk-boyoq')) {
-                        c.checked = false;
-                    } else if (opt.chk === 'chk-travertin' && (c.id === 'chk-oboi' || c.id === 'chk-boyoq')) {
-                        c.checked = false;
-                    } else if (opt.chk === 'chk-boyoq' && (c.id === 'chk-oboi' || c.id === 'chk-travertin')) {
-                        c.checked = false;
-                    }
-                });
-                
-                calculateVolumes();
-                menu.style.display = 'none';
-            };
-            menu.appendChild(el);
-        });
-
-        const parentRect = event.currentTarget.parentElement.getBoundingClientRect();
-        menu.style.left = (event.clientX - parentRect.left) + 'px';
-        menu.style.top = (event.clientY - parentRect.top) + 'px';
-        menu.style.display = 'block';
+    let options = [];
+    if (zone === 'walls') {
+        options = [
+            { text: 'Oboi Neoklassik (Oboi 1)', value: 'oboi1', chk: 'chk-oboi' },
+            { text: 'Oboi Elegant (Oboi 2)', value: 'oboi2', chk: 'chk-oboi' },
+            { text: 'Oboi Royal (Oboi 3)', value: 'oboi3', chk: 'chk-oboi' },
+            { text: 'Ottachento (Textured)', value: 'ottachento', chk: 'chk-travertin' },
+            { text: 'Kraska (Neoklassik White)', value: 'kraska', chk: 'chk-boyoq' }
+        ];
+    } else if (zone === 'floor') {
+        options = [
+            { text: 'Parket Neoklassik (Ёлочный паркет)', value: 'parket', chk: 'chk-laminat' }
+        ];
+    } else if (zone === 'ceiling') {
+        return; 
     }
 
-    document.addEventListener('click', function(e) {
-        if (!e.target.classList.contains('clickable-zone')) {
-            document.querySelectorAll('.svg-context-menu').forEach(m => m.style.display = 'none');
-        }
+    options.forEach(opt => {
+        const el = document.createElement('option');
+        el.textContent = opt.text;
+        el.onclick = function() {
+            // 1. НАЛОЖЕНИЕ ТЕКСТУРЫ: вызываем твою новую магическую функцию-трафарет
+            setMaterial(roomId, zone, opt.value);
+            
+            // 2. ЧЕКБОКСЫ: Твоя родная логика переключения галочек (осталась нетронутой)
+            document.querySelectorAll('.work-checkbox').forEach(c => {
+                if(c.id === opt.chk) {
+                    c.checked = true;
+                } else if (opt.chk === 'chk-oboi' && (c.id === 'chk-travertin' || c.id === 'chk-boyoq')) {
+                    c.checked = false;
+                } else if (opt.chk === 'chk-travertin' && (c.id === 'chk-oboi' || c.id === 'chk-boyoq')) {
+                    c.checked = false;
+                } else if (opt.chk === 'chk-boyoq' && (c.id === 'chk-oboi' || c.id === 'chk-travertin')) {
+                    c.checked = false;
+                }
+            });
+            
+            // 3. МАТЕМАТИКА: Пересчитываем объемы под капотом
+            if (typeof calculateVolumes === 'function') calculateVolumes();
+            
+            // Закрываем меню после выбора
+            menu.style.display = 'none';
+        };
+        menu.appendChild(el);
     });
 
+    // Позиционирование всплывающего меню на картинке по клику
+    const parentRect = event.currentTarget.parentElement.getBoundingClientRect();
+    menu.style.left = (event.clientX - parentRect.left) + 'px';
+    menu.style.top = (event.clientY - parentRect.top) + 'px';
+    menu.style.display = 'block';
+}
+
 function addRoom() {
-        roomCount++;
-        const currentId = roomCount; 
-        const div = document.createElement('div');
-        div.className = 'card room-card';
-        div.id = `room-card-${currentId}`;
+    roomCount++;
+    const currentId = roomCount; 
+    const div = document.createElement('div');
+    div.className = 'card room-card';
+    div.id = `room-card-${currentId}`;
+    
+    div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <b style="color:var(--primary);">${currentId}-XONA / КОМНАТА</b>
+            <span style="color:red; cursor:pointer; font-weight:bold;" onclick="removeRoomCard(${currentId})">✕</span>
+        </div>
         
-        div.innerHTML = `
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <b style="color:var(--primary);">${currentId}-XONA / КОМНАТА</b>
-                <span style="color:red; cursor:pointer; font-weight:bold;" onclick="removeRoomCard(${currentId})">✕</span>
-            </div>
+        <label>Xona turi / Тип комнаты</label>
+        <select id="type-${currentId}" onchange="updateAdvancedPreview(${currentId}); autoAdjustCheckboxes(); calculateVolumes();">
+            <option value="living_room" selected>Mehmonxona / Гостиная</option>
+            <option value="bedroom">Yotoqxona / Спальня</option>
+            <option value="kitchen">Oshxona / Кухня</option>
+            <option value="bathroom">Yuvinish xonasi / Ванная</option>
+            <option value="toilet">Hojatxona / Туалет</option>
+        </select>
+
+        <label>Dizayn uslubi / Стиль дизайна</label>
+        <select id="design-${currentId}" onchange="updateAdvancedPreview(${currentId}); autoAdjustCheckboxes(); calculateVolumes();">
+            <option value="minimal">Minimalizm / Минимализм</option>
+            <option value="neoclassic" selected>Neoklassika / Неоклассика</option>
+            <option value="loft">Loft / Лофт</option>
+            <option value="japandi">Japandi / Джапанди</option>
+            <option value="ethnic_modern">Etnik Modern / Этник Модерн</option>
+        </select>
+
+        <div class="preview-container">
+            <div class="svg-context-menu" id="svg-menu-${currentId}"></div>
             
-            <label>Xona turi / Тип комнаты</label>
-            <select id="type-${currentId}" onchange="updateAdvancedPreview(${currentId}); autoAdjustCheckboxes(); calculateVolumes();">
-                <option value="living_room" selected>Mehmonxona / Гостиная</option>
-                <option value="bedroom">Yotoqxona / Спальня</option>
-                <option value="kitchen">Oshxona / Кухня</option>
-                <option value="bathroom">Yuvinish xonasi / Ванная</option>
-                <option value="toilet">Hojatxona / Туалет</option>
-            </select>
-
-            <label>Dizayn uslubi / Стиль дизайна</label>
-            <select id="design-${currentId}" onchange="updateAdvancedPreview(${currentId}); autoAdjustCheckboxes(); calculateVolumes();">
-                <option value="minimal">Minimalizm / Минимализм</option>
-                <option value="neoclassic" selected>Neoklassika / Неоклассика</option>
-                <option value="loft">Loft / Лофт</option>
-                <option value="japandi">Japandi / Джапанди</option>
-                <option value="ethnic_modern">Etnik Modern / Этник Модерн</option>
-            </select>
-
-          <div class="preview-container">
-                <div class="svg-context-menu" id="svg-menu-${currentId}"></div>
-                <svg class="room-preview-svg" viewBox="0 0 800 1200" xmlns="http://www.w3.org/2000/svg">
-                    <image id="svg-bg-${currentId}" href="backend/images/living_room_neoclassic.jpg" x="0" y="0" width="100%" height="100%" />
-                    
-                    <path class="clickable-zone" data-zone="ceiling" onclick="openSvgMenu(event, ${currentId}, 'ceiling')" d="M0,0 L800,0 L800,220 L0,220 Z" />
-                    <path class="clickable-zone" data-zone="walls" onclick="openSvgMenu(event, ${currentId}, 'walls')" d="M0,220 L800,220 L800,900 L0,900 Z" />
-                    <path class="clickable-zone" data-zone="floor" onclick="openSvgMenu(event, ${currentId}, 'floor')" d="M0,900 L800,900 L800,1200 L0,1200 Z" />
-                </svg>
-            </div>
-            <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-top: 12px; border: 1px dashed var(--border);">
-                <span style="font-size: 11px; color: var(--accent); font-weight: bold; display: block; margin-bottom: 8px; text-transform: uppercase;">
-                    🎯 Sirtlarni tanlash / Покрытия зон (Или кликайте прямо по картинке)
-                </span>
+            <svg class="room-preview-svg" viewBox="0 0 1170 690" xmlns="http://www.w3.org/2000/svg" id="svg-root-${currentId}">
+                <defs id="svg-defs-${currentId}"></defs>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div>
-                        <label style="margin-top:0;">👇 Pol zonasi (Пол)</label>
-                        <select id="floor-mat-${currentId}" onchange="updateAdvancedPreview(${currentId}, 'floor', this.value)">
-                            <option value="">-- Tanlash / Выбрать --</option>
-                            <option value="parket" selected>Паркет (Parket)</option>
-                            <option value="laminat">Laminat</option>
-                            <option value="kafel">Kafel</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="margin-top:0;">👈 Devorlar (Стены)</label>
-                        <select id="wall-mat-${currentId}" onchange="updateAdvancedPreview(${currentId}, 'walls', this.value)">
-                            <option value="">-- Tanlash / Выбрать --</option>
-                            <option value="oboi1">Обои 1</option>
-                            <option value="oboi2">Обои 2</option>
-                            <option value="oboi3">Обои 3</option>
-                            <option value="ottachento">Оттаченто (Ottachento)</option>
-                            <option value="kraska">Краска стены</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+                <image id="svg-bg-${currentId}" href="backend/images/living_room_neoclassic.jpg" x="0" y="0" width="1170" height="690" preserveAspectRatio="none" />
+                
+                <path id="mask-ceiling-${currentId}" style="mix-blend-mode: multiply; pointer-events: none;" d="M2,3 L1169,3 L1169,76 L964,233 L208,233 L2,76 Z" fill="transparent" />
+                <path id="mask-walls-${currentId}" style="mix-blend-mode: multiply; pointer-events: none;" d="M2,76 L208,233 L208,460 L2,612 Z M1169,76 L964,233 L964,460 L1169,612 Z M208,233 L964,233 L964,460 L208,460 Z" fill="transparent" />
+                <path id="mask-floor-${currentId}" style="mix-blend-mode: multiply; pointer-events: none;" d="M2,612 L208,460 L964,460 L1169,612 L1169,688 L2,688 Z" fill="transparent" />
 
-            <div class="params-grid" style="margin-top: 12px;">
-                <div><label>Eni / Ширина (m)</label><input id="w-${currentId}" type="number" placeholder="0.0" value="" onchange="calculateVolumes()"></div>
-                <div><label>Uzunligi / Длина (m)</label><input id="l-${currentId}" type="number" placeholder="0.0" value="" onchange="calculateVolumes()"></div>
-                <div><label>Balandligi / Высота (m)</label><input id="h-${currentId}" type="number" placeholder="0.0" value="" onchange="calculateVolumes()"></div>
-            </div>
-            <label>Eshik va Oyna / Двери и Окна (m²)</label>
-            <input id="o-${currentId}" type="number" placeholder="0.0" value="" onchange="calculateVolumes()">
-        `;
-        
-        document.getElementById('rooms-container').appendChild(div);
-        autoAdjustCheckboxes();
-        calculateVolumes();
-    }    
+                <path class="clickable-zone" data-zone="ceiling" onclick="openSvgMenu(event, ${currentId}, 'ceiling')" d="M2,3 L1169,3 L1169,76 L964,233 L208,233 L2,76 Z" />
+                <path class="clickable-zone" data-zone="walls" onclick="openSvgMenu(event, ${currentId}, 'walls')" d="M2,76 L208,233 L208,460 L2,612 Z M1169,76 L964,233 L964,460 L1169,612 Z M208,233 L964,233 L964,460 L208,460 Z" />
+                <path class="clickable-zone" data-zone="floor" onclick="openSvgMenu(event, ${currentId}, 'floor')" d="M2,612 L208,460 L964,460 L1169,612 L1169,688 L2,688 Z" />
+            </svg>
+        </div>
+
+        <select id="floor-mat-${currentId}" style="display:none;"><option value=""></option><option value="parket">P</option></select>
+        <select id="wall-mat-${currentId}" style="display:none;"><option value=""></option><option value="oboi1">O</option></select>
+
+        <div class="params-grid" style="margin-top: 12px;">
+            <div><label>Eni / Ширина (m)</label><input id="w-${currentId}" type="number" placeholder="0.0" onchange="calculateVolumes()"></div>
+            <div><label>Uzunligi / Длина (m)</label><input id="l-${currentId}" type="number" placeholder="0.0" onchange="calculateVolumes()"></div>
+            <div><label>Balandligi / Высота (m)</label><input id="h-${currentId}" type="number" placeholder="0.0" onchange="calculateVolumes()"></div>
+        </div>
+        <label>Eshik va Oyna / Двери и Окна (m²)</label>
+        <input id="o-${currentId}" type="number" placeholder="0.0" onchange="calculateVolumes()">
+    `;
+    
+    document.getElementById('rooms-container').appendChild(div);
+    autoAdjustCheckboxes();
+    calculateVolumes();
+}
     
 
     function removeRoomCard(id) {
@@ -1027,6 +1009,62 @@ function addRoom() {
             wrapper.appendChild(disclaimer);
         }
     }
+    // НАШ НОВЫЙ ИНСТРУМЕНТ ДЛЯ НАЛОЖЕНИЯ ТЕКСТУР ИЗ МЕНЮ
+function setMaterial(id, zone, value) {
+    const defs = document.getElementById(`svg-defs-${id}`);
+    const targetMask = document.getElementById(`mask-${zone}-${id}`);
+    
+    if (!defs || !targetMask) return;
+
+    // Если нажали на пустой вариант — сбрасываем маску
+    if (!value) {
+        targetMask.setAttribute('fill', 'transparent');
+        return;
+    }
+
+    // Карта путей к твоим квадратным текстурам-свотчам
+    let textureUrl = "";
+    if (zone === 'floor' && value === 'parket') {
+        textureUrl = "backend/images/texture_floor_parquet_herringbone.jpg";
+    }
+    if (zone === 'walls') {
+        if (value === 'oboi1') textureUrl = "backend/images/texture_wall_wallpaper_1.jpg";
+        if (value === 'oboi2') textureUrl = "backend/images/texture_wall_wallpaper_2.jpg";
+        if (value === 'oboi3') textureUrl = "backend/images/texture_wall_wallpaper_3.jpg";
+        if (value === 'ottachento') textureUrl = "backend/images/texture_wall_ottocento.jpg";
+        if (value === 'kraska') textureUrl = "backend/images/texture_wall_paint_white.jpg";
+    }
+
+    if (textureUrl) {
+        const patternId = `pattern-${zone}-${value}-${id}`;
+        
+        // Создаем внутри <defs> бесконечный узор из квадратика
+        defs.innerHTML = `
+            <pattern id="${patternId}" patternUnits="userSpaceOnUse" width="150" height="150">
+                <image href="${textureUrl}" x="0" y="0" width="150" height="150" />
+            </pattern>
+        `;
+
+        // Направляем этот узор на нужный <path>
+        targetMask.setAttribute('fill', `url(#${patternId})`);
+    }
+
+    // Синхронизация со скрытыми списками для бэкенда
+    const hiddenSelect = document.getElementById(`${zone}-mat-${id}`);
+    if (hiddenSelect) {
+        hiddenSelect.value = value;
+    }
+
+    // Намертво закрываем контекстное меню после клика
+    const menu = document.getElementById(`svg-menu-${id}`);
+    if (menu) {
+        menu.style.display = 'none';
+        menu.innerHTML = '';
+    }
+
+    // Запускаем перерасчет объемов работ
+    if (typeof calculateVolumes === 'function') calculateVolumes();
+}
 </script>
 </body>
 </html>
