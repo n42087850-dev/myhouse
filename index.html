@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +21,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
@@ -35,7 +35,7 @@
 
         .container {
             width: 100%;
-            max-width: 480px;
+            max-width: 500px; /* Немного расширил для солидности */
             background: var(--bg-main);
             min-height: 100vh;
             padding-bottom: 50px;
@@ -43,39 +43,43 @@
 
         header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
         header h1 {
             color: var(--primary);
-            font-size: 28px;
-            letter-spacing: 1px;
-            font-weight: bold;
+            font-size: 32px;
+            letter-spacing: 2px;
+            font-weight: 800;
         }
 
         header p {
-            color: var(--text-muted);
-            font-size: 11px;
+            color: var(--accent);
+            font-size: 12px;
             margin-top: 4px;
+            text-transform: uppercase;
+            font-weight: bold;
         }
 
+        /* TABS */
         .tabs {
             display: flex;
             background: var(--bg-card);
-            border-radius: 10px;
-            padding: 5px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            padding: 6px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
         }
 
         .tab {
             flex: 1;
             text-align: center;
-            padding: 12px 5px;
-            font-size: 11px;
+            padding: 14px 5px;
+            font-size: 12px;
             font-weight: bold;
             color: var(--text-muted);
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 10px;
             transition: 0.3s;
             text-transform: uppercase;
         }
@@ -83,6 +87,7 @@
         .tab.active {
             background: var(--primary);
             color: var(--text);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
         }
 
         .tab-content {
@@ -93,32 +98,35 @@
             display: block;
         }
 
+        /* CARDS */
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 18px;
+            padding: 24px;
             margin-bottom: 20px;
             position: relative;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
         }
 
         .room-card::before {
             content: '';
             position: absolute;
             left: 0;
-            top: 15px;
-            bottom: 15px;
-            width: 4px;
+            top: 20px;
+            bottom: 20px;
+            width: 5px;
             background: var(--accent);
-            border-radius: 0 4px 4px 0;
+            border-radius: 0 5px 5px 0;
         }
 
         label {
             display: block;
-            font-size: 12px;
+            font-size: 13px;
+            font-weight: 600;
             color: var(--text-muted);
-            margin-top: 12px;
-            margin-bottom: 5px;
+            margin-top: 15px;
+            margin-bottom: 6px;
         }
 
         select, input {
@@ -126,78 +134,41 @@
             background: var(--bg-main);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 15px;
             outline: none;
+            transition: 0.2s;
         }
 
         select:focus, input:focus {
             border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        /* SOVEREIGN IMAGE PREVIEW (NO SVG) */
+        .preview-container {
+            position: relative;
+            width: 100%;
+            margin-top: 18px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            line-height: 0;
+        }
+
+        .room-preview-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain; /* ГАРАНТИЯ: пропорции из Фигмы не нарушатся! */
         }
 
         .params-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-     /* Старый контейнер оставляем — он держит форму мобильного приложения */
-.container {
-    width: 100%;
-    max-width: 480px;
-    background: var(--bg-main);
-    min-height: 100vh;
-    padding-bottom: 50px;
-}
-
-.preview-container {
-    position: relative;
-    width: 100%;
-    margin-top: 15px;
-    background: transparent;
-    display: block;
-}
-
-.room-preview-svg {
-    width: 100%;
-    height: auto; /* Картинка сама выберет свою высоту и никогда не сожмется по бокам! */
-    display: block;
-}
-
-/* Стили для того, чтобы наложенная текстура выглядела реалистично с тенями */
-.clickable-zone {
-    fill: transparent;
-    transition: fill 0.3s ease;
-}
-
-        .clickable-zone:hover {
-            fill: rgba(52, 152, 219, 0.25);
-        }
-
-        .svg-context-menu {
-            position: absolute;
-            display: none;
-            background: var(--bg-card);
-            border: 1px solid var(--primary);
-            border-radius: 8px;
-            z-index: 100;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            padding: 5px;
-            width: 220px;
-        }
-
-        .svg-context-menu option {
-            padding: 8px;
-            color: var(--text);
-            cursor: pointer;
-            font-size: 12px;
-            border-radius: 4px;
-            transition: 0.2s;
-        }
-
-        .svg-context-menu option:hover {
-            background: var(--primary);
+            gap: 12px;
         }
 
         .section-header {
@@ -205,72 +176,75 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 5px;
-            margin: 20px 0 10px 0;
+            padding-bottom: 8px;
+            margin: 25px 0 15px 0;
         }
 
         .section-title {
             color: var(--accent);
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 0.5px;
+            font-size: 13px;
+            font-weight: 800;
             text-transform: uppercase;
         }
 
         .volume-badge {
-            background: var(--border);
-            color: var(--primary);
-            font-size: 11px;
-            padding: 2px 8px;
+            background: var(--primary);
+            color: white;
+            font-size: 12px;
+            padding: 4px 12px;
             border-radius: 20px;
             font-weight: bold;
         }
 
+        /* BUTTONS */
         .btn {
             width: 100%;
             background: transparent;
             border: 2px dashed var(--border);
             color: var(--text-muted);
-            padding: 15px;
-            border-radius: 12px;
+            padding: 18px;
+            border-radius: 14px;
             font-weight: bold;
             cursor: pointer;
             margin-bottom: 20px;
-            font-size: 13px;
+            font-size: 14px;
             transition: 0.3s;
         }
 
         .btn:hover {
             border-color: var(--primary);
             color: var(--text);
+            background: rgba(52, 152, 219, 0.05);
         }
 
         .btn-calc {
             background: var(--accent);
-            color: #000000;
+            color: #000;
             border: none;
-            font-size: 14px;
+            font-size: 16px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-radius: 12px;
-            padding: 18px;
-            font-weight: bold;
+            letter-spacing: 1px;
+            border-radius: 14px;
+            padding: 20px;
+            font-weight: 800;
             margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
         }
 
         .btn-calc:hover {
-            background: #e1b70e;
-            color: #000000;
+            background: #f39c12;
+            transform: translateY(-2px);
         }
 
+        /* WORK ITEMS */
         .work-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             background: var(--bg-main);
-            padding: 8px 12px;
-            border-radius: 8px;
+            padding: 10px 15px;
+            border-radius: 10px;
             border: 1px solid var(--border);
         }
 
@@ -282,70 +256,75 @@
         }
 
         .work-checkbox {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
             accent-color: var(--primary);
         }
 
         .work-name {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text);
+            font-weight: 500;
         }
 
         .work-price-input {
-            width: 90px;
-            padding: 6px;
+            width: 100px;
+            padding: 8px;
             text-align: right;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
-            color: var(--text);
+            color: var(--primary);
         }
 
         .result-box {
             background: var(--bg-card);
-            border: 2px solid var(--border);
-            border-radius: 15px;
-            padding: 20px;
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            padding: 25px;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 25px;
         }
 
         .result-box h3 {
             color: var(--primary);
-            font-size: 24px;
+            font-size: 32px;
             margin-bottom: 5px;
+            font-weight: 800;
         }
 
         .result-box p {
             color: var(--text-muted);
-            font-size: 11px;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
         }
 
+        /* MATERIALS REPORT */
         .materials-container {
             display: none;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 25px;
         }
 
         .materials-title {
             text-align: center;
-            font-weight: bold;
-            font-size: 14px;
+            font-weight: 800;
+            font-size: 16px;
             color: var(--accent);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-transform: uppercase;
         }
 
         .material-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
+            padding: 12px 0;
             border-bottom: 1px dashed var(--border);
-            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .material-row:last-child {
@@ -354,80 +333,49 @@
 
         .material-name {
             color: var(--text);
+            font-size: 15px;
+            font-weight: 500;
         }
 
         .material-val {
             color: var(--success);
-            font-weight: bold;
+            font-weight: 800;
+            font-size: 16px;
         }
 
         .notice-box {
             display: none;
             background: #1e3a2f;
-            border: 1px solid #27654a;
+            border: 1px solid #2ecc71;
             color: #52d69b;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-
-        .disclaimer-box {
-            margin-top: 15px;
-            padding: 10px;
-            background: #291a1a;
-            border: 1px dashed var(--danger);
-            border-radius: 8px;
-            color: #ff6b6b;
-            font-size: 11px;
-            text-align: center;
-            line-height: 1.4;
-        }
-
-        .feature-in-development {
-            margin-top: 25px;
             padding: 15px;
-            background: rgba(241, 196, 15, 0.05);
-            border: 1px solid rgba(241, 196, 15, 0.2);
             border-radius: 12px;
             text-align: center;
-        }
-
-        .feature-in-development h4 {
-            color: var(--accent);
-            font-size: 13px;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
-        }
-
-        .feature-in-development p {
-            color: var(--text-muted);
-            font-size: 12px;
-            line-height: 1.4;
+            font-size: 14px;
+            font-weight: 800;
+            margin-top: 20px;
+            cursor: pointer;
         }
 
         footer {
-            margin-top: 35px;
+            margin-top: 50px;
             text-align: center;
-            padding: 15px 0;
+            padding: 25px 0;
             border-top: 1px solid var(--border);
             width: 100%;
         }
 
         footer .founder-title {
             color: var(--primary);
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         footer .copyright {
             color: var(--text-muted);
-            font-size: 10px;
-            margin-top: 4px;
+            font-size: 11px;
+            margin-top: 6px;
         }
     </style>
 </head>
@@ -436,436 +384,187 @@
 <div class="container">
     <header>
         <h1>MYHOUSE</h1>
-        <p>SMART RENOVATION CALCULATOR</p>
+        <p>Professional Renovation System</p>
     </header>
 
     <div class="tabs">
-        <div class="tab active" id="tab1-btn" onclick="switchTab(1)">1. Material & Dizayn</div>
-        <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. Usta Mehnati (m²)</div>
+        <div class="tab active" id="tab1-btn" onclick="switchTab(1)">1. Design & Parameters</div>
+        <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. Labor Cost (UZS)</div>
     </div>
 
     <div id="tab1-content" class="tab-content active">
         <div id="rooms-container"></div>
 
-        <button class="btn" onclick="addRoom()">+ YANGI XONA QO'SHISH / ДОБАВИТЬ КОМНАТУ</button>
-        <button class="btn btn-calc" onclick="calculateVolumes()">Hisoblash / Рассчитать объемы</button>
+        <button class="btn" onclick="addRoom()">+ ADD NEW ROOM / ДОБАВИТЬ КОМНАТУ</button>
+        <button class="btn btn-calc" onclick="calculateVolumes()">Calculate Volumes / Рассчитать</button>
         
-        <div id="tab1-notice" class="notice-box">
-            KEYINGI BOSQICHGA O'TING →
+        <div id="tab1-notice" class="notice-box" onclick="switchTab(2)">
+            PROCEED TO ESTIMATION / ПЕРЕЙТИ К РАСЧЕТУ →
         </div>
     </div>
 
     <div id="tab2-content" class="tab-content">
-        <div class="card" style="padding: 15px 15px 25px 15px;">
-            <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; color: var(--text);">
-                USTA ISH HAQI NARXLARI
+        <div class="card">
+            <div style="text-align: center; font-weight: 800; font-size: 16px; margin-bottom: 20px; color: var(--text); text-transform: uppercase;">
+                Master Labor Rates (m²)
             </div>
 
             <div class="section-header">
-                <span class="section-title">Pol (Полы)</span>
+                <span class="section-title">Flooring / Полы</span>
                 <span class="volume-badge" id="lbl-floor-vol">0.00 m²</span>
             </div>
             
             <label class="work-item" for="chk-styajka">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-styajka" checked onclick="event.stopPropagation();">
-                    <span class="work-name">Styajka (Стяжка)</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-styajka" checked>
+                    <span class="work-name">Screed / Стяжка</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-styajka" value="45000" onclick="event.preventDefault(); event.stopPropagation();">
-            </label>
-            
-            <label class="work-item" for="chk-nalivnoy">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-nalivnoy" checked onclick="event.stopPropagation();">
-                    <span class="work-name">Nalivnoy pol</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-nalivnoy" value="25000" onclick="event.preventDefault(); event.stopPropagation();">
+                <input type="number" class="work-price-input" id="price-styajka" value="45000">
             </label>
             
             <label class="work-item" for="chk-laminat">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-laminat" onclick="event.stopPropagation();">
-                    <span class="work-name">Laminat/Tarket</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-laminat">
+                    <span class="work-name">Laminate / Ламинат</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-laminat" value="35000" onclick="event.preventDefault(); event.stopPropagation();">
-            </label>
-            
-            <label class="work-item" for="chk-kafel-pol">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-kafel-pol" onclick="event.stopPropagation();">
-                    <span class="work-name">Kafel (pol)</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-kafel-pol" value="60000" onclick="event.preventDefault(); event.stopPropagation();">
-            </label>
-            
-            <label class="work-item" for="chk-plintus">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-plintus" onclick="event.stopPropagation();">
-                    <span class="work-name">Plintus (m.p.)</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-plintus" value="15000" onclick="event.preventDefault(); event.stopPropagation();">
+                <input type="number" class="work-price-input" id="price-laminat" value="35000">
             </label>
 
             <div class="section-header">
-                <span class="section-title">Devor (Стены)</span>
+                <span class="section-title">Walls / Стены</span>
                 <span class="volume-badge" id="lbl-wall-vol">0.00 m²</span>
             </div>
             
             <label class="work-item" for="chk-shtukaturka">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" checked onclick="event.stopPropagation();">
-                    <span class="work-name">Shtukaturka</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" checked>
+                    <span class="work-name">Plaster / Штукатурка</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-shtukaturka" value="40000" onclick="event.preventDefault(); event.stopPropagation();">
-            </label>
-            
-            <label class="work-item" for="chk-shpatlevka">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-shpatlevka" onclick="event.stopPropagation();">
-                    <span class="work-name">Shpatlevka</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-shpatlevka" value="25000" onclick="event.preventDefault(); event.stopPropagation();">
+                <input type="number" class="work-price-input" id="price-shtukaturka" value="40000">
             </label>
             
             <label class="work-item" for="chk-oboi">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-oboi" checked onclick="event.stopPropagation();">
-                    <span class="work-name">Gulqog'oz yopishtirish</span>
+                    <input type="checkbox" class="work-checkbox" id="chk-oboi" checked>
+                    <span class="work-name">Wallpaper / Обои</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-oboi" value="25000" onclick="event.preventDefault(); event.stopPropagation();">
-            </label>
-            
-            <label class="work-item" for="chk-boyoq">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-boyoq" onclick="event.stopPropagation();">
-                    <span class="work-name">Bo'yoq (Покраска)</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-boyoq" value="20000" onclick="event.preventDefault(); event.stopPropagation();">
-            </label>
-            
-            <label class="work-item" for="chk-travertin">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-travertin" onclick="event.stopPropagation();">
-                    <span class="work-name">Travertin/Dekor</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-travertin" value="80000" onclick="event.preventDefault(); event.stopPropagation();">
+                <input type="number" class="work-price-input" id="price-oboi" value="25000">
             </label>
 
-            <div class="section-header">
-                <span class="section-title">Potolok & Injeneriya</span>
-                <span class="volume-badge" id="lbl-ceiling-vol">0.00 m²</span>
-            </div>
-            
-            <label class="work-item" for="chk-natyajnoy">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-natyajnoy" onclick="event.stopPropagation();">
-                    <span class="work-name">Natyajnoy potolok</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-natyajnoy" value="50000" onclick="event.preventDefault(); event.stopPropagation();">
-            </label>
-            
-            <label class="work-item" for="chk-gipsokarton">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-gipsokarton" checked onclick="event.stopPropagation();">
-                    <span class="work-name">Gipsokarton</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-gipsokarton" value="60000" onclick="event.preventDefault(); event.stopPropagation();">
-            </label>
-            
-            <label class="work-item" for="chk-elektro">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-elektro" onclick="event.stopPropagation();">
-                    <span class="work-name">Elektromontaj (m²)</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-elektro" value="110000" onclick="event.preventDefault(); event.stopPropagation();">
-            </label>
-            
-            <label class="work-item" for="chk-santexnika">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-santexnika" onclick="event.stopPropagation();">
-                    <span class="work-name">Santexnika (m²)</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-santexnika" value="90000" onclick="event.preventDefault(); event.stopPropagation();">
-            </label>
-
-            <button class="btn btn-calc" onclick="calculateSmeta()">Ish haqini hisoblash / Рассчитать смету</button>
+            <button class="btn btn-calc" onclick="calculateSmeta()">Calculate Total / Итоговая Смета</button>
         </div>
 
         <div class="result-box">
             <h3 id="total-price-display">0 UZS</h3>
-            <p>Jami usta mehnati uchun</p>
+            <p>Total Master Labor Cost</p>
         </div>
 
         <div class="materials-container" id="hisobot-container">
-            <div class="materials-title">Zarur stroymateriallar / Необходимые материалы</div>
+            <div class="materials-title">Required Materials (with 10% Waste)</div>
             <div id="materials-rows-wrapper"></div>
         </div>
     </div>
 
-    <div class="feature-in-development">
-        <h4>📦 Avtomatik buyurtma / Автозаказ</h4>
-        <p>Mebel va qurilish materiallarini to'g'diran-to'g'ri do'konlardan eng arzon narxda yetkazib berish tizimi ishlab chiqilmoqda.<br><small style="color: var(--accent);">Yaqinda ishga tushadi! / Скоро запуск!</small></p>
-    </div>
-
     <footer>
-        <div class="founder-title">Nodirjon Sobirov — Founder & Lead Developer</div>
-        <div class="copyright">© 2026 MYHOUSE PRO. Barcha huquqlar himoyalangan.</div>
+        <div class="founder-title">NODIRJON SOBIROV — Founder & Lead Developer</div>
+        <div class="copyright">© 2026 MYHOUSE PRO. All Rights Reserved.</div>
     </footer>
 </div>
 
 <script>
     let roomCount = 0;
-
     let totalFloorArea = 0;
     let totalWallArea = 0;
     let totalCeilingArea = 0;
     let totalPerimeter = 0;
-    let hasMaterials = false;
 
     window.onload = function() {
         addRoom(); 
     };
 
     function switchTab(tabIndex) {
-        if (tabIndex === 1) {
-            document.getElementById('tab1-btn').classList.add('active');
-            document.getElementById('tab2-btn').classList.remove('active');
-            document.getElementById('tab1-content').classList.add('active');
-            document.getElementById('tab2-content').classList.remove('active');
-        } else {
-            document.getElementById('tab1-btn').classList.remove('active');
-            document.getElementById('tab2-btn').classList.add('active');
-            document.getElementById('tab1-content').classList.remove('active');
-            document.getElementById('tab2-content').classList.add('active');
-            renderVolumeLabels();
-        }
-    }
-
-    // Универсальный менеджер путей для всех 25 комбинаций рендеров
-    function getAdvancedImagePath(roomType, designStyle, activeZone, materialValue) {
-        // 1. Если выбрана интерактивная Неоклассика в Гостиной И кликнули по зоне — отдаем текстуру
-        if (roomType === 'living_room' && designStyle === 'neoclassic' && activeZone && materialValue) {
-            if (activeZone === 'floor' && materialValue === 'parket') {
-                return "backend/images/texture_floor_parquet_herringbone.jpg";
-            }
-            if (activeZone === 'walls') {
-                if (materialValue === 'oboi1') return "backend/images/texture_wall_wallpaper_1.jpg";
-                if (materialValue === 'oboi2') return "backend/images/texture_wall_wallpaper_2.jpg";
-                if (materialValue === 'oboi3') return "backend/images/texture_wall_wallpaper_3.jpg";
-                if (materialValue === 'ottachento') return "backend/images/texture_wall_ottocento.jpg";
-                if (materialValue === 'kraska') return "backend/images/texture_wall_paint_white.jpg";
-            }
-        }
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         
-        // 2. Для ВСЕХ остальных случаев (все 24 комбинации комнат и стилей) 
-        // динамически собираем имя файла, например: "kitchen_minimal.jpg", "bedroom_japandi.jpg" и т.д.
-        return `backend/images/${roomType}_${designStyle}.jpg`;
-    }
-
-    function updateAdvancedPreview(id, changedZone = null, materialValue = null) {
-        const roomType = document.getElementById(`type-${id}`).value;
-        const designStyle = document.getElementById(`design-${id}`).value;
-        const bgImg = document.getElementById(`svg-bg-${id}`);
-        const svgContainer = document.getElementById(`room-card-${id}`).querySelector('.room-preview-svg');
+        document.getElementById(`tab${tabIndex}-btn`).classList.add('active');
+        document.getElementById(`tab${tabIndex}-content`).classList.add('active');
         
-        if (!bgImg) return;
-
-        const zones = svgContainer.querySelectorAll('.clickable-zone');
-        // Интерактив теперь "оживает" строго на комбинации Гостиная + Неоклассика
-        if (roomType === 'living_room' && designStyle === 'neoclassic') {
-            zones.forEach(z => z.style.pointerEvents = 'auto');
-        } else {
-            zones.forEach(z => z.style.pointerEvents = 'none');
-            document.getElementById(`floor-mat-${id}`).value = "";
-            document.getElementById(`wall-mat-${id}`).value = "";
-        }
-
-        if (changedZone && materialValue) {
-            bgImg.setAttribute('href', getAdvancedImagePath(roomType, designStyle, changedZone, materialValue));
-        } else {
-            bgImg.setAttribute('href', getAdvancedImagePath(roomType, designStyle));
-            if (designStyle === 'neoclassic' && roomType === 'living_room') {
-                document.getElementById(`floor-mat-${id}`).value = "parket";
-                bgImg.setAttribute('href', "backend/images/living_room_neoclassic.jpg");
-            }
-        }
+        if (tabIndex === 2) renderVolumeLabels();
     }
 
-    function openSvgMenu(event, roomId, zone) {
-    event.preventDefault();
-    
-    const roomType = document.getElementById(`type-${roomId}`).value;
-    const designStyle = document.getElementById(`design-${roomId}`).value;
-    
-    // Интерактив работает только для Неоклассики в Гостиной
-    if (roomType !== 'living_room' || designStyle !== 'neoclassic') return;
-
-    const menu = document.getElementById(`svg-menu-${roomId}`);
-    menu.innerHTML = ''; 
-
-    let options = [];
-    if (zone === 'walls') {
-        options = [
-            { text: 'Oboi Neoklassik (Oboi 1)', value: 'oboi1', chk: 'chk-oboi' },
-            { text: 'Oboi Elegant (Oboi 2)', value: 'oboi2', chk: 'chk-oboi' },
-            { text: 'Oboi Royal (Oboi 3)', value: 'oboi3', chk: 'chk-oboi' },
-            { text: 'Ottachento (Textured)', value: 'ottachento', chk: 'chk-travertin' },
-            { text: 'Kraska (Neoklassik White)', value: 'kraska', chk: 'chk-boyoq' }
-        ];
-    } else if (zone === 'floor') {
-        options = [
-            { text: 'Parket Neoklassik (Ёлочный паркет)', value: 'parket', chk: 'chk-laminat' }
-        ];
-    } else if (zone === 'ceiling') {
-        return; 
-    }
-
-    options.forEach(opt => {
-        const el = document.createElement('option');
-        el.textContent = opt.text;
-        el.onclick = function() {
-            // 1. НАЛОЖЕНИЕ ТЕКСТУРЫ: вызываем твою новую магическую функцию-трафарет
-            setMaterial(roomId, zone, opt.value);
-            
-            // 2. ЧЕКБОКСЫ: Твоя родная логика переключения галочек (осталась нетронутой)
-            document.querySelectorAll('.work-checkbox').forEach(c => {
-                if(c.id === opt.chk) {
-                    c.checked = true;
-                } else if (opt.chk === 'chk-oboi' && (c.id === 'chk-travertin' || c.id === 'chk-boyoq')) {
-                    c.checked = false;
-                } else if (opt.chk === 'chk-travertin' && (c.id === 'chk-oboi' || c.id === 'chk-boyoq')) {
-                    c.checked = false;
-                } else if (opt.chk === 'chk-boyoq' && (c.id === 'chk-oboi' || c.id === 'chk-travertin')) {
-                    c.checked = false;
-                }
-            });
-            
-            // 3. МАТЕМАТИКА: Пересчитываем объемы под капотом
-            if (typeof calculateVolumes === 'function') calculateVolumes();
-            
-            // Закрываем меню после выбора
-            menu.style.display = 'none';
-        };
-        menu.appendChild(el);
-    });
-
-    // Позиционирование всплывающего меню на картинке по клику
-    const parentRect = event.currentTarget.parentElement.getBoundingClientRect();
-    menu.style.left = (event.clientX - parentRect.left) + 'px';
-    menu.style.top = (event.clientY - parentRect.top) + 'px';
-    menu.style.display = 'block';
-}
-
-function addRoom() {
-    roomCount++;
-    const currentId = roomCount; 
-    const div = document.createElement('div');
-    div.className = 'card room-card';
-    div.id = `room-card-${currentId}`;
-    
-    div.innerHTML = `
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-            <b style="color:var(--primary);">${currentId}-XONA / КОМНАТА</b>
-            <span style="color:red; cursor:pointer; font-weight:bold;" onclick="removeRoomCard(${currentId})">✕</span>
-        </div>
+    function updatePreview(id) {
+        const type = document.getElementById(`type-${id}`).value;
+        const style = document.getElementById(`design-${id}`).value;
+        const img = document.getElementById(`room-preview-img-${id}`);
         
-        <label>Xona turi / Тип комнаты</label>
-        <select id="type-${currentId}" onchange="updateAdvancedPreview(${currentId}); autoAdjustCheckboxes(); calculateVolumes();">
-            <option value="living_room" selected>Mehmonxona / Гостиная</option>
-            <option value="bedroom">Yotoqxona / Спальня</option>
-            <option value="kitchen">Oshxona / Кухня</option>
-            <option value="bathroom">Yuvinish xonasi / Ванная</option>
-            <option value="toilet">Hojatxona / Туалет</option>
-        </select>
-
-        <label>Dizayn uslubi / Стиль дизайна</label>
-        <select id="design-${currentId}" onchange="updateAdvancedPreview(${currentId}); autoAdjustCheckboxes(); calculateVolumes();">
-            <option value="minimal">Minimalizm / Минимализм</option>
-            <option value="neoclassic" selected>Neoklassika / Неоклассика</option>
-            <option value="loft">Loft / Лофт</option>
-            <option value="japandi">Japandi / Джапанди</option>
-            <option value="ethnic_modern">Etnik Modern / Этник Модерн</option>
-        </select>
-
-        <div class="preview-container">
-            <div class="svg-context-menu" id="svg-menu-${currentId}"></div>
-            
-            <svg class="room-preview-svg" viewBox="0 0 1170 690" xmlns="http://www.w3.org/2000/svg" id="svg-root-${currentId}">
-                <defs id="svg-defs-${currentId}"></defs>
-                
-                <image id="svg-bg-${currentId}" href="backend/images/living_room_neoclassic.jpg" x="0" y="0" width="1170" height="690" preserveAspectRatio="none" />
-                
-                <path id="mask-ceiling-${currentId}" style="mix-blend-mode: multiply; pointer-events: none;" d="M2,3 L1169,3 L1169,76 L964,233 L208,233 L2,76 Z" fill="transparent" />
-                <path id="mask-walls-${currentId}" style="mix-blend-mode: multiply; pointer-events: none;" d="M2,76 L208,233 L208,460 L2,612 Z M1169,76 L964,233 L964,460 L1169,612 Z M208,233 L964,233 L964,460 L208,460 Z" fill="transparent" />
-                <path id="mask-floor-${currentId}" style="mix-blend-mode: multiply; pointer-events: none;" d="M2,612 L208,460 L964,460 L1169,612 L1169,688 L2,688 Z" fill="transparent" />
-
-                <path class="clickable-zone" data-zone="ceiling" onclick="openSvgMenu(event, ${currentId}, 'ceiling')" d="M2,3 L1169,3 L1169,76 L964,233 L208,233 L2,76 Z" />
-                <path class="clickable-zone" data-zone="walls" onclick="openSvgMenu(event, ${currentId}, 'walls')" d="M2,76 L208,233 L208,460 L2,612 Z M1169,76 L964,233 L964,460 L1169,612 Z M208,233 L964,233 L964,460 L208,460 Z" />
-                <path class="clickable-zone" data-zone="floor" onclick="openSvgMenu(event, ${currentId}, 'floor')" d="M2,612 L208,460 L964,460 L1169,612 L1169,688 L2,688 Z" />
-            </svg>
-        </div>
-
-        <select id="floor-mat-${currentId}" style="display:none;"><option value=""></option><option value="parket">P</option></select>
-        <select id="wall-mat-${currentId}" style="display:none;"><option value=""></option><option value="oboi1">O</option></select>
-
-        <div class="params-grid" style="margin-top: 12px;">
-            <div><label>Eni / Ширина (m)</label><input id="w-${currentId}" type="number" placeholder="0.0" onchange="calculateVolumes()"></div>
-            <div><label>Uzunligi / Длина (m)</label><input id="l-${currentId}" type="number" placeholder="0.0" onchange="calculateVolumes()"></div>
-            <div><label>Balandligi / Высота (m)</label><input id="h-${currentId}" type="number" placeholder="0.0" onchange="calculateVolumes()"></div>
-        </div>
-        <label>Eshik va Oyna / Двери и Окна (m²)</label>
-        <input id="o-${currentId}" type="number" placeholder="0.0" onchange="calculateVolumes()">
-    `;
-    
-    document.getElementById('rooms-container').appendChild(div);
-    autoAdjustCheckboxes();
-    calculateVolumes();
-}
-    
-
-    function removeRoomCard(id) {
-        const card = document.getElementById(`room-card-${id}`);
-        if (card) card.remove();
+        // ГАРАНТИРОВАННЫЙ ПУТЬ К ТВОИМ РЕНДЕРАМ
+        img.src = `backend/images/${type}_${style}.jpg`;
+        
         calculateVolumes();
     }
 
-    function renderVolumeLabels() {
-        document.getElementById('lbl-floor-vol').innerText = totalFloorArea.toFixed(2) + " m²";
-        document.getElementById('lbl-wall-vol').innerText = totalWallArea.toFixed(2) + " m²";
-        document.getElementById('lbl-ceiling-vol').innerText = totalCeilingArea.toFixed(2) + " m²";
+    function addRoom() {
+        roomCount++;
+        const id = roomCount;
+        const div = document.createElement('div');
+        div.className = 'card room-card';
+        div.id = `room-card-${id}`;
+        
+        div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <b style="color:var(--primary); font-size: 16px;">ROOM #${id}</b>
+                <span style="color:var(--danger); cursor:pointer; font-weight:bold; font-size: 20px;" onclick="removeRoomCard(${id})">✕</span>
+            </div>
+            
+            <label>Room Type / Тип комнаты</label>
+            <select id="type-${id}" onchange="updatePreview(${id})">
+                <option value="living_room" selected>Living Room / Гостиная</option>
+                <option value="bedroom">Bedroom / Спальня</option>
+                <option value="kitchen">Kitchen / Кухня</option>
+                <option value="bathroom">Bathroom / Ванная</option>
+            </select>
+
+            <label>Design Style / Стиль дизайна</label>
+            <select id="design-${id}" onchange="updatePreview(${id})">
+                <option value="minimal">Minimalism / Минимализм</option>
+                <option value="neoclassic" selected>Neoclassic / Неоклассика</option>
+                <option value="loft">Loft / Лофт</option>
+                <option value="japandi">Japandi / Джапанди</option>
+            </select>
+
+            <div class="preview-container">
+                <img id="room-preview-img-${id}" 
+                     class="room-preview-img" 
+                     src="backend/images/living_room_neoclassic.jpg" 
+                     alt="Juicy Render">
+            </div>
+
+            <div class="params-grid" style="margin-top: 15px;">
+                <div>
+                    <label>Width (m)</label>
+                    <input id="w-${id}" type="number" step="0.1" placeholder="0.0" onchange="calculateVolumes()">
+                </div>
+                <div>
+                    <label>Length (m)</label>
+                    <input id="l-${id}" type="number" step="0.1" placeholder="0.0" onchange="calculateVolumes()">
+                </div>
+                <div>
+                    <label>Height (m)</label>
+                    <input id="h-${id}" type="number" step="0.1" value="2.8" onchange="calculateVolumes()">
+                </div>
+            </div>
+
+            <label>Doors/Windows Area / Окна и Двери (m²)</label>
+            <input id="o-${id}" type="number" step="0.1" value="0.0" onchange="calculateVolumes()">
+        `;
+        
+        document.getElementById('rooms-container').appendChild(div);
+        calculateVolumes();
     }
 
-    function autoAdjustCheckboxes() {
-        let hasWetAreas = false;
-        let hasNeoStyle = false;
-
-        const cards = document.querySelectorAll('.room-card');
-        cards.forEach(card => {
-            const id = card.id.replace('room-card-', '');
-            const type = document.getElementById(`type-${id}`).value;
-            const design = document.getElementById(`design-${id}`).value;
-
-            if (type === "bathroom" || type === "toilet" || type === "kitchen") {
-                hasWetAreas = true;
-            }
-            if (design === "neoclassic") {
-                hasNeoStyle = true;
-            }
-        });
-
-        if (hasWetAreas) {
-            document.getElementById('chk-kafel-pol').checked = true;
-            document.getElementById('chk-laminat').checked = false;
-        } else {
-            document.getElementById('chk-kafel-pol').checked = false;
-            document.getElementById('chk-laminat').checked = true;
-        }
-
-        // Авточекбоксы под Неоклассику
-        if (hasNeoStyle) {
-            document.getElementById('chk-oboi').checked = true;
-            document.getElementById('chk-travertin').checked = false;
-        }
+    function removeRoomCard(id) {
+        document.getElementById(`room-card-${id}`).remove();
+        calculateVolumes();
     }
 
     function calculateVolumes() {
@@ -874,195 +573,66 @@ function addRoom() {
         totalCeilingArea = 0;
         totalPerimeter = 0;
 
-        const cards = document.querySelectorAll('.room-card');
-        if (cards.length === 0) return;
-
-        cards.forEach(card => {
+        document.querySelectorAll('.room-card').forEach(card => {
             const id = card.id.replace('room-card-', '');
-            
             const w = parseFloat(document.getElementById(`w-${id}`).value) || 0;
             const l = parseFloat(document.getElementById(`l-${id}`).value) || 0;
             const h = parseFloat(document.getElementById(`h-${id}`).value) || 0;
             const o = parseFloat(document.getElementById(`o-${id}`).value) || 0;
 
             const floor = w * l;
-            const perimeter = 2 * (w + l);
-            let walls = (perimeter * h) - o;
-            if (walls < 0) walls = 0;
-
+            const perim = 2 * (w + l);
+            let walls = (perim * h) - o;
+            
             totalFloorArea += floor;
-            totalCeilingArea += floor; 
-            totalWallArea += walls;
-            totalPerimeter += perimeter;
+            totalCeilingArea += floor;
+            totalWallArea += (walls > 0 ? walls : 0);
+            totalPerimeter += perim;
         });
 
-        autoAdjustCheckboxes();
         renderVolumeLabels();
+        
+        if(totalFloorArea > 0) {
+            document.getElementById('tab1-notice').style.display = 'block';
+        }
+    }
 
-        const nextBtn = document.getElementById('tab1-notice');
-        if (nextBtn) {
-            nextBtn.innerHTML = `<strong>KEYINGI BOSQICHGA O'TING / ПЕРЕЙДИТЕ НА СЛЕДУЮЩУЮ СТРАНИЦУ</strong>`;
-            nextBtn.style.display = 'block';
+    function renderVolumeLabels() {
+        if(document.getElementById('lbl-floor-vol')) {
+            document.getElementById('lbl-floor-vol').innerText = totalFloorArea.toFixed(2) + " m²";
+            document.getElementById('lbl-wall-vol').innerText = totalWallArea.toFixed(2) + " m²";
         }
     }
 
     function calculateSmeta() {
         let totalCost = 0;
-
-        function checkAndSum(checkboxId, priceInputId, volume) {
-            const cb = document.getElementById(checkboxId);
-            const price = parseFloat(document.getElementById(priceInputId).value) || 0;
-            if (cb && cb.checked) {
-                totalCost += volume * price;
-                return true;
-            }
-            return false;
-        }
-
-        const activeWorks = {
-            styajka: checkAndSum('chk-styajka', 'price-styajka', totalFloorArea),
-            nalivnoy: checkAndSum('chk-nalivnoy', 'price-nalivnoy', totalFloorArea),
-            laminat: checkAndSum('chk-laminat', 'price-laminat', totalFloorArea),
-            kafel: checkAndSum('chk-kafel-pol', 'price-kafel-pol', totalFloorArea),
-            plintus: checkAndSum('chk-plintus', 'price-plintus', totalPerimeter),
-            shtukaturka: checkAndSum('chk-shtukaturka', 'price-shtukaturka', totalWallArea),
-            shpatlevka: checkAndSum('chk-shpatlevka', 'price-shpatlevka', totalWallArea),
-            oboi: checkAndSum('chk-oboi', 'price-oboi', totalWallArea),
-            boyoq: checkAndSum('chk-boyoq', 'price-boyoq', totalWallArea),
-            travertin: checkAndSum('chk-travertin', 'price-travertin', totalWallArea),
-            gipsokarton: checkAndSum('chk-gipsokarton', 'price-gipsokarton', totalCeilingArea),
-            natyajnoy: checkAndSum('chk-natyajnoy', 'price-natyajnoy', totalCeilingArea),
-            elektro: checkAndSum('chk-elektro', 'price-elektro', totalFloorArea),
-            santexnika: checkAndSum('chk-santexnika', 'price-santexnika', totalFloorArea)
-        };
-
-        document.getElementById('total-price-display').innerText = totalCost.toLocaleString('ru-RU') + " UZS";
-
         const wrapper = document.getElementById('materials-rows-wrapper');
-        const container = document.getElementById('hisobot-container');
-        wrapper.innerHTML = ''; 
+        wrapper.innerHTML = '';
 
-        hasMaterials = false;
-
-        function appendMaterialRow(name, amount, unit, hint = "") {
-            if (amount <= 0) return;
-            hasMaterials = true;
-            
-            const netAmount = amount;
-            const grossAmount = netAmount * 1.10; 
-
-            const row = document.createElement('div');
-            row.className = 'material-row';
-            row.style.flexDirection = 'column';
-            row.style.alignItems = 'flex-start';
-            
-            row.innerHTML = `
-                <div style="display: flex; justify-content: space-between; width: 100%;">
-                    <span class="material-name">${name} <small style="color:var(--text-muted); font-size:10px;">(+10% zaxira)</small></span>
-                    <span class="material-val">${Math.ceil(grossAmount).toLocaleString('ru-RU')} ${unit}</span>
-                </div>
-                ${hint ? `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${hint} (Asl ehtiyoj: ${Math.ceil(netAmount).toLocaleString('ru-RU')} ${unit})</div>` : ''}
-            `;
-            wrapper.appendChild(row);
+        function addWork(chkId, priceId, vol, name, matName, rate, unit) {
+            const isChecked = document.getElementById(chkId).checked;
+            const price = parseFloat(document.getElementById(priceId).value) || 0;
+            if(isChecked) {
+                totalCost += (vol * price);
+                if(matName) {
+                    const gross = (vol * rate) * 1.10;
+                    wrapper.innerHTML += `
+                        <div class="material-row">
+                            <span class="material-name">${matName}</span>
+                            <span class="material-val">${Math.ceil(gross).toLocaleString()} ${unit}</span>
+                        </div>`;
+                }
+            }
         }
 
-        if (activeWorks.styajka) {
-            appendMaterialRow("Cement (Цемент M400)", totalFloorArea * 15, "kg", "Sarfi: 15 kg/m²");
-            appendMaterialRow("Pesok (Песок просеянный)", totalFloorArea * 0.04, "m³", "Sarfi: 0.04 m³/m²");
-        }
-        if (activeWorks.nalivnoy) {
-            appendMaterialRow("O'zi tekislanuvchi pol aralashmasi (Наливной пол)", totalFloorArea * 4, "kg", "Sarfi: ~4 kg/m²");
-        }
-        if (activeWorks.shtukaturka) {
-            appendMaterialRow("Gipsli shtukaturka (Rotband)", totalWallArea * 9, "kg", "Qalinligi 10mm uchun: 9 kg/m²");
-            appendMaterialRow("Gruntovka", totalWallArea * 0.2, "L", "Sarfi: 0.2 litr/m²");
-        }
-        if (activeWorks.shpatlevka) {
-            appendMaterialRow("Finiş shpatlevka", totalWallArea * 1.2, "kg", "Sarfi: 1.2 kg/m² (2 qatлам)");
-        }
-        if (activeWorks.oboi) {
-            appendMaterialRow("Gulqog'oz (рулон 1.06m x 10m)", totalWallArea / 8.5, "rulon", "1 ta rulon = ~8.5 m² real devor maydoni"); 
-            appendMaterialRow("Gulqog'oz yelimi (Клей)", totalWallArea * 0.05, "pachka", "1 ta pachka = ~20 m² uchun");
-        }
-        if (activeWorks.travertin) {
-            appendMaterialRow("Dekorativ travertin/suvoq aralashmasi", totalWallArea * 2.5, "kg", "Sarfi: ~2.5 kg/m²");
-        }
-        if (activeWorks.laminat) {
-            appendMaterialRow("Laminat (Podlozka bilan)", totalFloorArea * 1.05, "m²", "Pol maydoni + qirqimlar xarajati");
-        }
-        if (activeWorks.kafel) {
-            appendMaterialRow("Kafel yelimi (Клей для кафеля)", totalFloorArea * 5, "kg", "O'rtacha sarfi: 5 kg/m²");
-        }
-        if (activeWorks.gipsokarton) {
-            appendMaterialRow("Gipsokarton listlari (9.5mm)", totalCeilingArea / 3, "ta (list)", "1 ta standart list = 3 m²");
-            appendMaterialRow("Profil CD-60 (3m)", totalCeilingArea * 2, "ta", "Profil zaxirasi uchun");
-        }
+        addWork('chk-styajka', 'price-styajka', totalFloorArea, "Screed", "Cement M400", 15, "kg");
+        addWork('chk-shtukaturka', 'price-shtukaturka', totalWallArea, "Plaster", "Rotband Gypsum", 9, "kg");
+        addWork('chk-oboi', 'price-oboi', totalWallArea, "Wallpaper", "Wallpaper (Standard Roll)", 0.12, "rolls");
 
-        if (hasMaterials) {
-            container.style.display = 'block';
-            const disclaimer = document.createElement('div');
-            document.querySelectorAll('.disclaimer-box').forEach(el => el.remove());
-            disclaimer.className = 'disclaimer-box';
-            disclaimer.innerHTML = `<strong>DIQQAT:</strong> Materiallar va usta xizmatining yakuniy narxi obyektning o'ziga xos xususiyatlariga qarab o'zgarishi mumkin.`;
-            wrapper.appendChild(disclaimer);
-        }
+        document.getElementById('total-price-display').innerText = totalCost.toLocaleString() + " UZS";
+        document.getElementById('hisobot-container').style.display = 'block';
     }
-    // НАШ НОВЫЙ ИНСТРУМЕНТ ДЛЯ НАЛОЖЕНИЯ ТЕКСТУР ИЗ МЕНЮ
-function setMaterial(id, zone, value) {
-    const defs = document.getElementById(`svg-defs-${id}`);
-    const targetMask = document.getElementById(`mask-${zone}-${id}`);
-    
-    if (!defs || !targetMask) return;
-
-    // Если нажали на пустой вариант — сбрасываем маску
-    if (!value) {
-        targetMask.setAttribute('fill', 'transparent');
-        return;
-    }
-
-    // Карта путей к твоим квадратным текстурам-свотчам
-    let textureUrl = "";
-    if (zone === 'floor' && value === 'parket') {
-        textureUrl = "backend/images/texture_floor_parquet_herringbone.jpg";
-    }
-    if (zone === 'walls') {
-        if (value === 'oboi1') textureUrl = "backend/images/texture_wall_wallpaper_1.jpg";
-        if (value === 'oboi2') textureUrl = "backend/images/texture_wall_wallpaper_2.jpg";
-        if (value === 'oboi3') textureUrl = "backend/images/texture_wall_wallpaper_3.jpg";
-        if (value === 'ottachento') textureUrl = "backend/images/texture_wall_ottocento.jpg";
-        if (value === 'kraska') textureUrl = "backend/images/texture_wall_paint_white.jpg";
-    }
-
-    if (textureUrl) {
-        const patternId = `pattern-${zone}-${value}-${id}`;
-        
-        // Создаем внутри <defs> бесконечный узор из квадратика
-        defs.innerHTML = `
-            <pattern id="${patternId}" patternUnits="userSpaceOnUse" width="150" height="150">
-                <image href="${textureUrl}" x="0" y="0" width="150" height="150" />
-            </pattern>
-        `;
-
-        // Направляем этот узор на нужный <path>
-        targetMask.setAttribute('fill', `url(#${patternId})`);
-    }
-
-    // Синхронизация со скрытыми списками для бэкенда
-    const hiddenSelect = document.getElementById(`${zone}-mat-${id}`);
-    if (hiddenSelect) {
-        hiddenSelect.value = value;
-    }
-
-    // Намертво закрываем контекстное меню после клика
-    const menu = document.getElementById(`svg-menu-${id}`);
-    if (menu) {
-        menu.style.display = 'none';
-        menu.innerHTML = '';
-    }
-
-    // Запускаем перерасчет объемов работ
-    if (typeof calculateVolumes === 'function') calculateVolumes();
-}
 </script>
+
 </body>
 </html>
