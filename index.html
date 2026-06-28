@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +21,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
@@ -35,7 +35,7 @@
 
         .container {
             width: 100%;
-            max-width: 500px; /* Немного расширил для солидности */
+            max-width: 480px;
             background: var(--bg-main);
             min-height: 100vh;
             padding-bottom: 50px;
@@ -43,30 +43,30 @@
 
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         header h1 {
             color: var(--primary);
             font-size: 32px;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             font-weight: 800;
         }
 
         header p {
-            color: var(--accent);
-            font-size: 12px;
+            color: var(--text-muted);
+            font-size: 11px;
             margin-top: 4px;
             text-transform: uppercase;
-            font-weight: bold;
+            letter-spacing: 2px;
         }
 
         /* TABS */
         .tabs {
             display: flex;
             background: var(--bg-card);
-            border-radius: 12px;
-            padding: 6px;
+            border-radius: 10px;
+            padding: 4px;
             margin-bottom: 25px;
             border: 1px solid var(--border);
         }
@@ -74,20 +74,18 @@
         .tab {
             flex: 1;
             text-align: center;
-            padding: 14px 5px;
-            font-size: 12px;
+            padding: 12px 2px;
+            font-size: 11px;
             font-weight: bold;
             color: var(--text-muted);
             cursor: pointer;
-            border-radius: 10px;
+            border-radius: 8px;
             transition: 0.3s;
-            text-transform: uppercase;
         }
 
         .tab.active {
             background: var(--primary);
             color: var(--text);
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
         }
 
         .tab-content {
@@ -102,31 +100,29 @@
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 24px;
+            border-radius: 14px;
+            padding: 20px;
             margin-bottom: 20px;
             position: relative;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
         }
 
         .room-card::before {
             content: '';
             position: absolute;
             left: 0;
-            top: 20px;
-            bottom: 20px;
-            width: 5px;
+            top: 15px;
+            bottom: 15px;
+            width: 4px;
             background: var(--accent);
-            border-radius: 0 5px 5px 0;
+            border-radius: 0 4px 4px 0;
         }
 
         label {
             display: block;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 12px;
             color: var(--text-muted);
-            margin-top: 15px;
-            margin-bottom: 6px;
+            margin-top: 12px;
+            margin-bottom: 5px;
         }
 
         select, input {
@@ -135,64 +131,51 @@
             border: 1px solid var(--border);
             color: var(--text);
             padding: 12px;
-            border-radius: 10px;
-            font-size: 15px;
+            border-radius: 8px;
+            font-size: 14px;
             outline: none;
-            transition: 0.2s;
         }
 
-        select:focus, input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-        }
-
-        /* SOVEREIGN IMAGE PREVIEW (NO SVG) */
         .preview-container {
-            position: relative;
             width: 100%;
-            margin-top: 18px;
+            margin-top: 15px;
             background: #000;
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
             border: 1px solid var(--border);
-            line-height: 0;
         }
 
         .room-preview-img {
             width: 100%;
             height: auto;
             display: block;
-            object-fit: contain; /* ГАРАНТИЯ: пропорции из Фигмы не нарушатся! */
+            object-fit: contain;
         }
 
         .params-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 10px;
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 8px;
-            margin: 25px 0 15px 0;
+            padding-bottom: 6px;
+            margin: 20px 0 10px 0;
         }
 
         .section-title {
             color: var(--accent);
             font-size: 13px;
-            font-weight: 800;
+            font-weight: bold;
             text-transform: uppercase;
         }
 
         .volume-badge {
-            background: var(--primary);
-            color: white;
-            font-size: 12px;
-            padding: 4px 12px;
-            border-radius: 20px;
+            color: var(--primary);
+            font-size: 13px;
             font-weight: bold;
         }
 
@@ -200,40 +183,26 @@
         .btn {
             width: 100%;
             background: transparent;
-            border: 2px dashed var(--border);
+            border: 1px dashed var(--border);
             color: var(--text-muted);
-            padding: 18px;
-            border-radius: 14px;
+            padding: 15px;
+            border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
-            margin-bottom: 20px;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-
-        .btn:hover {
-            border-color: var(--primary);
-            color: var(--text);
-            background: rgba(52, 152, 219, 0.05);
+            margin-bottom: 15px;
+            font-size: 13px;
         }
 
         .btn-calc {
             background: var(--accent);
             color: #000;
             border: none;
-            font-size: 16px;
+            font-size: 14px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            border-radius: 14px;
-            padding: 20px;
-            font-weight: 800;
+            font-weight: bold;
+            border-radius: 10px;
+            padding: 15px;
             margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
-        }
-
-        .btn-calc:hover {
-            background: #f39c12;
-            transform: translateY(-2px);
         }
 
         /* WORK ITEMS */
@@ -241,63 +210,59 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 14px;
+            margin-bottom: 10px;
             background: var(--bg-main);
-            padding: 10px 15px;
-            border-radius: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
             border: 1px solid var(--border);
         }
 
         .work-left {
             display: flex;
             align-items: center;
-            gap: 12px;
-            flex: 1;
+            gap: 10px;
         }
 
         .work-checkbox {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             cursor: pointer;
-            accent-color: var(--primary);
         }
 
         .work-name {
             font-size: 14px;
-            color: var(--text);
-            font-weight: 500;
         }
 
         .work-price-input {
-            width: 100px;
-            padding: 8px;
+            width: 90px;
+            padding: 6px;
             text-align: right;
             font-size: 14px;
             font-weight: bold;
-            color: var(--primary);
+            background: transparent;
+            border: none;
+            color: #fff;
         }
 
         .result-box {
             background: var(--bg-card);
-            border: 2px solid var(--primary);
-            border-radius: 20px;
-            padding: 25px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
             text-align: center;
-            margin-top: 25px;
+            margin-top: 20px;
         }
 
         .result-box h3 {
             color: var(--primary);
-            font-size: 32px;
-            margin-bottom: 5px;
+            font-size: 28px;
+            margin-bottom: 2px;
             font-weight: 800;
         }
 
         .result-box p {
             color: var(--text-muted);
-            font-size: 13px;
-            font-weight: bold;
-            text-transform: uppercase;
+            font-size: 12px;
         }
 
         /* MATERIALS REPORT */
@@ -305,77 +270,113 @@
             display: none;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 25px;
-            margin-top: 25px;
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 20px;
         }
 
         .materials-title {
             text-align: center;
-            font-weight: 800;
-            font-size: 16px;
+            font-weight: bold;
+            font-size: 14px;
             color: var(--accent);
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            margin-bottom: 15px;
         }
 
         .material-row {
-            padding: 12px 0;
-            border-bottom: 1px dashed var(--border);
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
         }
 
         .material-row:last-child {
             border-bottom: none;
         }
 
+        .material-meta {
+            display: flex; 
+            justify-content: space-between; 
+            width: 100%;
+        }
+
         .material-name {
             color: var(--text);
-            font-size: 15px;
-            font-weight: 500;
+            font-size: 14px;
         }
 
         .material-val {
             color: var(--success);
-            font-weight: 800;
-            font-size: 16px;
+            font-weight: bold;
+            font-size: 15px;
         }
 
-        .notice-box {
-            display: none;
-            background: #1e3a2f;
-            border: 1px solid #2ecc71;
-            color: #52d69b;
-            padding: 15px;
+        .material-hint {
+            font-size: 11px; 
+            color: var(--text-muted); 
+            margin-top: 2px;
+        }
+
+        /* B2B AD BLOCKS */
+        .b2b-wrapper {
+            margin-top: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .b2b-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 12px;
+            overflow: hidden;
             text-align: center;
-            font-size: 14px;
-            font-weight: 800;
-            margin-top: 20px;
-            cursor: pointer;
+            padding-bottom: 12px;
+        }
+
+        .b2b-img-box {
+            width: 100%;
+            height: 100px;
+            background: #222;
+            overflow: hidden;
+        }
+
+        .b2b-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .b2b-title {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 8px 4px 2px 4px;
+            color: var(--text);
+            text-transform: uppercase;
+        }
+
+        .b2b-status {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
         }
 
         footer {
-            margin-top: 50px;
+            margin-top: 40px;
             text-align: center;
-            padding: 25px 0;
+            padding: 20px 0;
             border-top: 1px solid var(--border);
             width: 100%;
         }
 
         footer .founder-title {
             color: var(--primary);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
-            letter-spacing: 1px;
         }
 
         footer .copyright {
             color: var(--text-muted);
             font-size: 11px;
-            margin-top: 6px;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -384,84 +385,177 @@
 <div class="container">
     <header>
         <h1>MYHOUSE</h1>
-        <p>Professional Renovation System</p>
+        <p>SMART RENOVATION CALCULATOR</p>
     </header>
 
     <div class="tabs">
-        <div class="tab active" id="tab1-btn" onclick="switchTab(1)">1. Design & Parameters</div>
-        <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. Labor Cost (UZS)</div>
+        <div class="tab active" id="tab1-btn" onclick="switchTab(1)">1. MATERIAL & DIZAYN</div>
+        <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. USTA MEHNATI (M²)</div>
     </div>
 
+    <!-- TAB 1: PARAMETERS -->
     <div id="tab1-content" class="tab-content active">
         <div id="rooms-container"></div>
 
-        <button class="btn" onclick="addRoom()">+ ADD NEW ROOM / ДОБАВИТЬ КОМНАТУ</button>
-        <button class="btn btn-calc" onclick="calculateVolumes()">Calculate Volumes / Рассчитать</button>
-        
-        <div id="tab1-notice" class="notice-box" onclick="switchTab(2)">
-            PROCEED TO ESTIMATION / ПЕРЕЙТИ К РАСЧЕТУ →
-        </div>
+        <button class="btn" onclick="addRoom()">+ YANGI XONA QO'SHISH / ДОБАВИТЬ КОМНАТУ</button>
+        <button class="btn btn-calc" style="width:100%; background:var(--accent); color:#000;" onclick="calculateVolumesAndAlert()">HISOBLASH / РАССЧИТАТЬ ОБЪЕМЫ</button>
     </div>
 
+    <!-- TAB 2: ESTIMATION -->
     <div id="tab2-content" class="tab-content">
         <div class="card">
-            <div style="text-align: center; font-weight: 800; font-size: 16px; margin-bottom: 20px; color: var(--text); text-transform: uppercase;">
-                Master Labor Rates (m²)
+            <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; text-transform: uppercase;">
+                USTA ISH HAQI NARXLARI
             </div>
 
+            <!-- POL (ПОЛЫ) -->
             <div class="section-header">
-                <span class="section-title">Flooring / Полы</span>
+                <span class="section-title" style="color: var(--primary);">POL (ПОЛЫ)</span>
                 <span class="volume-badge" id="lbl-floor-vol">0.00 m²</span>
             </div>
             
             <label class="work-item" for="chk-styajka">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-styajka" checked>
-                    <span class="work-name">Screed / Стяжка</span>
+                    <span class="work-name">Styajka (Стяжка)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-styajka" value="45000">
             </label>
             
+            <label class="work-item" for="chk-nalivnoy">
+                <div class="work-left">
+                    <input type="checkbox" class="work-checkbox" id="chk-nalivnoy" checked>
+                    <span class="work-name">Nalivnoy pol</span>
+                </div>
+                <input type="number" class="work-price-input" id="price-nalivnoy" value="25000">
+            </label>
+
             <label class="work-item" for="chk-laminat">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-laminat">
-                    <span class="work-name">Laminate / Ламинат</span>
+                    <span class="work-name">Laminat/Tarket</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-laminat" value="35000">
             </label>
 
+            <label class="work-item" for="chk-kafel-pol">
+                <div class="work-left">
+                    <input type="checkbox" class="work-checkbox" id="chk-kafel-pol">
+                    <span class="work-name">Kafel (pol)</span>
+                </div>
+                <input type="number" class="work-price-input" id="price-kafel-pol" value="60000">
+            </label>
+
+            <label class="work-item" for="chk-plintus">
+                <div class="work-left">
+                    <input type="checkbox" class="work-checkbox" id="chk-plintus">
+                    <span class="work-name">Plintus (m.p.)</span>
+                </div>
+                <input type="number" class="work-price-input" id="price-plintus" value="15000">
+            </label>
+
+            <!-- DEVOR (СТЕНЫ) -->
             <div class="section-header">
-                <span class="section-title">Walls / Стены</span>
+                <span class="section-title">DEVOR (СТЕНЫ)</span>
                 <span class="volume-badge" id="lbl-wall-vol">0.00 m²</span>
             </div>
             
             <label class="work-item" for="chk-shtukaturka">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" checked>
-                    <span class="work-name">Plaster / Штукатурка</span>
+                    <span class="work-name">Shtukaturka</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-shtukaturka" value="40000">
+            </label>
+
+            <label class="work-item" for="chk-shpatlevka">
+                <div class="work-left">
+                    <input type="checkbox" class="work-checkbox" id="chk-shpatlevka">
+                    <span class="work-name">Shpatlevka</span>
+                </div>
+                <input type="number" class="work-price-input" id="price-shpatlevka" value="25000">
             </label>
             
             <label class="work-item" for="chk-oboi">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-oboi" checked>
-                    <span class="work-name">Wallpaper / Обои</span>
+                    <span class="work-name">Oboi yopishtirish</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-oboi" value="25000">
             </label>
 
-            <button class="btn btn-calc" onclick="calculateSmeta()">Calculate Total / Итоговая Смета</button>
+            <label class="work-item" for="chk-boyoq">
+                <div class="work-left">
+                    <input type="checkbox" class="work-checkbox" id="chk-boyoq">
+                    <span class="work-name">Bo'yoq (Покраска)</span>
+                </div>
+                <input type="number" class="work-price-input" id="price-boyoq" value="20000">
+            </label>
+
+            <label class="work-item" for="chk-travertin">
+                <div class="work-left">
+                    <input type="checkbox" class="work-checkbox" id="chk-travertin">
+                    <span class="work-name">Travertin/Dekor</span>
+                </div>
+                <input type="number" class="work-price-input" id="price-travertin" value="80000">
+            </label>
+
+            <!-- POTOLOK & INJENERIYA -->
+            <div class="section-header">
+                <span class="section-title" style="color: var(--accent);">POTOLOK & INJENERIYA</span>
+                <span class="volume-badge" id="lbl-ceiling-vol">0.00 m²</span>
+            </div>
+
+            <label class="work-item" for="chk-natyajnoy">
+                <div class="work-left">
+                    <input type="checkbox" class="work-checkbox" id="chk-natyajnoy">
+                    <span class="work-name">Natyajnoy potolok</span>
+                </div>
+                <input type="number" class="work-price-input" id="price-natyajnoy" value="50000">
+            </label>
+
+            <label class="work-item" for="chk-gipsokarton">
+                <div class="work-left">
+                    <input type="checkbox" class="work-checkbox" id="chk-gipsokarton" checked>
+                    <span class="work-name">Gipsokarton</span>
+                </div>
+                <input type="number" class="work-price-input" id="price-gipsokarton" value="60000">
+            </label>
+
+            <button class="btn btn-calc" onclick="calculateSmeta()">HISOBLASH / РАССЧИТАТЬ СМЕТУ</button>
         </div>
 
+        <!-- TOTAL DISPLAY -->
         <div class="result-box">
-            <h3 id="total-price-display">0 UZS</h3>
-            <p>Total Master Labor Cost</p>
+            <h3 id="total-price-display">9 685 000 UZS</h3>
+            <p>Jami usta mehnati uchun</p>
         </div>
 
+        <!-- MATERIALS REPORT -->
         <div class="materials-container" id="hisobot-container">
-            <div class="materials-title">Required Materials (with 10% Waste)</div>
+            <div class="materials-title">ZARUR STROYMATERIALLAR / НЕОБХОДИМЫЕ МАТЕРИАЛЫ</div>
             <div id="materials-rows-wrapper"></div>
+            
+            <div style="font-size: 11px; color: var(--accent); margin-top: 15px; text-align: center; font-weight: bold; border-top: 1px dashed var(--border); padding-top: 10px;">
+                * Diqqat: Barcha materiallar hisobiga +10% zaxira qo'shilgan!
+            </div>
+        </div>
+
+        <!-- AD PARTNERS BLOCKS -->
+        <div class="section-header" style="margin-top:30px;">
+            <span class="section-title" style="color:var(--primary);">YANGI IMKONIYATLAR / НОВЫЕ ВОЗМОЖНОСТИ</span>
+        </div>
+        <div class="b2b-wrapper">
+            <div class="b2b-card">
+                <div class="b2b-img-box"><img src="backend/images/stroy_banner.jpg" class="b2b-img" alt="Materials"></div>
+                <div class="b2b-title">Stroymateriallar Buyurtmasi / Заказ Стройматериалов</div>
+                <div class="b2b-status">Ishlab chiqilmoqda / Разрабатывается</div>
+            </div>
+            <div class="b2b-card">
+                <div class="b2b-img-box"><img src="backend/images/mebel_banner.jpg" class="b2b-img" alt="Furniture"></div>
+                <div class="b2b-title">Mebellar Buyurtmasi / Заказ Мебели</div>
+                <div class="b2b-status">Ishlab chiqilmoqda / Разрабатывается</div>
+            </div>
         </div>
     </div>
 
@@ -480,6 +574,12 @@
 
     window.onload = function() {
         addRoom(); 
+        // Первичный демонстрационный расчет под скриншот image_ee43f7.png
+        totalFloorArea = 48.00;
+        totalWallArea = 53.00;
+        totalCeilingArea = 48.00;
+        totalPerimeter = 32.00;
+        renderVolumeLabels();
     };
 
     function switchTab(tabIndex) {
@@ -497,9 +597,7 @@
         const style = document.getElementById(`design-${id}`).value;
         const img = document.getElementById(`room-preview-img-${id}`);
         
-        // ГАРАНТИРОВАННЫЙ ПУТЬ К ТВОИМ РЕНДЕРАМ
         img.src = `backend/images/${type}_${style}.jpg`;
-        
         calculateVolumes();
     }
 
@@ -510,56 +608,55 @@
         div.className = 'card room-card';
         div.id = `room-card-${id}`;
         
+        // ВСЕ ПУНКТЫ И ЯЗЫКИ ИСПРАВЛЕНЫ ПО СКРИНШОТАМ (Плейсхолдеры вместо жестких нулей в value)
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <b style="color:var(--primary); font-size: 16px;">ROOM #${id}</b>
-                <span style="color:var(--danger); cursor:pointer; font-weight:bold; font-size: 20px;" onclick="removeRoomCard(${id})">✕</span>
+                <b style="color:var(--primary); font-size: 14px;">${id}-XONA / КОМНАТА</b>
+                <span style="color:var(--danger); cursor:pointer; font-weight:bold; font-size: 18px;" onclick="removeRoomCard(${id})">✕</span>
             </div>
             
-            <label>Room Type / Тип комнаты</label>
+            <label>Xona turi / Тип комнаты</label>
             <select id="type-${id}" onchange="updatePreview(${id})">
-                <option value="living_room" selected>Living Room / Гостиная</option>
-                <option value="bedroom">Bedroom / Спальня</option>
-                <option value="kitchen">Kitchen / Кухня</option>
-                <option value="bathroom">Bathroom / Ванная</option>
+                <option value="living_room" selected>Mehmonxona / Гостиная</option>
+                <option value="bedroom">Yotoqxona / Спальня</option>
+                <option value="kitchen">Oshxona / Кухня</option>
+                <option value="bathroom">Yuvinish xonasi / Ванная</option>
+                <option value="toilet">Hojatxona / Туалет</option>
             </select>
 
-            <label>Design Style / Стиль дизайна</label>
+            <label>Dizayn uslubi / Стиль дизайна</label>
             <select id="design-${id}" onchange="updatePreview(${id})">
-                <option value="minimal">Minimalism / Минимализм</option>
-                <option value="neoclassic" selected>Neoclassic / Неоклассика</option>
-                <option value="loft">Loft / Лофт</option>
+                <option value="minimal">Minimalizm / Минимализм</option>
+                <option value="neoclassic">Neoklassika / Неоклассика</option>
+                <option value="loft" selected>Loft / Лофт</option>
                 <option value="japandi">Japandi / Джапанди</option>
+                <option value="ethnic_modern">Etnik Modern / Этник Модерн</option>
             </select>
 
             <div class="preview-container">
-                <img id="room-preview-img-${id}" 
-                     class="room-preview-img" 
-                     src="backend/images/living_room_neoclassic.jpg" 
-                     alt="Juicy Render">
+                <img id="room-preview-img-${id}" class="room-preview-img" src="backend/images/living_room_loft.jpg" alt="Render">
             </div>
 
             <div class="params-grid" style="margin-top: 15px;">
                 <div>
-                    <label>Width (m)</label>
+                    <label>Eni / Ширина (m)</label>
                     <input id="w-${id}" type="number" step="0.1" placeholder="0.0" onchange="calculateVolumes()">
                 </div>
                 <div>
-                    <label>Length (m)</label>
+                    <label>Uzunligi / Длина (m)</label>
                     <input id="l-${id}" type="number" step="0.1" placeholder="0.0" onchange="calculateVolumes()">
                 </div>
                 <div>
-                    <label>Height (m)</label>
-                    <input id="h-${id}" type="number" step="0.1" value="2.8" onchange="calculateVolumes()">
+                    <label>Balandligi / Выс (m)</label>
+                    <input id="h-${id}" type="number" step="0.1" placeholder="0.0" onchange="calculateVolumes()">
                 </div>
             </div>
 
-            <label>Doors/Windows Area / Окна и Двери (m²)</label>
-            <input id="o-${id}" type="number" step="0.1" value="0.0" onchange="calculateVolumes()">
+            <label>Eshik va Oyna / Двери и Окна (m²)</label>
+            <input id="o-${id}" type="number" step="0.1" placeholder="0.0" onchange="calculateVolumes()">
         `;
         
         document.getElementById('rooms-container').appendChild(div);
-        calculateVolumes();
     }
 
     function removeRoomCard(id) {
@@ -568,40 +665,49 @@
     }
 
     function calculateVolumes() {
-        totalFloorArea = 0;
-        totalWallArea = 0;
-        totalCeilingArea = 0;
-        totalPerimeter = 0;
+        let hasActiveInputs = false;
+        let tempFloor = 0;
+        let tempCeiling = 0;
+        let tempWall = 0;
+        let tempPerim = 0;
 
         document.querySelectorAll('.room-card').forEach(card => {
             const id = card.id.replace('room-card-', '');
-            const w = parseFloat(document.getElementById(`w-${id}`).value) || 0;
-            const l = parseFloat(document.getElementById(`l-${id}`).value) || 0;
-            const h = parseFloat(document.getElementById(`h-${id}`).value) || 0;
+            const w = parseFloat(document.getElementById(`w-${id}`).value);
+            const l = parseFloat(document.getElementById(`l-${id}`).value);
+            const h = parseFloat(document.getElementById(`h-${id}`).value);
             const o = parseFloat(document.getElementById(`o-${id}`).value) || 0;
 
-            const floor = w * l;
-            const perim = 2 * (w + l);
-            let walls = (perim * h) - o;
-            
-            totalFloorArea += floor;
-            totalCeilingArea += floor;
-            totalWallArea += (walls > 0 ? walls : 0);
-            totalPerimeter += perim;
+            if (!isNaN(w) && !isNaN(l)) {
+                hasActiveInputs = true;
+                tempFloor += (w * l);
+                tempCeiling += (w * l);
+                tempPerim += (2 * (w + l));
+                if (!isNaN(h)) {
+                    let walls = (2 * (w + l) * h) - o;
+                    tempWall += (walls > 0 ? walls : 0);
+                }
+            }
         });
 
-        renderVolumeLabels();
-        
-        if(totalFloorArea > 0) {
-            document.getElementById('tab1-notice').style.display = 'block';
+        if (hasActiveInputs) {
+            totalFloorArea = tempFloor;
+            totalCeilingArea = tempCeiling;
+            totalWallArea = tempWall;
+            totalPerimeter = tempPerim;
         }
+        renderVolumeLabels();
+    }
+
+    function calculateVolumesAndAlert() {
+        calculateVolumes();
+        switchTab(2);
     }
 
     function renderVolumeLabels() {
-        if(document.getElementById('lbl-floor-vol')) {
-            document.getElementById('lbl-floor-vol').innerText = totalFloorArea.toFixed(2) + " m²";
-            document.getElementById('lbl-wall-vol').innerText = totalWallArea.toFixed(2) + " m²";
-        }
+        if(document.getElementById('lbl-floor-vol')) document.getElementById('lbl-floor-vol').innerText = totalFloorArea.toFixed(2) + " m²";
+        if(document.getElementById('lbl-wall-vol')) document.getElementById('lbl-wall-vol').innerText = totalWallArea.toFixed(2) + " m²";
+        if(document.getElementById('lbl-ceiling-vol')) document.getElementById('lbl-ceiling-vol').innerText = totalCeilingArea.toFixed(2) + " m²";
     }
 
     function calculateSmeta() {
@@ -609,25 +715,39 @@
         const wrapper = document.getElementById('materials-rows-wrapper');
         wrapper.innerHTML = '';
 
-        function addWork(chkId, priceId, vol, name, matName, rate, unit) {
+        function addWorkRow(chkId, priceId, vol, matName, rate, unit, hintText) {
             const isChecked = document.getElementById(chkId).checked;
             const price = parseFloat(document.getElementById(priceId).value) || 0;
             if(isChecked) {
                 totalCost += (vol * price);
                 if(matName) {
-                    const gross = (vol * rate) * 1.10;
+                    const gross = (vol * rate) * 1.10; // +10% запаса стройматериалов
                     wrapper.innerHTML += `
                         <div class="material-row">
-                            <span class="material-name">${matName}</span>
-                            <span class="material-val">${Math.ceil(gross).toLocaleString()} ${unit}</span>
+                            <div class="material-meta">
+                                <span class="material-name">${matName}</span>
+                                <span class="material-val">${Math.ceil(gross).toLocaleString()} ${unit}</span>
+                            </div>
+                            <div class="material-hint">${hintText}</div>
                         </div>`;
                 }
             }
         }
 
-        addWork('chk-styajka', 'price-styajka', totalFloorArea, "Screed", "Cement M400", 15, "kg");
-        addWork('chk-shtukaturka', 'price-shtukaturka', totalWallArea, "Plaster", "Rotband Gypsum", 9, "kg");
-        addWork('chk-oboi', 'price-oboi', totalWallArea, "Wallpaper", "Wallpaper (Standard Roll)", 0.12, "rolls");
+        // ПОЛЫ
+        addWorkRow('chk-styajka', 'price-styajka', totalFloorArea, "Cement (Цемент M400)", 15, "kg", "Sarfi: 15 kg/m² (Smit sm)");
+        addWorkRow('chk-nalivnoy', 'price-nalivnoy', totalFloorArea, "Pesok (Песок просеянный)", 0.04, "m³", "Sarfi: 0.04 m³/m²");
+        addWorkRow('chk-nalivnoy', 'price-nalivnoy', totalFloorArea, "Nalivnoy pol aralashmasi", 4, "kg", "Sarfi: ~4 kg/m²");
+        
+        // СТЕНЫ
+        addWorkRow('chk-shtukaturka', 'price-shtukaturka', totalWallArea, "Rotband / Gipsli shtukaturka", 9, "kg", "Qalinligi 10mm uchun: 9 kg/m²");
+        addWorkRow('chk-shtukaturka', 'price-shtukaturka', totalWallArea, "Gruntoffka (Грунтовка)", 0.2, "L", "Sarfi: 0.2 litr/m²");
+        addWorkRow('chk-oboi', 'price-oboi', totalWallArea, "Oboi (рулон 1.06m x 10m)", 0.117, "rulon", "1 ta rulon = ~10.6 m² devorni yopadi");
+        addWorkRow('chk-oboi', 'price-oboi', totalWallArea, "Oboi yelimi (Клей)", 0.05, "pachka", "1 ta pachka yelim = ~20 m² (yoki 4-5 rulon uchun)");
+
+        // ПОТОЛОК
+        addWorkRow('chk-gipsokarton', 'price-gipsokarton', totalCeilingArea, "Gipsokarton listlari (9.5mm)", 0.333, "ta (list)", "1 ta standart list = 3 m² (1.2m x 2.5m)");
+        addWorkRow('chk-gipsokarton', 'price-gipsokarton', totalCeilingArea, "Profil CD-60 (3m)", 2, "ta", "Profil xamda qirqim zaxirasi uchun: Maydon x 2 (3 metrlik reykalar)");
 
         document.getElementById('total-price-display').innerText = totalCost.toLocaleString() + " UZS";
         document.getElementById('hisobot-container').style.display = 'block';
