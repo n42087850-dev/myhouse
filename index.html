@@ -205,22 +205,23 @@
             margin-top: 10px;
         }
 
-        /* WORK ITEMS */
+        /* WORK ITEMS (ИСПРАВЛЕН ЦВЕТ НА БЕЛЫЙ) */
         .work-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 10px;
-            background: var(--bg-main);
-            padding: 10px 12px;
+            background: var(--bg-card);
+            padding: 12px 15px;
             border-radius: 8px;
             border: 1px solid var(--border);
+            cursor: pointer;
         }
 
         .work-left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .work-checkbox {
@@ -231,6 +232,8 @@
 
         .work-name {
             font-size: 14px;
+            color: #ffffff !important; /* ЯРКИЙ БЕЛЫЙ ЦВЕТ ИЗ image_ee669a */
+            font-weight: 500;
         }
 
         .work-price-input {
@@ -284,7 +287,7 @@
         }
 
         .material-row {
-            padding: 10px 0;
+            padding: 12px 0;
             border-bottom: 1px solid var(--border);
         }
 
@@ -334,7 +337,7 @@
 
         .b2b-img-box {
             width: 100%;
-            height: 100px;
+            height: 110px;
             background: #222;
             overflow: hidden;
         }
@@ -414,45 +417,45 @@
                 <span class="volume-badge" id="lbl-floor-vol">0.00 m²</span>
             </div>
             
-            <label class="work-item" for="chk-styajka">
+            <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-styajka" checked>
                     <span class="work-name">Styajka (Стяжка)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-styajka" value="45000">
-            </label>
+            </div>
             
-            <label class="work-item" for="chk-nalivnoy">
+            <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-nalivnoy" checked>
                     <span class="work-name">Nalivnoy pol</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-nalivnoy" value="25000">
-            </label>
+            </div>
 
-            <label class="work-item" for="chk-laminat">
+            <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-laminat">
+                    <input type="checkbox" class="work-checkbox" id="chk-laminat" checked>
                     <span class="work-name">Laminat/Tarket</span>
                 </div>
-                <input type="number" class="work-price-input" id="price-laminat" value="35000">
-            </label>
+                <input type="number" class="work-price-input" id="price-laminat" value="33000">
+            </div>
 
-            <label class="work-item" for="chk-kafel-pol">
+            <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-kafel-pol">
+                    <input type="checkbox" class="work-checkbox" id="chk-kafel-pol" checked>
                     <span class="work-name">Kafel (pol)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-kafel-pol" value="60000">
-            </label>
+            </div>
 
-            <label class="work-item" for="chk-plintus">
+            <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-plintus">
+                    <input type="checkbox" class="work-checkbox" id="chk-plintus" checked>
                     <span class="work-name">Plintus (m.p.)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-plintus" value="15000">
-            </label>
+            </div>
 
             <!-- DEVOR (СТЕНЫ) -->
             <div class="section-header">
@@ -460,45 +463,45 @@
                 <span class="volume-badge" id="lbl-wall-vol">0.00 m²</span>
             </div>
             
-            <label class="work-item" for="chk-shtukaturka">
+            <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" checked>
                     <span class="work-name">Shtukaturka</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-shtukaturka" value="40000">
-            </label>
+            </div>
 
-            <label class="work-item" for="chk-shpatlevka">
+            <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-shpatlevka">
+                    <input type="checkbox" class="work-checkbox" id="chk-shpatlevka" checked>
                     <span class="work-name">Shpatlevka</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-shpatlevka" value="25000">
-            </label>
+            </div>
             
-            <label class="work-item" for="chk-oboi">
+            <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-oboi" checked>
                     <span class="work-name">Oboi yopishtirish</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-oboi" value="25000">
-            </label>
+            </div>
 
-            <label class="work-item" for="chk-boyoq">
+            <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-boyoq">
+                    <input type="checkbox" class="work-checkbox" id="chk-boyoq" checked>
                     <span class="work-name">Bo'yoq (Покраска)</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-boyoq" value="20000">
-            </label>
+            </div>
 
-            <label class="work-item" for="chk-travertin">
+            <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-travertin">
                     <span class="work-name">Travertin/Dekor</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-travertin" value="80000">
-            </label>
+            </div>
 
             <!-- POTOLOK & INJENERIYA -->
             <div class="section-header">
@@ -506,28 +509,28 @@
                 <span class="volume-badge" id="lbl-ceiling-vol">0.00 m²</span>
             </div>
 
-            <label class="work-item" for="chk-natyajnoy">
+            <div class="work-item">
                 <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-natyajnoy">
+                    <input type="checkbox" class="work-checkbox" id="chk-natyajnoy" checked>
                     <span class="work-name">Natyajnoy potolok</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-natyajnoy" value="50000">
-            </label>
+            </div>
 
-            <label class="work-item" for="chk-gipsokarton">
+            <div class="work-item">
                 <div class="work-left">
                     <input type="checkbox" class="work-checkbox" id="chk-gipsokarton" checked>
                     <span class="work-name">Gipsokarton</span>
                 </div>
                 <input type="number" class="work-price-input" id="price-gipsokarton" value="60000">
-            </label>
+            </div>
 
             <button class="btn btn-calc" onclick="calculateSmeta()">HISOBLASH / РАССЧИТАТЬ СМЕТУ</button>
         </div>
 
         <!-- TOTAL DISPLAY -->
         <div class="result-box">
-            <h3 id="total-price-display">9 685 000 UZS</h3>
+            <h3 id="total-price-display">0 UZS</h3>
             <p>Jami usta mehnati uchun</p>
         </div>
 
@@ -541,18 +544,22 @@
             </div>
         </div>
 
-        <!-- AD PARTNERS BLOCKS -->
+        <!-- ГАРАНТИРОВАННО РАБОЧИЕ ИЗОБРАЖЕНИЯ ПАРТНЕРОВ -->
         <div class="section-header" style="margin-top:30px;">
             <span class="section-title" style="color:var(--primary);">YANGI IMKONIYATLAR / НОВЫЕ ВОЗМОЖНОСТИ</span>
         </div>
         <div class="b2b-wrapper">
             <div class="b2b-card">
-                <div class="b2b-img-box"><img src="backend/images/stroy_banner.jpg" class="b2b-img" alt="Materials"></div>
+                <div class="b2b-img-box">
+                    <img src="https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=200&q=80" class="b2b-img" alt="Materials">
+                </div>
                 <div class="b2b-title">Stroymateriallar Buyurtmasi / Заказ Стройматериалов</div>
                 <div class="b2b-status">Ishlab chiqilmoqda / Разрабатывается</div>
             </div>
             <div class="b2b-card">
-                <div class="b2b-img-box"><img src="backend/images/mebel_banner.jpg" class="b2b-img" alt="Furniture"></div>
+                <div class="b2b-img-box">
+                    <img src="https://images.unsplash.com/photo-1249611591322-a9a7cc040a8f?auto=format&fit=crop&w=200&q=80" class="b2b-img" alt="Furniture">
+                </div>
                 <div class="b2b-title">Mebellar Buyurtmasi / Заказ Мебели</div>
                 <div class="b2b-status">Ishlab chiqilmoqda / Разрабатывается</div>
             </div>
@@ -574,11 +581,11 @@
 
     window.onload = function() {
         addRoom(); 
-        // Первичный демонстрационный расчет под скриншот image_ee43f7.png
-        totalFloorArea = 48.00;
-        totalWallArea = 53.00;
-        totalCeilingArea = 48.00;
-        totalPerimeter = 32.00;
+        // СТРОГО ОБНУЛЯЕМ ВСЕ ДАННЫЕ ПРИ СТАРТЕ! НИКАКИХ ЛЖЕ-ОБЪЕМОВ.
+        totalFloorArea = 0;
+        totalWallArea = 0;
+        totalCeilingArea = 0;
+        totalPerimeter = 0;
         renderVolumeLabels();
     };
 
@@ -596,7 +603,6 @@
         const type = document.getElementById(`type-${id}`).value;
         const style = document.getElementById(`design-${id}`).value;
         const img = document.getElementById(`room-preview-img-${id}`);
-        
         img.src = `backend/images/${type}_${style}.jpg`;
         calculateVolumes();
     }
@@ -608,7 +614,7 @@
         div.className = 'card room-card';
         div.id = `room-card-${id}`;
         
-        // ВСЕ ПУНКТЫ И ЯЗЫКИ ИСПРАВЛЕНЫ ПО СКРИНШОТАМ (Плейсхолдеры вместо жестких нулей в value)
+        // ЧИСТЫЕ HTML PLACEHOLDER-Ы. НИКАКИХ ЛИШНИХ НУЛЕЙ В ЗНАЧЕНИЯХ VALUE!
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <b style="color:var(--primary); font-size: 14px;">${id}-XONA / КОМНАТА</b>
@@ -695,6 +701,11 @@
             totalCeilingArea = tempCeiling;
             totalWallArea = tempWall;
             totalPerimeter = tempPerim;
+        } else {
+            totalFloorArea = 0;
+            totalCeilingArea = 0;
+            totalWallArea = 0;
+            totalPerimeter = 0;
         }
         renderVolumeLabels();
     }
@@ -705,9 +716,9 @@
     }
 
     function renderVolumeLabels() {
-        if(document.getElementById('lbl-floor-vol')) document.getElementById('lbl-floor-vol').innerText = totalFloorArea.toFixed(2) + " m²";
-        if(document.getElementById('lbl-wall-vol')) document.getElementById('lbl-wall-vol').innerText = totalWallArea.toFixed(2) + " m²";
-        if(document.getElementById('lbl-ceiling-vol')) document.getElementById('lbl-ceiling-vol').innerText = totalCeilingArea.toFixed(2) + " m²";
+        document.getElementById('lbl-floor-vol').innerText = totalFloorArea.toFixed(2) + " m²";
+        document.getElementById('lbl-wall-vol').innerText = totalWallArea.toFixed(2) + " m²";
+        document.getElementById('lbl-ceiling-vol').innerText = totalCeilingArea.toFixed(2) + " m²";
     }
 
     function calculateSmeta() {
@@ -715,39 +726,87 @@
         const wrapper = document.getElementById('materials-rows-wrapper');
         wrapper.innerHTML = '';
 
-        function addWorkRow(chkId, priceId, vol, matName, rate, unit, hintText) {
-            const isChecked = document.getElementById(chkId).checked;
-            const price = parseFloat(document.getElementById(priceId).value) || 0;
-            if(isChecked) {
-                totalCost += (vol * price);
-                if(matName) {
-                    const gross = (vol * rate) * 1.10; // +10% запаса стройматериалов
-                    wrapper.innerHTML += `
-                        <div class="material-row">
-                            <div class="material-meta">
-                                <span class="material-name">${matName}</span>
-                                <span class="material-val">${Math.ceil(gross).toLocaleString()} ${unit}</span>
-                            </div>
-                            <div class="material-hint">${hintText}</div>
-                        </div>`;
-                }
-            }
+        function addMaterialRow(matName, amount, unit, hintText) {
+            if (amount <= 0 || isNaN(amount)) return;
+            const gross = amount * 1.10; // Строгая прорабская норма: +10% запаса
+            wrapper.innerHTML += `
+                <div class="material-row">
+                    <div class="material-meta">
+                        <span class="material-name">${matName}</span>
+                        <span class="material-val">${unit === "m³" ? gross.toFixed(2) : Math.ceil(gross).toLocaleString()} ${unit}</span>
+                    </div>
+                    <div class="material-hint">${hintText}</div>
+                </div>`;
         }
 
-        // ПОЛЫ
-        addWorkRow('chk-styajka', 'price-styajka', totalFloorArea, "Cement (Цемент M400)", 15, "kg", "Sarfi: 15 kg/m² (Smit sm)");
-        addWorkRow('chk-nalivnoy', 'price-nalivnoy', totalFloorArea, "Pesok (Песок просеянный)", 0.04, "m³", "Sarfi: 0.04 m³/m²");
-        addWorkRow('chk-nalivnoy', 'price-nalivnoy', totalFloorArea, "Nalivnoy pol aralashmasi", 4, "kg", "Sarfi: ~4 kg/m²");
+        // 1. ПОЛЫ (POL)
+        if (document.getElementById('chk-styajka').checked) {
+            const price = parseFloat(document.getElementById('price-styajka').value) || 0;
+            totalCost += (totalFloorArea * price);
+            addMaterialRow("Cement (Цемент M400)", totalFloorArea * 15, "kg", "Sarfi: 15 kg/m² (Smit sm)");
+        }
         
-        // СТЕНЫ
-        addWorkRow('chk-shtukaturka', 'price-shtukaturka', totalWallArea, "Rotband / Gipsli shtukaturka", 9, "kg", "Qalinligi 10mm uchun: 9 kg/m²");
-        addWorkRow('chk-shtukaturka', 'price-shtukaturka', totalWallArea, "Gruntoffka (Грунтовка)", 0.2, "L", "Sarfi: 0.2 litr/m²");
-        addWorkRow('chk-oboi', 'price-oboi', totalWallArea, "Oboi (рулон 1.06m x 10m)", 0.117, "rulon", "1 ta rulon = ~10.6 m² devorni yopadi");
-        addWorkRow('chk-oboi', 'price-oboi', totalWallArea, "Oboi yelimi (Клей)", 0.05, "pachka", "1 ta pachka yelim = ~20 m² (yoki 4-5 rulon uchun)");
+        if (document.getElementById('chk-nalivnoy').checked) {
+            const price = parseFloat(document.getElementById('price-nalivnoy').value) || 0;
+            totalCost += (totalFloorArea * price);
+            addMaterialRow("Pesok (Песок просеянный)", totalFloorArea * 0.04, "m³", "Sarfi: 0.04 m³/m²");
+            addMaterialRow("Nalivnoy pol aralashmasi", totalFloorArea * 4, "kg", "Sarfi: ~4 kg/m²");
+        }
 
-        // ПОТОЛОК
-        addWorkRow('chk-gipsokarton', 'price-gipsokarton', totalCeilingArea, "Gipsokarton listlari (9.5mm)", 0.333, "ta (list)", "1 ta standart list = 3 m² (1.2m x 2.5m)");
-        addWorkRow('chk-gipsokarton', 'price-gipsokarton', totalCeilingArea, "Profil CD-60 (3m)", 2, "ta", "Profil xamda qirqim zaxirasi uchun: Maydon x 2 (3 metrlik reykalar)");
+        if (document.getElementById('chk-laminat').checked) {
+            const price = parseFloat(document.getElementById('price-laminat').value) || 0;
+            totalCost += (totalFloorArea * price);
+        }
+        if (document.getElementById('chk-kafel-pol').checked) {
+            const price = parseFloat(document.getElementById('price-kafel-pol').value) || 0;
+            totalCost += (totalFloorArea * price);
+        }
+        if (document.getElementById('chk-plintus').checked) {
+            const price = parseFloat(document.getElementById('price-plintus').value) || 0;
+            totalCost += (totalPerimeter * price);
+        }
+
+        // 2. СТЕНЫ (DEVOR)
+        if (document.getElementById('chk-shtukaturka').checked) {
+            const price = parseFloat(document.getElementById('price-shtukaturka').value) || 0;
+            totalCost += (totalWallArea * price);
+            addMaterialRow("Rotband / Gipsli shtukaturka", totalWallArea * 9, "kg", "Qalinligi 10mm uchun: 9 kg/m²");
+            addMaterialRow("Gruntoffka (Грунтовка)", totalWallArea * 0.2, "L", "Sarfi: 0.2 litr/m²");
+        }
+
+        if (document.getElementById('chk-shpatlevka').checked) {
+            const price = parseFloat(document.getElementById('price-shpatlevka').value) || 0;
+            totalCost += (totalWallArea * price);
+        }
+
+        if (document.getElementById('chk-oboi').checked) {
+            const price = parseFloat(document.getElementById('price-oboi').value) || 0;
+            totalCost += (totalWallArea * price);
+            addMaterialRow("Oboi (рулон 1.06m x 10m)", totalWallArea / 10.6, "rulon", "1 ta rulon = ~10.6 m² devorni yopadi");
+            addMaterialRow("Oboi yelimi (Клей)", totalWallArea / 20, "pachka", "1 ta pachka yelim = ~20 m² (yoki 4-5 rulon uchun)");
+        }
+
+        if (document.getElementById('chk-boyoq').checked) {
+            const price = parseFloat(document.getElementById('price-boyoq').value) || 0;
+            totalCost += (totalWallArea * price);
+        }
+        if (document.getElementById('chk-travertin').checked) {
+            const price = parseFloat(document.getElementById('price-travertin').value) || 0;
+            totalCost += (totalWallArea * price);
+        }
+
+        // 3. ПОТОЛОК (POTOLOK)
+        if (document.getElementById('chk-natyajnoy').checked) {
+            const price = parseFloat(document.getElementById('price-natyajnoy').value) || 0;
+            totalCost += (totalCeilingArea * price);
+        }
+
+        if (document.getElementById('chk-gipsokarton').checked) {
+            const price = parseFloat(document.getElementById('price-gipsokarton').value) || 0;
+            totalCost += (totalCeilingArea * price);
+            addMaterialRow("Gipsokarton listlari (9.5mm)", totalCeilingArea / 3, "ta (list)", "1 ta standart list = 3 m² (1.2m x 2.5m)");
+            addMaterialRow("Profil CD-60 (3m)", totalCeilingArea * 2, "ta", "Profil xamda qirqim zaxirasi uchun: Maydon x 2 (3 metrlik reykalar)");
+        }
 
         document.getElementById('total-price-display').innerText = totalCost.toLocaleString() + " UZS";
         document.getElementById('hisobot-container').style.display = 'block';
