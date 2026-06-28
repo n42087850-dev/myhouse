@@ -205,7 +205,7 @@
             margin-top: 10px;
         }
 
-        /* WORK ITEMS (ИСПРАВЛЕН ЦВЕТ НА БЕЛЫЙ) */
+        /* WORK ITEMS */
         .work-item {
             display: flex;
             align-items: center;
@@ -232,7 +232,7 @@
 
         .work-name {
             font-size: 14px;
-            color: #ffffff !important; /* ЯРКИЙ БЕЛЫЙ ЦВЕТ ИЗ image_ee669a */
+            color: #ffffff !important;
             font-weight: 500;
         }
 
@@ -544,7 +544,7 @@
             </div>
         </div>
 
-        <!-- ГАРАНТИРОВАННО РАБОЧИЕ ИЗОБРАЖЕНИЯ ПАРТНЕРОВ -->
+        <!-- AD PARTNERS BLOCKS -->
         <div class="section-header" style="margin-top:30px;">
             <span class="section-title" style="color:var(--primary);">YANGI IMKONIYATLAR / НОВЫЕ ВОЗМОЖНОСТИ</span>
         </div>
@@ -558,7 +558,7 @@
             </div>
             <div class="b2b-card">
                 <div class="b2b-img-box">
-                    <img src="https://images.unsplash.com/photo-1249611591322-a9a7cc040a8f?auto=format&fit=crop&w=200&q=80" class="b2b-img" alt="Furniture">
+                    <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=200&q=80" class="b2b-img" alt="Furniture">
                 </div>
                 <div class="b2b-title">Mebellar Buyurtmasi / Заказ Мебели</div>
                 <div class="b2b-status">Ishlab chiqilmoqda / Разрабатывается</div>
@@ -581,7 +581,6 @@
 
     window.onload = function() {
         addRoom(); 
-        // СТРОГО ОБНУЛЯЕМ ВСЕ ДАННЫЕ ПРИ СТАРТЕ! НИКАКИХ ЛЖЕ-ОБЪЕМОВ.
         totalFloorArea = 0;
         totalWallArea = 0;
         totalCeilingArea = 0;
@@ -614,7 +613,6 @@
         div.className = 'card room-card';
         div.id = `room-card-${id}`;
         
-        // ЧИСТЫЕ HTML PLACEHOLDER-Ы. НИКАКИХ ЛИШНИХ НУЛЕЙ В ЗНАЧЕНИЯХ VALUE!
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <b style="color:var(--primary); font-size: 14px;">${id}-XONA / КОМНАТА</b>
@@ -771,7 +769,7 @@
             const price = parseFloat(document.getElementById('price-shtukaturka').value) || 0;
             totalCost += (totalWallArea * price);
             addMaterialRow("Rotband / Gipsli shtukaturka", totalWallArea * 9, "kg", "Qalinligi 10mm uchun: 9 kg/m²");
-            addMaterialRow("Gruntoffka (Грунтовка)", totalWallArea * 0.2, "L", "Sarfi: 0.2 litr/m²");
+            addMaterialRow("Gruntovka (Грунтовка)", totalWallArea * 0.2, "L", "Sarfi: 0.2 litr/m²");
         }
 
         if (document.getElementById('chk-shpatlevka').checked) {
