@@ -3,813 +3,593 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MYHOUSE PRO - Smart Renovation Calculator</title>
+    <title>MYHOUSE PRO — Remont va Mebel Kalkulyatori</title>
     <style>
         :root {
-            --bg-main: #0c1524;
-            --bg-card: #142238;
-            --primary: #3498db;
-            --accent: #f1c40f;
-            --text: #ffffff;
-            --text-muted: #8a9cb4;
-            --border: #1f3556;
-            --success: #2ecc71;
-            --danger: #e74c3c;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --primary: #38bdf8;
+            --accent: #f59e0b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
             background-color: var(--bg-main);
             color: var(--text);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+            padding-bottom: 60px;
         }
 
-        .container {
-            width: 100%;
-            max-width: 480px;
-            background: var(--bg-main);
-            min-height: 100vh;
-            padding-bottom: 50px;
-        }
-
-        header {
+        .header {
             text-align: center;
-            margin-bottom: 25px;
-        }
-
-        header h1 {
-            color: var(--primary);
-            font-size: 32px;
-            letter-spacing: 1px;
-            font-weight: 800;
-        }
-
-        header p {
-            color: var(--text-muted);
-            font-size: 11px;
-            margin-top: 4px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        /* TABS */
-        .tabs {
-            display: flex;
-            background: var(--bg-card);
-            border-radius: 10px;
-            padding: 4px;
-            margin-bottom: 25px;
-            border: 1px solid var(--border);
-        }
-
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 12px 2px;
-            font-size: 11px;
-            font-weight: bold;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-radius: 8px;
-            transition: 0.3s;
-        }
-
-        .tab.active {
-            background: var(--primary);
-            color: var(--text);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* CARDS */
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 20px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
             margin-bottom: 20px;
-            position: relative;
         }
 
-        .room-card::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 15px;
-            bottom: 15px;
-            width: 4px;
-            background: var(--accent);
-            border-radius: 0 4px 4px 0;
+        .header h1 {
+            color: var(--primary);
+            font-size: 22px;
+            letter-spacing: 1px;
         }
 
-        label {
-            display: block;
-            font-size: 12px;
+        .header p {
             color: var(--text-muted);
-            margin-top: 12px;
-            margin-bottom: 5px;
-        }
-
-        select, input {
-            width: 100%;
-            background: var(--bg-main);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .preview-container {
-            width: 100%;
-            margin-top: 15px;
-            background: #000;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .room-preview-img {
-            width: 100%;
-            height: auto;
-            display: block;
-            object-fit: contain;
-        }
-
-        .params-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            font-size: 12px;
+            margin-top: 4px;
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 6px;
-            margin: 20px 0 10px 0;
+            margin-bottom: 12px;
         }
 
         .section-title {
-            color: var(--accent);
-            font-size: 13px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .volume-badge {
-            color: var(--primary);
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        /* BUTTONS */
-        .btn {
-            width: 100%;
-            background: transparent;
-            border: 1px dashed var(--border);
-            color: var(--text-muted);
-            padding: 15px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 15px;
-            font-size: 13px;
-        }
-
-        .btn-calc {
-            background: var(--accent);
-            color: #000;
-            border: none;
             font-size: 14px;
-            text-transform: uppercase;
             font-weight: bold;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
         }
 
-        /* WORK ITEMS */
-        .work-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .room-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .room-title {
+            font-weight: bold;
+            color: var(--primary);
             margin-bottom: 10px;
-            background: var(--bg-card);
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            cursor: pointer;
+            font-size: 15px;
         }
 
-        .work-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .form-group {
+            margin-bottom: 10px;
         }
 
-        .work-checkbox {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .work-name {
-            font-size: 14px;
-            color: #ffffff !important;
-            font-weight: 500;
-        }
-
-        .work-price-input {
-            width: 90px;
-            padding: 6px;
-            text-align: right;
-            font-size: 14px;
-            font-weight: bold;
-            background: transparent;
-            border: none;
-            color: #fff;
-        }
-
-        .result-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 20px;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .result-box h3 {
-            color: var(--primary);
-            font-size: 28px;
-            margin-bottom: 2px;
-            font-weight: 800;
-        }
-
-        .result-box p {
-            color: var(--text-muted);
+        label {
+            display: block;
             font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
         }
 
-        /* MATERIALS REPORT */
-        .materials-container {
-            display: none;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .materials-title {
-            text-align: center;
-            font-weight: bold;
-            font-size: 14px;
-            color: var(--accent);
-            margin-bottom: 15px;
-        }
-
-        .material-row {
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .material-row:last-child {
-            border-bottom: none;
-        }
-
-        .material-meta {
-            display: flex; 
-            justify-content: space-between; 
+        input, select {
             width: 100%;
-        }
-
-        .material-name {
+            padding: 10px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
             color: var(--text);
             font-size: 14px;
         }
 
-        .material-val {
-            color: var(--success);
-            font-weight: bold;
-            font-size: 15px;
-        }
-
-        .material-hint {
-            font-size: 11px; 
-            color: var(--text-muted); 
-            margin-top: 2px;
-        }
-
-        /* B2B AD BLOCKS */
-        .b2b-wrapper {
-            margin-top: 25px;
+        .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
+        }
+
+        .preview-box {
+            width: 100%;
+            height: 180px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 10px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+        }
+
+        .preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .btn-add {
+            background: transparent;
+            border: 1px dashed var(--primary);
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .summary-price {
+            font-size: 26px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 5px 0;
+        }
+
+        .b2b-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
         }
 
         .b2b-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            overflow: hidden;
+            padding: 10px;
             text-align: center;
-            padding-bottom: 12px;
+            transition: 0.2s;
+        }
+
+        .b2b-card:hover {
+            border-color: var(--accent);
         }
 
         .b2b-img-box {
             width: 100%;
-            height: 110px;
-            background: #222;
+            height: 80px;
+            border-radius: 6px;
             overflow: hidden;
+            margin-bottom: 8px;
         }
 
-        .b2b-img {
+        .b2b-img-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
         .b2b-title {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: bold;
-            padding: 8px 4px 2px 4px;
-            color: var(--text);
-            text-transform: uppercase;
+            margin-bottom: 4px;
         }
 
         .b2b-status {
-            font-size: 9px;
-            color: var(--text-muted);
-            text-transform: uppercase;
+            font-size: 10px;
+            color: var(--accent);
         }
 
-        footer {
-            margin-top: 40px;
-            text-align: center;
-            padding: 20px 0;
-            border-top: 1px solid var(--border);
+        /* MODAL CATALOG STYLES */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
         }
 
-        footer .founder-title {
+        .modal-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-main);
+        }
+
+        .modal-header h3 {
+            color: var(--accent);
+            font-size: 15px;
+            margin: 0;
+        }
+
+        .close-btn {
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .huvaydo-category-title {
+            font-size: 14px;
+            font-weight: bold;
             color: var(--primary);
+            margin-top: 10px;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .huvaydo-category-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .huvaydo-card {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .huvaydo-card-title {
             font-size: 13px;
             font-weight: bold;
+            color: var(--text);
         }
 
-        footer .copyright {
+        .huvaydo-order-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.2s;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
             color: var(--text-muted);
-            font-size: 11px;
-            margin-top: 4px;
+        }
+
+        .footer span {
+            color: var(--primary);
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>MYHOUSE</h1>
-        <p>SMART RENOVATION CALCULATOR</p>
-    </header>
-
-    <div class="tabs">
-        <div class="tab active" id="tab1-btn" onclick="switchTab(1)">1. MATERIAL & DIZAYN</div>
-        <div class="tab" id="tab2-btn" onclick="switchTab(2)">2. USTA MEHNATI (M²)</div>
+    <div class="header">
+        <h1>MYHOUSE PRO</h1>
+        <p>Xonadon ta'miri va mebellar kalkulyatori</p>
     </div>
 
-    <!-- TAB 1: PARAMETERS -->
-    <div id="tab1-content" class="tab-content active">
-        <div id="rooms-container"></div>
-
-        <button class="btn" onclick="addRoom()">+ YANGI XONA QO'SHISH / ДОБАВИТЬ КОМНАТУ</button>
-        <button class="btn btn-calc" style="width:100%; background:var(--accent); color:#000;" onclick="calculateVolumesAndAlert()">HISOBLASH / РАССЧИТАТЬ ОБЪЕМЫ</button>
+    <div class="section-header">
+        <span class="section-title">XONALARNI SOZLASH / НАСТРОЙКА КОМНАТ</span>
     </div>
 
-    <!-- TAB 2: ESTIMATION -->
-    <div id="tab2-content" class="tab-content">
-        <div class="card">
-            <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; text-transform: uppercase;">
-                USTA ISH HAQI NARXLARI
-            </div>
+    <div id="rooms-container">
+        <!-- Динамические комнаты создаются через JS -->
+    </div>
 
-            <!-- POL (ПОЛЫ) -->
-            <div class="section-header">
-                <span class="section-title" style="color: var(--primary);">POL (ПОЛЫ)</span>
-                <span class="volume-badge" id="lbl-floor-vol">0.00 m²</span>
-            </div>
-            
-            <div class="work-item">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-styajka" checked>
-                    <span class="work-name">Styajka (Стяжка)</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-styajka" value="45000">
-            </div>
-            
-            <div class="work-item">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-nalivnoy" checked>
-                    <span class="work-name">Nalivnoy pol</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-nalivnoy" value="25000">
-            </div>
+    <button class="btn btn-add" onclick="addRoom()">+ Xona qo'shish / Добавить комнату</button>
 
-            <div class="work-item">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-laminat" checked>
-                    <span class="work-name">Laminat/Tarket</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-laminat" value="33000">
-            </div>
+    <div class="summary-card">
+        <label>JAMI TAXMINIY SMETA / ИТОГОВАЯ СМЕТА</label>
+        <div class="summary-price" id="total-price">0 UZS</div>
+        <p style="font-size: 11px; color: var(--text-muted);">Jami usta mehnati va materiallar uchun / За работу и материалы</p>
+    </div>
 
-            <div class="work-item">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-kafel-pol" checked>
-                    <span class="work-name">Kafel (pol)</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-kafel-pol" value="60000">
+    <!-- NEW OPPORTUNITIES / B2B BLOCK -->
+    <div class="section-header" style="margin-top:30px;">
+        <span class="section-title">YANGI IMKONIYATLAR / НОВЫЕ ВОЗМОЖНОСТИ</span>
+    </div>
+    
+    <div class="b2b-wrapper">
+        <div class="b2b-card">
+            <div class="b2b-img-box">
+                <img src="https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=200&q=80" alt="Materials">
             </div>
-
-            <div class="work-item">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-plintus" checked>
-                    <span class="work-name">Plintus (m.p.)</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-plintus" value="15000">
-            </div>
-
-            <!-- DEVOR (СТЕНЫ) -->
-            <div class="section-header">
-                <span class="section-title">DEVOR (СТЕНЫ)</span>
-                <span class="volume-badge" id="lbl-wall-vol">0.00 m²</span>
-            </div>
-            
-            <div class="work-item">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-shtukaturka" checked>
-                    <span class="work-name">Shtukaturka</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-shtukaturka" value="40000">
-            </div>
-
-            <div class="work-item">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-shpatlevka" checked>
-                    <span class="work-name">Shpatlevka</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-shpatlevka" value="25000">
-            </div>
-            
-            <div class="work-item">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-oboi" checked>
-                    <span class="work-name">Oboi yopishtirish</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-oboi" value="25000">
-            </div>
-
-            <div class="work-item">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-boyoq" checked>
-                    <span class="work-name">Bo'yoq (Покраска)</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-boyoq" value="20000">
-            </div>
-
-            <div class="work-item">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-travertin">
-                    <span class="work-name">Travertin/Dekor</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-travertin" value="80000">
-            </div>
-
-            <!-- POTOLOK & INJENERIYA -->
-            <div class="section-header">
-                <span class="section-title" style="color: var(--accent);">POTOLOK & INJENERIYA</span>
-                <span class="volume-badge" id="lbl-ceiling-vol">0.00 m²</span>
-            </div>
-
-            <div class="work-item">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-natyajnoy" checked>
-                    <span class="work-name">Natyajnoy potolok</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-natyajnoy" value="50000">
-            </div>
-
-            <div class="work-item">
-                <div class="work-left">
-                    <input type="checkbox" class="work-checkbox" id="chk-gipsokarton" checked>
-                    <span class="work-name">Gipsokarton</span>
-                </div>
-                <input type="number" class="work-price-input" id="price-gipsokarton" value="60000">
-            </div>
-
-            <button class="btn btn-calc" onclick="calculateSmeta()">HISOBLASH / РАССЧИТАТЬ СМЕТУ</button>
+            <div class="b2b-title">STROYMATERIALLAR BUYURTMASI</div>
+            <div class="b2b-status">ISHLAB CHIQILMOQDA</div>
         </div>
-
-        <!-- TOTAL DISPLAY -->
-        <div class="result-box">
-            <h3 id="total-price-display">0 UZS</h3>
-            <p>Jami usta mehnati uchun</p>
-        </div>
-
-        <!-- MATERIALS REPORT -->
-        <div class="materials-container" id="hisobot-container">
-            <div class="materials-title">ZARUR STROYMATERIALLAR / НЕОБХОДИМЫЕ МАТЕРИАЛЫ</div>
-            <div id="materials-rows-wrapper"></div>
-            
-            <div style="font-size: 11px; color: var(--accent); margin-top: 15px; text-align: center; font-weight: bold; border-top: 1px dashed var(--border); padding-top: 10px;">
-                * Diqqat: Barcha materiallar hisobiga +10% zaxira qo'shilgan!
+        
+        <!-- Кнопка заказа мебели HUVAYDO -->
+        <div class="b2b-card" style="cursor: pointer;" onclick="openFurnitureModal()">
+            <div class="b2b-img-box">
+                <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=200&q=80" alt="Furniture">
             </div>
+            <div class="b2b-title">MEBELLAR BUYURTMASI</div>
+            <div class="b2b-status" style="color: var(--accent); font-weight: bold;">HUVAYDO KATALOGI ➔</div>
         </div>
+    </div>
 
-        <!-- AD PARTNERS BLOCKS -->
-        <div class="section-header" style="margin-top:30px;">
-            <span class="section-title" style="color:var(--primary);">YANGI IMKONIYATLAR / НОВЫЕ ВОЗМОЖНОСТИ</span>
-        </div>
-        <div class="b2b-wrapper">
-            <div class="b2b-card">
-                <div class="b2b-img-box">
-                    <img src="https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=200&q=80" class="b2b-img" alt="Materials">
-                </div>
-                <div class="b2b-title">Stroymateriallar Buyurtmasi / Заказ Стройматериалов</div>
-                <div class="b2b-status">Ishlab chiqilmoqda / Разрабатывается</div>
+    <!-- MODAL WINDOW FOR HUVAYDO CATALOG -->
+    <div class="modal-overlay" id="furnitureModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>HUVAYDO MEBEL KATALOGI</h3>
+                <span class="close-btn" onclick="closeFurnitureModal()">&times;</span>
             </div>
-            <div class="b2b-card">
-                <div class="b2b-img-box">
-                    <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=200&q=80" class="b2b-img" alt="Furniture">
-                </div>
-                <div class="b2b-title">Mebellar Buyurtmasi / Заказ Мебели</div>
-                <div class="b2b-status">Ishlab chiqilmoqda / Разрабатывается</div>
+            <div class="modal-body" id="huvaydoCatalogList">
+                <!-- Категории и товары подгружаются динамически через JS -->
             </div>
         </div>
     </div>
 
-    <footer>
-        <div class="founder-title">NODIRJON SOBIROV — Founder & Lead Developer</div>
-        <div class="copyright">© 2026 MYHOUSE PRO. All Rights Reserved.</div>
-    </footer>
-</div>
+    <div class="footer">
+        <p><span>NODIRJON SOBIROV</span> — Founder & Lead Developer</p>
+        <p>© 2026 MYHOUSE PRO. All Rights Reserved.</p>
+    </div>
 
-<script>
-    let roomCount = 0;
-    let totalFloorArea = 0;
-    let totalWallArea = 0;
-    let totalCeilingArea = 0;
-    let totalPerimeter = 0;
+    <script>
+        // Telegram Bot credentials
+        const TELEGRAM_BOT_TOKEN = "8940078076:AAER-MoAb3HTJKtDXVkHdrNSRGwv2ekMttI";
+        const TELEGRAM_CHAT_ID = "7200196169";
 
-    window.onload = function() {
-        addRoom(); 
-        totalFloorArea = 0;
-        totalWallArea = 0;
-        totalCeilingArea = 0;
-        totalPerimeter = 0;
-        renderVolumeLabels();
-    };
+        let roomCount = 0;
 
-    function switchTab(tabIndex) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        
-        document.getElementById(`tab${tabIndex}-btn`).classList.add('active');
-        document.getElementById(`tab${tabIndex}-content`).classList.add('active');
-        
-        if (tabIndex === 2) renderVolumeLabels();
-    }
+        const roomTypes = {
+            bedroom: "Yotoqxona / Спальня",
+            living: "Mehmonxona / Гостиная",
+            kitchen: "Oshxona / Кухня",
+            bathroom: "Banyon / Ванная",
+            hall: "Dahliz / Прихожая"
+        };
 
-    function updatePreview(id) {
-        const type = document.getElementById(`type-${id}`).value;
-        const style = document.getElementById(`design-${id}`).value;
-        const img = document.getElementById(`room-preview-img-${id}`);
-        img.src = `backend/images/${type}_${style}.jpg`;
-        calculateVolumes();
-    }
+        const designStyles = {
+            japandi: "Japandi",
+            modern: "Modern",
+            minimalism: "Minimalism",
+            neoclassic: "Neoclassic",
+            loft: "Loft"
+        };
 
-    function addRoom() {
-        roomCount++;
-        const id = roomCount;
-        const div = document.createElement('div');
-        div.className = 'card room-card';
-        div.id = `room-card-${id}`;
-        
-        div.innerHTML = `
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <b style="color:var(--primary); font-size: 14px;">${id}-XONA / КОМНАТА</b>
-                <span style="color:var(--danger); cursor:pointer; font-weight:bold; font-size: 18px;" onclick="removeRoomCard(${id})">✕</span>
-            </div>
+        // HUVAYDO Catalogue taxonomy
+        const huvaydoCatalog = [
+            {
+                category: "🛏 Yotoqxona komplekti / Спальный гарнитур",
+                items: [
+                    { name: "Bed with 2 nightstands Khuvaydo (Full Set / Полный комплект)" },
+                    { name: "Khuvaydo Premium Bedroom Suite (Full Set)" },
+                    { name: "Khuvaydo Wardrobe Modern (Шкаф-купе)" }
+                ]
+            },
+            {
+                category: "🍳 Oshxona komplekti / Кухонный гарнитур",
+                items: [
+                    { name: "Khuvaydo Kitchen Cabinet Custom (Full Set / Полный гарнитур)" },
+                    { name: "Khuvaydo Modern Kitchen Island Set" },
+                    { name: "Khuvaydo Dining Table & Chairs Set" }
+                ]
+            },
+            {
+                category: "🛋 Mehmonxona va Boshqa mebellar / Гостиная и Прочее",
+                items: [
+                    { name: "Khuvaydo Soft Sofa Set Premium (Полный мягкий гарнитур)" },
+                    { name: "Khuvaydo TV Wall Unit & Shelves" }
+                ]
+            }
+        ];
+
+        function addRoom() {
+            roomCount++;
+            const container = document.getElementById('rooms-container');
             
-            <label>Xona turi / Тип комнаты</label>
-            <select id="type-${id}" onchange="updatePreview(${id})">
-                <option value="living_room" selected>Mehmonxona / Гостиная</option>
-                <option value="bedroom">Yotoqxona / Спальня</option>
-                <option value="kitchen">Oshxona / Кухня</option>
-                <option value="bathroom">Yuvinish xonasi / Ванная</option>
-                <option value="toilet">Hojatxona / Туалет</option>
-            </select>
+            let typeOptions = '';
+            for (let key in roomTypes) {
+                typeOptions += `<option value="${key}">${roomTypes[key]}</option>`;
+            }
 
-            <label>Dizayn uslubi / Стиль дизайна</label>
-            <select id="design-${id}" onchange="updatePreview(${id})">
-                <option value="minimal">Minimalizm / Минимализм</option>
-                <option value="neoclassic">Neoklassika / Неоклассика</option>
-                <option value="loft" selected>Loft / Лофт</option>
-                <option value="japandi">Japandi / Джапанди</option>
-                <option value="ethnic_modern">Etnik Modern / Этник Модерн</option>
-            </select>
+            let styleOptions = '';
+            for (let key in designStyles) {
+                styleOptions += `<option value="${key}">${designStyles[key]}</option>`;
+            }
 
-            <div class="preview-container">
-                <img id="room-preview-img-${id}" class="room-preview-img" src="backend/images/living_room_loft.jpg" alt="Render">
-            </div>
+            const roomHTML = `
+                <div class="room-card" id="room-${roomCount}">
+                    <div class="room-title">#${roomCount} Xona / Комната</div>
+                    
+                    <div class="grid-2 form-group">
+                        <div>
+                            <label>Xona turi / Тип</label>
+                            <select id="type-${roomCount}" onchange="updatePreview(${roomCount})">
+                                ${typeOptions}
+                            </select>
+                        </div>
+                        <div>
+                            <label>Dizayn uslubi / Стиль</label>
+                            <select id="design-${roomCount}" onchange="updatePreview(${roomCount})">
+                                ${styleOptions}
+                            </select>
+                        </div>
+                    </div>
 
-            <div class="params-grid" style="margin-top: 15px;">
-                <div>
-                    <label>Eni / Ширина (m)</label>
-                    <input id="w-${id}" type="number" step="0.1" placeholder="0.0" onchange="calculateVolumes()">
+                    <div class="grid-2 form-group">
+                        <div>
+                            <label>Maydoni (m²)</label>
+                            <input type="number" id="area-${roomCount}" value="20" min="1" oninput="calculateSmeta()">
+                        </div>
+                        <div>
+                            <label>Balandligi (m)</label>
+                            <input type="number" id="height-${roomCount}" value="2.8" step="0.1" oninput="calculateSmeta()">
+                        </div>
+                    </div>
+
+                    <div class="preview-box">
+                        <img id="room-preview-img-${roomCount}" src="" alt="Dizayn predprosmotr">
+                    </div>
                 </div>
-                <div>
-                    <label>Uzunligi / Длина (m)</label>
-                    <input id="l-${id}" type="number" step="0.1" placeholder="0.0" onchange="calculateVolumes()">
-                </div>
-                <div>
-                    <label>Balandligi / Выс (m)</label>
-                    <input id="h-${id}" type="number" step="0.1" placeholder="0.0" onchange="calculateVolumes()">
-                </div>
-            </div>
+            `;
 
-            <label>Eshik va Oyna / Двери и Окна (m²)</label>
-            <input id="o-${id}" type="number" step="0.1" placeholder="0.0" onchange="calculateVolumes()">
-        `;
-        
-        document.getElementById('rooms-container').appendChild(div);
-    }
+            container.insertAdjacentHTML('beforeend', roomHTML);
+            updatePreview(roomCount);
+        }
 
-    function removeRoomCard(id) {
-        document.getElementById(`room-card-${id}`).remove();
-        calculateVolumes();
-    }
+        function updatePreview(id) {
+            const type = document.getElementById(`type-${id}`).value;
+            const style = document.getElementById(`design-${id}`).value;
+            const img = document.getElementById(`room-preview-img-${id}`);
+            
+            // Загрузка предпросмотра из локальной папки или сервера
+            img.src = `images/${type}_${style}.jpg`;
+            
+            // Если картинки нет — подгружается качественный заглушечный фоновое авто-изображение
+            img.onerror = function() {
+                this.src = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80';
+            };
 
-    function calculateVolumes() {
-        let hasActiveInputs = false;
-        let tempFloor = 0;
-        let tempCeiling = 0;
-        let tempWall = 0;
-        let tempPerim = 0;
+            calculateSmeta();
+        }
 
-        document.querySelectorAll('.room-card').forEach(card => {
-            const id = card.id.replace('room-card-', '');
-            const w = parseFloat(document.getElementById(`w-${id}`).value);
-            const l = parseFloat(document.getElementById(`l-${id}`).value);
-            const h = parseFloat(document.getElementById(`h-${id}`).value);
-            const o = parseFloat(document.getElementById(`o-${id}`).value) || 0;
-
-            if (!isNaN(w) && !isNaN(l)) {
-                hasActiveInputs = true;
-                tempFloor += (w * l);
-                tempCeiling += (w * l);
-                tempPerim += (2 * (w + l));
-                if (!isNaN(h)) {
-                    let walls = (2 * (w + l) * h) - o;
-                    tempWall += (walls > 0 ? walls : 0);
+        function calculateSmeta() {
+            let totalSum = 0;
+            for (let i = 1; i <= roomCount; i++) {
+                const areaInput = document.getElementById(`area-${i}`);
+                if (areaInput) {
+                    const area = parseFloat(areaInput.value) || 0;
+                    // Пример расчета: ~800,000 UZS за м² (работа + материалы)
+                    totalSum += area * 800000;
                 }
             }
-        });
-
-        if (hasActiveInputs) {
-            totalFloorArea = tempFloor;
-            totalCeilingArea = tempCeiling;
-            totalWallArea = tempWall;
-            totalPerimeter = tempPerim;
-        } else {
-            totalFloorArea = 0;
-            totalCeilingArea = 0;
-            totalWallArea = 0;
-            totalPerimeter = 0;
-        }
-        renderVolumeLabels();
-    }
-
-    function calculateVolumesAndAlert() {
-        calculateVolumes();
-        switchTab(2);
-    }
-
-    function renderVolumeLabels() {
-        document.getElementById('lbl-floor-vol').innerText = totalFloorArea.toFixed(2) + " m²";
-        document.getElementById('lbl-wall-vol').innerText = totalWallArea.toFixed(2) + " m²";
-        document.getElementById('lbl-ceiling-vol').innerText = totalCeilingArea.toFixed(2) + " m²";
-    }
-
-    function calculateSmeta() {
-        let totalCost = 0;
-        const wrapper = document.getElementById('materials-rows-wrapper');
-        wrapper.innerHTML = '';
-
-        function addMaterialRow(matName, amount, unit, hintText) {
-            if (amount <= 0 || isNaN(amount)) return;
-            const gross = amount * 1.10; // Строгая прорабская норма: +10% запаса
-            wrapper.innerHTML += `
-                <div class="material-row">
-                    <div class="material-meta">
-                        <span class="material-name">${matName}</span>
-                        <span class="material-val">${unit === "m³" ? gross.toFixed(2) : Math.ceil(gross).toLocaleString()} ${unit}</span>
-                    </div>
-                    <div class="material-hint">${hintText}</div>
-                </div>`;
+            document.getElementById('total-price').innerText = totalSum.toLocaleString('uz-UZ') + " UZS";
         }
 
-        // 1. ПОЛЫ (POL)
-        if (document.getElementById('chk-styajka').checked) {
-            const price = parseFloat(document.getElementById('price-styajka').value) || 0;
-            totalCost += (totalFloorArea * price);
-            addMaterialRow("Cement (Цемент M400)", totalFloorArea * 15, "kg", "Sarfi: 15 kg/m² (Smit sm)");
-        }
-        
-        if (document.getElementById('chk-nalivnoy').checked) {
-            const price = parseFloat(document.getElementById('price-nalivnoy').value) || 0;
-            totalCost += (totalFloorArea * price);
-            addMaterialRow("Pesok (Песок просеянный)", totalFloorArea * 0.04, "m³", "Sarfi: 0.04 m³/m²");
-            addMaterialRow("Nalivnoy pol aralashmasi", totalFloorArea * 4, "kg", "Sarfi: ~4 kg/m²");
+        // --- CATALOG MODAL FUNCTIONS ---
+        function openFurnitureModal() {
+            renderHuvaydoCatalog();
+            document.getElementById('furnitureModal').style.display = 'flex';
         }
 
-        if (document.getElementById('chk-laminat').checked) {
-            const price = parseFloat(document.getElementById('price-laminat').value) || 0;
-            totalCost += (totalFloorArea * price);
-        }
-        if (document.getElementById('chk-kafel-pol').checked) {
-            const price = parseFloat(document.getElementById('price-kafel-pol').value) || 0;
-            totalCost += (totalFloorArea * price);
-        }
-        if (document.getElementById('chk-plintus').checked) {
-            const price = parseFloat(document.getElementById('price-plintus').value) || 0;
-            totalCost += (totalPerimeter * price);
+        function closeFurnitureModal() {
+            document.getElementById('furnitureModal').style.display = 'none';
         }
 
-        // 2. СТЕНЫ (DEVOR)
-        if (document.getElementById('chk-shtukaturka').checked) {
-            const price = parseFloat(document.getElementById('price-shtukaturka').value) || 0;
-            totalCost += (totalWallArea * price);
-            addMaterialRow("Rotband / Gipsli shtukaturka", totalWallArea * 9, "kg", "Qalinligi 10mm uchun: 9 kg/m²");
-            addMaterialRow("Gruntovka (Грунтовка)", totalWallArea * 0.2, "L", "Sarfi: 0.2 litr/m²");
+        function renderHuvaydoCatalog() {
+            const listContainer = document.getElementById('huvaydoCatalogList');
+            listContainer.innerHTML = '';
+
+            huvaydoCatalog.forEach(cat => {
+                let categoryHTML = `
+                    <div class="huvaydo-category-title">${cat.category}</div>
+                    <div class="huvaydo-category-group">
+                `;
+
+                cat.items.forEach(item => {
+                    categoryHTML += `
+                        <div class="huvaydo-card">
+                            <div class="huvaydo-card-title">📦 ${item.name}</div>
+                            <button class="huvaydo-order-btn" onclick="sendFurnitureOrder('${item.name}')">
+                                Buyurtma berish / Заказать
+                            </button>
+                        </div>
+                    `;
+                });
+
+                categoryHTML += `</div>`;
+                listContainer.innerHTML += categoryHTML;
+            });
         }
 
-        if (document.getElementById('chk-shpatlevka').checked) {
-            const price = parseFloat(document.getElementById('price-shpatlevka').value) || 0;
-            totalCost += (totalWallArea * price);
+        async function sendFurnitureOrder(furnitureName) {
+            const name = prompt("Ismingizni kiriting / Введите ваше имя:");
+            if (!name) return;
+
+            const phone = prompt("Telefon raqamingizni kiriting / Ваш номер (+998...):");
+            if (!phone) return;
+
+            const message = `🚀 **Yangi mebel buyurtmasi (MYHOUSE PRO)**\n\n🛋 **Mebel:** ${furnitureName}\n👤 **Mijoz:** ${name}\n📞 **Telefon:** ${phone}\n📅 **Sana:** ${new Date().toLocaleString('uz-UZ')}`;
+
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message,
+                        parse_mode: "Markdown"
+                    })
+                });
+
+                if (response.ok) {
+                    alert("Muvaffaqiyatli yuborildi! Tez orada siz bilan bog'lanamiz / Заказ отправлен!");
+                    closeFurnitureModal();
+                } else {
+                    alert("Xatolik yuz berdi / Ошибка отправки");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Internet aloqasini tekshiring / Нет соединения с интернетом");
+            }
         }
 
-        if (document.getElementById('chk-oboi').checked) {
-            const price = parseFloat(document.getElementById('price-oboi').value) || 0;
-            totalCost += (totalWallArea * price);
-            addMaterialRow("Oboi (рулон 1.06m x 10m)", totalWallArea / 10.6, "rulon", "1 ta rulon = ~10.6 m² devorni yopadi");
-            addMaterialRow("Oboi yelimi (Клей)", totalWallArea / 20, "pachka", "1 ta pachka yelim = ~20 m² (yoki 4-5 rulon uchun)");
-        }
-
-        if (document.getElementById('chk-boyoq').checked) {
-            const price = parseFloat(document.getElementById('price-boyoq').value) || 0;
-            totalCost += (totalWallArea * price);
-        }
-        if (document.getElementById('chk-travertin').checked) {
-            const price = parseFloat(document.getElementById('price-travertin').value) || 0;
-            totalCost += (totalWallArea * price);
-        }
-
-        // 3. ПОТОЛОК (POTOLOK)
-        if (document.getElementById('chk-natyajnoy').checked) {
-            const price = parseFloat(document.getElementById('price-natyajnoy').value) || 0;
-            totalCost += (totalCeilingArea * price);
-        }
-
-        if (document.getElementById('chk-gipsokarton').checked) {
-            const price = parseFloat(document.getElementById('price-gipsokarton').value) || 0;
-            totalCost += (totalCeilingArea * price);
-            addMaterialRow("Gipsokarton listlari (9.5mm)", totalCeilingArea / 3, "ta (list)", "1 ta standart list = 3 m² (1.2m x 2.5m)");
-            addMaterialRow("Profil CD-60 (3m)", totalCeilingArea * 2, "ta", "Profil xamda qirqim zaxirasi uchun: Maydon x 2 (3 metrlik reykalar)");
-        }
-
-        document.getElementById('total-price-display').innerText = totalCost.toLocaleString() + " UZS";
-        document.getElementById('hisobot-container').style.display = 'block';
-    }
-</script>
-
+        // Инициализация первой комнаты при запуске
+        window.onload = function() {
+            addRoom();
+        };
+    </script>
 </body>
 </html>
