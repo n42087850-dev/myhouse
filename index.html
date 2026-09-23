@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MYHOUSE PRO — Remont va Mebel Kalkulyatori</title>
+    <title>MYHOUSE PRO</title>
     <style>
         :root {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
+            --bg-main: #0b132b;
+            --bg-card: #1c2541;
             --primary: #38bdf8;
             --accent: #f59e0b;
             --text: #f8fafc;
             --text-muted: #94a3b8;
-            --border: #334155;
+            --border: #3a506b;
             --success: #10b981;
         }
 
@@ -41,7 +41,7 @@
 
         .header h1 {
             color: var(--primary);
-            font-size: 22px;
+            font-size: 24px;
             letter-spacing: 1px;
         }
 
@@ -49,20 +49,6 @@
             color: var(--text-muted);
             font-size: 12px;
             margin-top: 4px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .section-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--text-muted);
-            text-transform: uppercase;
         }
 
         .room-card {
@@ -76,8 +62,8 @@
         .room-title {
             font-weight: bold;
             color: var(--primary);
-            margin-bottom: 10px;
-            font-size: 15px;
+            margin-bottom: 12px;
+            font-size: 16px;
         }
 
         .form-group {
@@ -107,12 +93,18 @@
             gap: 10px;
         }
 
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
         .preview-box {
             width: 100%;
-            height: 180px;
+            height: 200px;
             border-radius: 8px;
             overflow: hidden;
-            margin-top: 10px;
+            margin-top: 12px;
             background: var(--bg-main);
             border: 1px solid var(--border);
         }
@@ -140,37 +132,21 @@
             background: transparent;
             border: 1px dashed var(--primary);
             color: var(--primary);
-            margin-bottom: 20px;
-        }
-
-        .summary-card {
-            background: var(--bg-card);
-            border: 1px solid var(--primary);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .summary-price {
-            font-size: 26px;
-            font-weight: bold;
-            color: var(--primary);
-            margin: 5px 0;
+            margin-bottom: 25px;
         }
 
         .b2b-wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 12px;
+            margin-top: 20px;
         }
 
         .b2b-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 10px;
+            padding: 12px;
             text-align: center;
             transition: 0.2s;
         }
@@ -181,8 +157,8 @@
 
         .b2b-img-box {
             width: 100%;
-            height: 80px;
-            border-radius: 6px;
+            height: 90px;
+            border-radius: 8px;
             overflow: hidden;
             margin-bottom: 8px;
         }
@@ -197,6 +173,7 @@
             font-size: 11px;
             font-weight: bold;
             margin-bottom: 4px;
+            color: var(--text);
         }
 
         .b2b-status {
@@ -204,7 +181,7 @@
             color: var(--accent);
         }
 
-        /* MODAL CATALOG STYLES */
+        /* MODAL STYLES FOR HUVAYDO CATALOG */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -276,34 +253,47 @@
         .huvaydo-category-group {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .huvaydo-card {
             background: var(--bg-main);
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 12px;
+            padding: 10px;
             display: flex;
-            flex-direction: column;
-            gap: 8px;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .huvaydo-thumb {
+            width: 70px;
+            height: 70px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+        }
+
+        .huvaydo-info {
+            flex: 1;
         }
 
         .huvaydo-card-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             color: var(--text);
+            margin-bottom: 6px;
         }
 
         .huvaydo-order-btn {
             background: var(--accent);
             color: #000;
             border: none;
-            padding: 8px;
+            padding: 6px 12px;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             transition: 0.2s;
         }
 
@@ -312,6 +302,8 @@
             margin-top: 30px;
             font-size: 12px;
             color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
         }
 
         .footer span {
@@ -327,47 +319,37 @@
         <p>Xonadon ta'miri va mebellar kalkulyatori</p>
     </div>
 
-    <div class="section-header">
-        <span class="section-title">XONALARNI SOZLASH / НАСТРОЙКА КОМНАТ</span>
-    </div>
-
+    <!-- КОМНАТЫ -->
     <div id="rooms-container">
-        <!-- Динамические комнаты создаются через JS -->
+        <!-- Комнаты генерируются через JS -->
     </div>
 
     <button class="btn btn-add" onclick="addRoom()">+ Xona qo'shish / Добавить комнату</button>
 
-    <div class="summary-card">
-        <label>JAMI TAXMINIY SMETA / ИТОГОВАЯ СМЕТА</label>
-        <div class="summary-price" id="total-price">0 UZS</div>
-        <p style="font-size: 11px; color: var(--text-muted);">Jami usta mehnati va materiallar uchun / За работу и материалы</p>
-    </div>
-
     <!-- NEW OPPORTUNITIES / B2B BLOCK -->
-    <div class="section-header" style="margin-top:30px;">
-        <span class="section-title">YANGI IMKONIYATLAR / НОВЫЕ ВОЗМОЖНОСТИ</span>
+    <div style="font-size: 13px; font-weight: bold; color: var(--primary); text-transform: uppercase;">
+        YANGI IMKONIYATLAR / НОВЫЕ ВОЗМОЖНОСТИ
     </div>
     
     <div class="b2b-wrapper">
         <div class="b2b-card">
             <div class="b2b-img-box">
-                <img src="https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=200&q=80" alt="Materials">
+                <img src="images/bedroom_ethnic_modern.jpg" alt="Materials" onerror="this.src='images/bedroom_japandi.jpg'">
             </div>
-            <div class="b2b-title">STROYMATERIALLAR BUYURTMASI</div>
-            <div class="b2b-status">ISHLAB CHIQILMOQDA</div>
+            <div class="b2b-title">STROYMATERIALLAR BUYURTMASI / ЗАКАЗ СТРОЙМАТЕРИАЛОВ</div>
+            <div class="b2b-status">ISHLAB CHIQILMOQDA / РАЗРАБАТЫВАЕТСЯ</div>
         </div>
         
-        <!-- Кнопка заказа мебели HUVAYDO -->
         <div class="b2b-card" style="cursor: pointer;" onclick="openFurnitureModal()">
             <div class="b2b-img-box">
-                <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=200&q=80" alt="Furniture">
+                <img src="images/full-set-khuvaydo-7.jpg" alt="Furniture" onerror="this.src='images/bedroom_khuvaydo-full-set-1.jpg'">
             </div>
-            <div class="b2b-title">MEBELLAR BUYURTMASI</div>
+            <div class="b2b-title">MEBELLAR BUYURTMASI / ЗАКАЗ МЕБЕЛИ</div>
             <div class="b2b-status" style="color: var(--accent); font-weight: bold;">HUVAYDO KATALOGI ➔</div>
         </div>
     </div>
 
-    <!-- MODAL WINDOW FOR HUVAYDO CATALOG -->
+    <!-- МОДАЛЬНОЕ ОКНО КАТАЛОГА HUVAYDO -->
     <div class="modal-overlay" id="furnitureModal">
         <div class="modal-container">
             <div class="modal-header">
@@ -375,7 +357,7 @@
                 <span class="close-btn" onclick="closeFurnitureModal()">&times;</span>
             </div>
             <div class="modal-body" id="huvaydoCatalogList">
-                <!-- Категории и товары подгружаются динамически через JS -->
+                <!-- Подгрузка товаров каталога Huvaydo -->
             </div>
         </div>
     </div>
@@ -386,51 +368,53 @@
     </div>
 
     <script>
-        // Telegram Bot credentials
         const TELEGRAM_BOT_TOKEN = "8940078076:AAER-MoAb3HTJKtDXVkHdrNSRGwv2ekMttI";
         const TELEGRAM_CHAT_ID = "7200196169";
 
         let roomCount = 0;
 
+        // 5 ТОЧНЫХ КОМНАТ ПО ИМЕНАМ ФАЙЛОВ
         const roomTypes = {
             bedroom: "Yotoqxona / Спальня",
-            living: "Mehmonxona / Гостиная",
+            living_room: "Mehmonxona / Гостиная",
             kitchen: "Oshxona / Кухня",
-            bathroom: "Banyon / Ванная",
-            hall: "Dahliz / Прихожая"
+            bathroom: "Vanna / Ванная",
+            toilet: "Tualet / Туалет"
         };
 
+        // 5 ТОЧНЫХ СТИЛЕЙ ПО ИМЕНАМ ФАЙЛОВ
         const designStyles = {
+            ethnic_modern: "Etnik modern",
             japandi: "Japandi",
-            modern: "Modern",
-            minimalism: "Minimalism",
+            minimal: "Minimalism",
             neoclassic: "Neoclassic",
             loft: "Loft"
         };
 
-        // HUVAYDO Catalogue taxonomy
+        // КАТАЛОГ МЕБЕЛИ С УКАЗАНИЕМ ТОЧНЫХ ИМЕН ФАЙЛОВ ИЗ РЕПОЗИТОРИЯ
         const huvaydoCatalog = [
             {
-                category: "🛏 Yotoqxona komplekti / Спальный гарнитур",
+                category: "🛏 Yotoqxona komplekti / Спальный гарнитур (Full Set)",
                 items: [
-                    { name: "Bed with 2 nightstands Khuvaydo (Full Set / Полный комплект)" },
-                    { name: "Khuvaydo Premium Bedroom Suite (Full Set)" },
-                    { name: "Khuvaydo Wardrobe Modern (Шкаф-купе)" }
+                    { name: "Khuvaydo Full Set Bedroom Suite #7", img: "images/full-set-khuvaydo-7.jpg" },
+                    { name: "Khuvaydo Full Set Bedroom Suite #8", img: "images/full-set-khuvaydo-8.jpg" },
+                    { name: "Bed with 2 Nightstands Khuvaydo #1", img: "images/bed-with-2-nightstands-khuvaydo-1.jpg" },
+                    { name: "Khuvaydo Closet Modern #1", img: "images/closet-khuvaydo-1.jpg" }
                 ]
             },
             {
                 category: "🍳 Oshxona komplekti / Кухонный гарнитур",
                 items: [
-                    { name: "Khuvaydo Kitchen Cabinet Custom (Full Set / Полный гарнитур)" },
-                    { name: "Khuvaydo Modern Kitchen Island Set" },
-                    { name: "Khuvaydo Dining Table & Chairs Set" }
+                    { name: "Khuvaydo Kitchen Set #9", img: "images/kitchen-khuvaydo-9.jpg" },
+                    { name: "Khuvaydo Kitchen Set #10", img: "images/kitchen-khuvaydo-10.jpg" },
+                    { name: "Khuvaydo Kitchen Set #11", img: "images/kitchen-khuvaydo-11.jpg" }
                 ]
             },
             {
-                category: "🛋 Mehmonxona va Boshqa mebellar / Гостиная и Прочее",
+                category: "🛋 Mehmonxona / Гостиная",
                 items: [
-                    { name: "Khuvaydo Soft Sofa Set Premium (Полный мягкий гарнитур)" },
-                    { name: "Khuvaydo TV Wall Unit & Shelves" }
+                    { name: "Khuvaydo Sofa with Table Full Set #6", img: "images/sofa-with-table-full-set-khuvaydo-6.jpg" },
+                    { name: "Khuvaydo Dresser with Stool #1", img: "images/dresser-with-stool-khuvaydo-1.jpg" }
                 ]
             }
         ];
@@ -468,15 +452,24 @@
                         </div>
                     </div>
 
-                    <div class="grid-2 form-group">
+                    <div class="grid-3 form-group">
                         <div>
-                            <label>Maydoni (m²)</label>
-                            <input type="number" id="area-${roomCount}" value="20" min="1" oninput="calculateSmeta()">
+                            <label>Uzunligi (m)</label>
+                            <input type="number" id="length-${roomCount}" value="5" min="0.1" step="0.1">
+                        </div>
+                        <div>
+                            <label>Kengligi (m)</label>
+                            <input type="number" id="width-${roomCount}" value="4" min="0.1" step="0.1">
                         </div>
                         <div>
                             <label>Balandligi (m)</label>
-                            <input type="number" id="height-${roomCount}" value="2.8" step="0.1" oninput="calculateSmeta()">
+                            <input type="number" id="height-${roomCount}" value="2.8" min="0.1" step="0.1">
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Eshik va derazalar (m²)</label>
+                        <input type="number" id="openings-${roomCount}" value="4" min="0" step="0.1">
                     </div>
 
                     <div class="preview-box">
@@ -489,36 +482,17 @@
             updatePreview(roomCount);
         }
 
+        // ТОЧНАЯ СБОРКА ИМЕНИ ФАЙЛА РЕНДЕРА ПО КАРТИНКАМ В ИЗ РЕПОЗИТОРИЯ
         function updatePreview(id) {
             const type = document.getElementById(`type-${id}`).value;
             const style = document.getElementById(`design-${id}`).value;
             const img = document.getElementById(`room-preview-img-${id}`);
             
-            // Загрузка предпросмотра из локальной папки или сервера
+            // Путь формируется ровно как у тебя на GitHub: images/room_style.jpg
             img.src = `images/${type}_${style}.jpg`;
-            
-            // Если картинки нет — подгружается качественный заглушечный фоновое авто-изображение
-            img.onerror = function() {
-                this.src = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80';
-            };
-
-            calculateSmeta();
         }
 
-        function calculateSmeta() {
-            let totalSum = 0;
-            for (let i = 1; i <= roomCount; i++) {
-                const areaInput = document.getElementById(`area-${i}`);
-                if (areaInput) {
-                    const area = parseFloat(areaInput.value) || 0;
-                    // Пример расчета: ~800,000 UZS за м² (работа + материалы)
-                    totalSum += area * 800000;
-                }
-            }
-            document.getElementById('total-price').innerText = totalSum.toLocaleString('uz-UZ') + " UZS";
-        }
-
-        // --- CATALOG MODAL FUNCTIONS ---
+        // CATATLOG FUNCTIONS
         function openFurnitureModal() {
             renderHuvaydoCatalog();
             document.getElementById('furnitureModal').style.display = 'flex';
@@ -541,10 +515,13 @@
                 cat.items.forEach(item => {
                     categoryHTML += `
                         <div class="huvaydo-card">
-                            <div class="huvaydo-card-title">📦 ${item.name}</div>
-                            <button class="huvaydo-order-btn" onclick="sendFurnitureOrder('${item.name}')">
-                                Buyurtma berish / Заказать
-                            </button>
+                            <img src="${item.img}" class="huvaydo-thumb" alt="${item.name}">
+                            <div class="huvaydo-info">
+                                <div class="huvaydo-card-title">${item.name}</div>
+                                <button class="huvaydo-order-btn" onclick="sendFurnitureOrder('${item.name}')">
+                                    Buyurtma berish / Заказать
+                                </button>
+                            </div>
                         </div>
                     `;
                 });
@@ -586,7 +563,6 @@
             }
         }
 
-        // Инициализация первой комнаты при запуске
         window.onload = function() {
             addRoom();
         };
