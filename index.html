@@ -13,7 +13,6 @@
             --text: #f8fafc;
             --text-muted: #94a3b8;
             --border: #3a506b;
-            --success: #10b981;
         }
 
         * {
@@ -66,9 +65,7 @@
             font-size: 16px;
         }
 
-        .form-group {
-            margin-bottom: 10px;
-        }
+        .form-group { margin-bottom: 10px; }
 
         label {
             display: block;
@@ -87,32 +84,15 @@
             font-size: 14px;
         }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-        }
-
-        .preview-box {
-            width: 100%;
-            margin-top: 15px;
-            border-radius: 10px;
-            overflow: hidden;
-            background: transparent;
-        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 
         .preview-box img {
             width: 100%;
             height: auto;
             display: block;
             border-radius: 10px;
-            object-fit: contain;
+            margin-top: 10px;
         }
 
         .btn {
@@ -125,7 +105,6 @@
             width: 100%;
             cursor: pointer;
             font-size: 14px;
-            transition: 0.2s;
         }
 
         .btn-add {
@@ -148,50 +127,32 @@
             border-radius: 12px;
             padding: 12px;
             text-align: center;
-            transition: 0.2s;
-        }
-
-        .b2b-card:hover {
-            border-color: var(--accent);
-        }
-
-        .b2b-img-box {
-            width: 100%;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 8px;
         }
 
         .b2b-img-box img {
             width: 100%;
-            height: auto;
-            max-height: 140px;
-            object-fit: contain;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
             display: block;
         }
 
         .b2b-title {
             font-size: 11px;
             font-weight: bold;
-            margin-bottom: 4px;
-            color: var(--text);
+            margin: 6px 0 2px 0;
         }
 
-        .b2b-status {
-            font-size: 10px;
-            color: var(--accent);
-        }
+        .b2b-status { font-size: 10px; color: var(--accent); }
 
+        /* MODAL */
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9);
             z-index: 1000;
-            backdrop-filter: blur(5px);
             justify-content: center;
             align-items: center;
             padding: 15px;
@@ -202,12 +163,11 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             width: 100%;
-            max-width: 480px;
-            max-height: 85vh;
+            max-width: 520px;
+            max-height: 90vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .modal-header {
@@ -219,17 +179,12 @@
             background: var(--bg-main);
         }
 
-        .modal-header h3 {
-            color: var(--accent);
-            font-size: 15px;
-            margin: 0;
-        }
+        .modal-header h3 { color: var(--accent); font-size: 15px; margin: 0; }
 
         .close-btn {
             color: var(--text-muted);
             font-size: 24px;
             cursor: pointer;
-            line-height: 1;
         }
 
         .modal-body {
@@ -241,19 +196,12 @@
         }
 
         .huvaydo-category-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             color: var(--primary);
-            margin-top: 10px;
-            margin-bottom: 6px;
-            padding-bottom: 4px;
             border-bottom: 1px dashed var(--border);
-        }
-
-        .huvaydo-category-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            padding-bottom: 4px;
+            margin-top: 10px;
         }
 
         .huvaydo-card {
@@ -264,37 +212,55 @@
             display: flex;
             gap: 12px;
             align-items: center;
+            cursor: pointer;
         }
 
         .huvaydo-thumb {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             border-radius: 6px;
             object-fit: cover;
-            border: 1px solid var(--border);
         }
 
-        .huvaydo-info {
-            flex: 1;
+        .huvaydo-info { flex: 1; }
+
+        /* GALLERY SLIDER */
+        .slider-box {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        .huvaydo-card-title {
-            font-size: 12px;
-            font-weight: bold;
-            color: var(--text);
-            margin-bottom: 6px;
+        .slider-img {
+            width: 100%;
+            height: 280px;
+            object-fit: contain;
+            display: block;
         }
 
-        .huvaydo-order-btn {
-            background: var(--accent);
-            color: #000;
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.6);
+            color: #fff;
             border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: bold;
+            padding: 10px 14px;
+            font-size: 18px;
             cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .slider-prev { left: 10px; }
+        .slider-next { right: 10px; }
+
+        .slider-counter {
+            text-align: center;
             font-size: 11px;
-            transition: 0.2s;
+            color: var(--text-muted);
+            margin-top: 6px;
         }
 
         .footer {
@@ -305,11 +271,6 @@
             border-top: 1px solid var(--border);
             padding-top: 15px;
         }
-
-        .footer span {
-            color: var(--primary);
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
@@ -319,12 +280,10 @@
         <p>Xonadon ta'miri va mebellar kalkulyatori</p>
     </div>
 
-    <!-- КОМНАТЫ -->
     <div id="rooms-container"></div>
 
     <button class="btn btn-add" onclick="addRoom()">+ Xona qo'shish / Добавить комнату</button>
 
-    <!-- NEW OPPORTUNITIES / B2B BLOCK -->
     <div style="font-size: 13px; font-weight: bold; color: var(--primary); text-transform: uppercase;">
         YANGI IMKONIYATLAR / НОВЫЕ ВОЗМОЖНОСТИ
     </div>
@@ -332,7 +291,8 @@
     <div class="b2b-wrapper">
         <div class="b2b-card">
             <div class="b2b-img-box">
-                <img src="images/stroymateriali.jpg" alt="Materials" onerror="this.src='images/kitchen_loft.jpg'">
+                <!-- Отдельная картинка для стройматериалов -->
+                <img src="images/stroymateriali.jpg" alt="Materials" onerror="this.src='https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=500'">
             </div>
             <div class="b2b-title">STROYMATERIALLAR BUYURTMASI / ЗАКАЗ СТРОЙМАТЕРИАЛОВ</div>
             <div class="b2b-status">ISHLAB CHIQILMOQDA / РАЗРАБАТЫВАЕТСЯ</div>
@@ -340,18 +300,18 @@
         
         <div class="b2b-card" style="cursor: pointer;" onclick="openFurnitureModal()">
             <div class="b2b-img-box">
-                <img src="images/full-set-khuvaydo-7.jpg" alt="Furniture" onerror="this.src='images/bedroom_khuvaydo-full-set-1.jpg'">
+                <img src="images/bedroom-khuvaydo-full-set-1.jpg" alt="Furniture" onerror="this.src='images/full-set-khuvaydo-7.jpg'">
             </div>
             <div class="b2b-title">MEBELLAR BUYURTMASI / ЗАКАЗ МЕБЕЛИ</div>
             <div class="b2b-status" style="color: var(--accent); font-weight: bold;">HUVAYDO KATALOGI ➔</div>
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО КАТАЛОГА HUVAYDO -->
+    <!-- МОДАЛЬНОЕ ОКНО HUVAYDO -->
     <div class="modal-overlay" id="furnitureModal">
         <div class="modal-container">
             <div class="modal-header">
-                <h3>HUVAYDO MEBEL KATALOGI</h3>
+                <h3 id="modalCatalogTitle">HUVAYDO MEBEL KATALOGI</h3>
                 <span class="close-btn" onclick="closeFurnitureModal()">&times;</span>
             </div>
             <div class="modal-body" id="huvaydoCatalogList"></div>
@@ -364,17 +324,16 @@
     </div>
 
     <script>
-        // Ссылка на бэкенд (для локального теста - http://127.0.0.1:8000)
         const API_URL = "http://127.0.0.1:8000";
+        const TG_BOT_TOKEN = "8940078076:AAER-MoAb3HTJKtDXVkHdrNSRGwv2ekMttI";
+        const TG_CHAT_ID = "7200196169";
 
         let roomCount = 0;
 
         const roomTypes = {
             bedroom: "Yotoqxona / Спальня",
             living_room: "Mehmonxona / Гостиная",
-            kitchen: "Oshxona / Кухня",
-            bathroom: "Vanna / Ванная",
-            toilet: "Tualet / Туалет"
+            kitchen: "Oshxona / Кухня"
         };
 
         const designStyles = {
@@ -385,92 +344,91 @@
             loft: "Loft"
         };
 
+        // База данных гарнитуров Khuvaydo с группировкой по номерам
         const huvaydoCatalog = [
             {
-                category: "🛏 Yotoqxona komplekti / Спальный гарнитур (Full Set)",
+                category: "🛏 Yotoqxona komplektlari / Спальные гарнитуры",
                 items: [
-                    { name: "Khuvaydo Full Set Bedroom Suite #7", img: "images/full-set-khuvaydo-7.jpg" },
-                    { name: "Khuvaydo Full Set Bedroom Suite #8", img: "images/full-set-khuvaydo-8.jpg" },
-                    { name: "Bed with 2 Nightstands Khuvaydo #1", img: "images/bed-with-2-nightstands-khuvaydo-1.jpg" },
-                    { name: "Khuvaydo Closet Modern #1", img: "images/closet-khuvaydo-1.jpg" }
+                    { 
+                        id: "set_1",
+                        name: "Khuvaydo Full Set #1", 
+                        coverImg: "images/bedroom-khuvaydo-full-set-1.jpg",
+                        images: [
+                            "images/bedroom-khuvaydo-full-set-1.jpg",
+                            "images/bed-with-2-nightstands-khuvaydo-1.jpg",
+                            "images/closet-khuvaydo-1.jpg",
+                            "images/dresser-with-stool-khuvaydo-1.jpg",
+                            "images/nightstand-khuvaydo-1.jpg",
+                            "images/tall-nightstand-khuvaydo-1.jpg",
+                            "images/bigger-dresser-khuvaydo-1.jpg"
+                        ],
+                        size: "Krovat (200x180), Shkaf (240x220), 2 Tumba, Komod, Zerkalo",
+                        price: "19,800,000 UZS",
+                        desc: "To'liq yotoqxona garnituri. Barcha elementlar bir xil dizaynda."
+                    },
+                    { 
+                        id: "set_7",
+                        name: "Khuvaydo Full Set #7", 
+                        coverImg: "images/full-set-khuvaydo-7.jpg",
+                        images: [
+                            "images/full-set-khuvaydo-7.jpg",
+                            "images/closet-khuvaydo-7.jpg",
+                            "images/dresser-khuvaydo-7.jpg"
+                        ],
+                        size: "Krovat, Shkaf, Tumba, Komod",
+                        price: "18,500,000 UZS",
+                        desc: "Zamonaviy lüks yotoqxona garnituri."
+                    },
+                    { 
+                        id: "set_8",
+                        name: "Khuvaydo Full Set #8", 
+                        coverImg: "images/full-set-khuvaydo-8.jpg",
+                        images: [
+                            "images/full-set-khuvaydo-8.jpg",
+                            "images/closet-khuvaydo-8.jpg",
+                            "images/nightsand-khuvaydo-8.jpg",
+                            "images/tall-nightstand-khuvaydo-8.jpg",
+                            "images/dresser-with-stool-khuvaydo-8.jpg"
+                        ],
+                        size: "Krovat (200x160), Shkaf, Tumbachkalar",
+                        price: "17,200,000 UZS",
+                        desc: "Minimalistik uslubdagi to'liq to'plam."
+                    }
                 ]
             },
             {
-                category: "🍳 Oshxona komplekti / Кухонный гарнитур",
+                category: "🍳 Suveren Oshxonalar / Кухонные гарнитуры",
                 items: [
-                    { name: "Khuvaydo Kitchen Set #9", img: "images/kitchen-khuvaydo-9.jpg" },
-                    { name: "Khuvaydo Kitchen Set #10", img: "images/kitchen-khuvaydo-10.jpg" },
-                    { name: "Khuvaydo Kitchen Set #11", img: "images/kitchen-khuvaydo-11.jpg" }
-                ]
-            },
-            {
-                category: "🛋 Mehmonxona / Гостиная",
-                items: [
-                    { name: "Khuvaydo Sofa with Table Full Set #6", img: "images/sofa-with-table-full-set-khuvaydo-6.jpg" },
-                    { name: "Khuvaydo Dresser with Stool #1", img: "images/dresser-with-stool-khuvaydo-1.jpg" }
+                    { id: "k9", name: "Khuvaydo Kitchen #9", coverImg: "images/kitchen-khuvaydo-9.jpg", images: ["images/kitchen-khuvaydo-9.jpg"], size: "3.2m", price: "14,000,000 UZS", desc: "Alohida oshxona гарнитури." },
+                    { id: "k10", name: "Khuvaydo Kitchen #10", coverImg: "images/kitchen-khuvaydo-10.jpg", images: ["images/kitchen-khuvaydo-10.jpg"], size: "4.0m", price: "19,500,000 UZS", desc: "Premium oshxona гарнитури." },
+                    { id: "k11", name: "Khuvaydo Kitchen #11", coverImg: "images/kitchen-khuvaydo-11.jpg", images: ["images/kitchen-khuvaydo-11.jpg"], size: "3.5m", price: "16,000,000 UZS", desc: "Etnik modern oshxona." },
+                    { id: "k12", name: "Khuvaydo Kitchen #12", coverImg: "images/kitchen-khuvaydo-12.jpg", images: ["images/kitchen-khuvaydo-12.jpg"], size: "3.0m", price: "13,500,000 UZS", desc: "Kompakt oshxona." },
+                    { id: "k13", name: "Khuvaydo Kitchen #13", coverImg: "images/kitchen-khuvaydo-13.jpg", images: ["images/kitchen-khuvaydo-13.jpg"], size: "4.2m", price: "21,000,000 UZS", desc: "Katta va keng oshxona." }
                 ]
             }
         ];
 
+        let currentSlideIndex = 0;
+        let currentItemImages = [];
+
         function addRoom() {
             roomCount++;
             const container = document.getElementById('rooms-container');
-            
-            let typeOptions = '';
-            for (let key in roomTypes) {
-                typeOptions += `<option value="${key}">${roomTypes[key]}</option>`;
-            }
-
-            let styleOptions = '';
-            for (let key in designStyles) {
-                styleOptions += `<option value="${key}">${designStyles[key]}</option>`;
-            }
+            let typeOptions = ''; for (let key in roomTypes) typeOptions += `<option value="${key}">${roomTypes[key]}</option>`;
+            let styleOptions = ''; for (let key in designStyles) styleOptions += `<option value="${key}">${designStyles[key]}</option>`;
 
             const roomHTML = `
                 <div class="room-card" id="room-${roomCount}">
                     <div class="room-title">#${roomCount} Xona / Комната</div>
-                    
                     <div class="grid-2 form-group">
-                        <div>
-                            <label>Xona turi / Тип</label>
-                            <select id="type-${roomCount}" onchange="updatePreview(${roomCount})">
-                                ${typeOptions}
-                            </select>
-                        </div>
-                        <div>
-                            <label>Dizayn uslubi / Стиль</label>
-                            <select id="design-${roomCount}" onchange="updatePreview(${roomCount})">
-                                ${styleOptions}
-                            </select>
-                        </div>
+                        <div><label>Xona turi</label><select id="type-${roomCount}" onchange="updatePreview(${roomCount})">${typeOptions}</select></div>
+                        <div><label>Uslub</label><select id="design-${roomCount}" onchange="updatePreview(${roomCount})">${styleOptions}</select></div>
                     </div>
-
-                    <div class="grid-3 form-group">
-                        <div>
-                            <label>Uzunligi (m)</label>
-                            <input type="number" id="length-${roomCount}" placeholder="5" min="0.1" step="0.1">
-                        </div>
-                        <div>
-                            <label>Kengligi (m)</label>
-                            <input type="number" id="width-${roomCount}" placeholder="4" min="0.1" step="0.1">
-                        </div>
-                        <div>
-                            <label>Balandligi (m)</label>
-                            <input type="number" id="height-${roomCount}" placeholder="2.8" min="0.1" step="0.1">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Eshik va derazalar (m²)</label>
-                        <input type="number" id="openings-${roomCount}" placeholder="4" min="0" step="0.1">
-                    </div>
-
                     <div class="preview-box">
-                        <img id="room-preview-img-${roomCount}" src="" alt="Dizayn predprosmotr">
+                        <img id="room-preview-img-${roomCount}" src="" alt="Dizayn">
                     </div>
                 </div>
             `;
-
             container.insertAdjacentHTML('beforeend', roomHTML);
             updatePreview(roomCount);
         }
@@ -478,13 +436,12 @@
         function updatePreview(id) {
             const type = document.getElementById(`type-${id}`).value;
             const style = document.getElementById(`design-${id}`).value;
-            const img = document.getElementById(`room-preview-img-${id}`);
-            
-            img.src = `images/${type}_${style}.jpg`;
+            document.getElementById(`room-preview-img-${id}`).src = `images/${type}_${style}.jpg`;
         }
 
         function openFurnitureModal() {
             renderHuvaydoCatalog();
+            document.getElementById('modalCatalogTitle').innerText = "HUVAYDO MEBEL KATALOGI";
             document.getElementById('furnitureModal').style.display = 'flex';
         }
 
@@ -497,64 +454,101 @@
             listContainer.innerHTML = '';
 
             huvaydoCatalog.forEach(cat => {
-                let categoryHTML = `
-                    <div class="huvaydo-category-title">${cat.category}</div>
-                    <div class="huvaydo-category-group">
-                `;
-
+                let categoryHTML = `<div class="huvaydo-category-title">${cat.category}</div><div>`;
                 cat.items.forEach(item => {
                     categoryHTML += `
-                        <div class="huvaydo-card">
-                            <img src="${item.img}" class="huvaydo-thumb" alt="${item.name}">
+                        <div class="huvaydo-card" onclick="openItemDetail('${item.id}')" style="margin-top: 10px;">
+                            <img src="${item.coverImg}" class="huvaydo-thumb" alt="${item.name}" onerror="this.src='images/full-set-khuvaydo-7.jpg'">
                             <div class="huvaydo-info">
-                                <div class="huvaydo-card-title">${item.name}</div>
-                                <button class="huvaydo-order-btn" onclick="sendFurnitureOrder('${item.name}')">
-                                    Buyurtma berish / Заказать
-                                </button>
+                                <div style="font-size: 13px; font-weight: bold;">${item.name}</div>
+                                <div style="font-size: 11px; color: var(--text-muted);">Foto soni: ${item.images.length} ta</div>
+                                <div style="font-size: 12px; color: var(--accent); font-weight: bold; margin-top: 4px;">${item.price}</div>
                             </div>
                         </div>
                     `;
                 });
-
                 categoryHTML += `</div>`;
                 listContainer.innerHTML += categoryHTML;
             });
         }
 
+        function openItemDetail(itemId) {
+            let item = null;
+            huvaydoCatalog.forEach(cat => {
+                cat.items.forEach(i => { if(i.id === itemId) item = i; });
+            });
+            if(!item) return;
+
+            currentItemImages = item.images;
+            currentSlideIndex = 0;
+
+            document.getElementById('modalCatalogTitle').innerText = item.name;
+            const listContainer = document.getElementById('huvaydoCatalogList');
+
+            listContainer.innerHTML = `
+                <div>
+                    <!-- SLIDER -->
+                    <div class="slider-box">
+                        <img id="gallerySliderImg" class="slider-img" src="${currentItemImages[0]}" onerror="this.src='images/full-set-khuvaydo-7.jpg'">
+                        ${currentItemImages.length > 1 ? `
+                            <button class="slider-nav slider-prev" onclick="changeSlide(-1)">❮</button>
+                            <button class="slider-nav slider-next" onclick="changeSlide(1)">❯</button>
+                        ` : ''}
+                    </div>
+                    <div class="slider-counter" id="slideCounter">1 / ${currentItemImages.length}</div>
+
+                    <div style="font-size: 16px; font-weight: bold; color: var(--primary); margin-top: 12px;">${item.name}</div>
+                    <div style="font-size: 14px; font-weight: bold; color: var(--accent); margin: 4px 0;">${item.price}</div>
+                    
+                    <div style="font-size: 12px; color: var(--text-muted); background: var(--bg-main); padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-top: 10px;">
+                        <b>O'lchamlari / Размеры:</b><br>${item.size}<br><br>
+                        <b>Tavsif:</b><br>${item.desc}
+                    </div>
+
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <button class="btn" style="background: var(--text-muted);" onclick="renderHuvaydoCatalog()">❮ Orqaga / Назад</button>
+                        <button class="btn" onclick="sendFurnitureOrder('${item.name}')">Buyurtma berish / Заказать</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            if (currentSlideIndex < 0) currentSlideIndex = currentItemImages.length - 1;
+            if (currentSlideIndex >= currentItemImages.length) currentSlideIndex = 0;
+
+            document.getElementById('gallerySliderImg').src = currentItemImages[currentSlideIndex];
+            document.getElementById('slideCounter').innerText = `${currentSlideIndex + 1} / ${currentItemImages.length}`;
+        }
+
         async function sendFurnitureOrder(furnitureName) {
             const name = prompt("Ismingizni kiriting / Введите ваше имя:");
             if (!name) return;
-
             const phone = prompt("Telefon raqamingizni kiriting / Ваш номер (+998...):");
             if (!phone) return;
 
+            const textMessage = `🚀 *Yangi buyurtma! (MYHOUSE PRO)*\n\n📦 *Kategoriya:* Mebel (Huvaydo)\n🛋 *Mahsulot:* ${furnitureName}\n👤 *Mijoz:* ${name}\n📞 *Tel:* ${phone}`;
+
             try {
-                const response = await fetch(`${API_URL}/order`, {
+                const tgRes = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        item_name: furnitureName,
-                        client_name: name,
-                        client_phone: phone,
-                        category: "Mebel (Huvaydo)"
-                    })
+                    body: JSON.stringify({ chat_id: TG_CHAT_ID, text: textMessage, parse_mode: "Markdown" })
                 });
 
-                if (response.ok) {
-                    alert("Muvaffaqiyatli yuborildi! Tez orada siz bilan bog'lanamiz / Заказ отправлен!");
+                if (tgRes.ok) {
+                    alert("Muvaffaqiyatli yuborildi! / Заказ успешно отправлен!");
                     closeFurnitureModal();
                 } else {
                     alert("Xatolik yuz berdi / Ошибка отправки");
                 }
-            } catch (err) {
-                console.error(err);
-                alert("Сервер недоступен или отсутствует интернет");
+            } catch (e) {
+                alert("Internet ulanishini tekshiring / Проверьте интернет");
             }
         }
 
-        window.onload = function() {
-            addRoom();
-        };
+        window.onload = function() { addRoom(); };
     </script>
 </body>
 </html>
