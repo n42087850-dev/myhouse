@@ -69,7 +69,7 @@
 
         label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             margin-bottom: 4px;
         }
@@ -81,7 +81,7 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             color: var(--text);
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -127,12 +127,24 @@
             border-radius: 12px;
             padding: 12px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .b2b-img-box {
+            width: 100%;
+            height: 180px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
         }
 
         .b2b-img-box img {
             width: 100%;
-            height: auto;
-            border-radius: 8px;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
             display: block;
         }
 
@@ -219,9 +231,7 @@
             display: block;
         }
 
-        .huvaydo-info {
-            margin-top: 8px;
-        }
+        .huvaydo-info { margin-top: 8px; }
 
         /* GALLERY SLIDER */
         .slider-box {
@@ -289,18 +299,22 @@
     <div class="b2b-wrapper">
         <div class="b2b-card">
             <div class="b2b-img-box">
-                <img src="images/stroymateriali.jpg" alt="Materials" onerror="this.src='https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=500'">
+                <img src="images/stroymateriali.jpg" alt="Materials" onerror="this.style.display='none'">
             </div>
-            <div class="b2b-title">STROYMATERIALLAR BUYURTMASI / ЗАКАЗ СТРОЙМАТЕРИАЛОВ</div>
-            <div class="b2b-status">ISHLAB CHIQILMOQDA / РАЗРАБАТЫВАЕТСЯ</div>
+            <div>
+                <div class="b2b-title">STROYMATERIALLAR BUYURTMASI / ЗАКАЗ СТРОЙМАТЕРИАЛОВ</div>
+                <div class="b2b-status">ISHLAB CHIQILMOQDA / РАЗРАБАТЫВАЕТСЯ</div>
+            </div>
         </div>
         
         <div class="b2b-card" style="cursor: pointer;" onclick="openFurnitureModal()">
             <div class="b2b-img-box">
-                <img src="images/bedroom-khuvaydo-full-set-1.jpg" alt="Furniture" onerror="this.src='images/full-set-khuvaydo-7.jpg'">
+                <img src="images/bedroom-khuvaydo-full-set-1.jpg" alt="Furniture" onerror="this.src='images/bedroom-khuvaydo-full-set-1.jpg'">
             </div>
-            <div class="b2b-title">MEBELLAR BUYURTMASI / ЗАКАЗ МЕБЕЛИ</div>
-            <div class="b2b-status" style="color: var(--accent); font-weight: bold;">HUVAYDO KATALOGI ➔</div>
+            <div>
+                <div class="b2b-title">MEBELLAR BUYURTMASI / ЗАКАЗ МЕБЕЛИ</div>
+                <div class="b2b-status" style="color: var(--accent); font-weight: bold;">HUVAYDO KATALOGI ➔</div>
+            </div>
         </div>
     </div>
 
@@ -336,11 +350,11 @@
         };
 
         const designStyles = {
-            ethnic_modern: "Etnik modern",
-            japandi: "Japandi",
-            minimal: "Minimalism",
-            neoclassic: "Neoclassic",
-            loft: "Loft"
+            ethnic_modern: "Etnik modern / Этника модерн",
+            japandi: "Japandi / Джапанди",
+            minimal: "Minimalism / Минимализм",
+            neoclassic: "Neoclassic / Неоклассика",
+            loft: "Loft / Лофт"
         };
 
         const huvaydoCatalog = [
@@ -478,13 +492,17 @@
                 <div class="room-card" id="room-${roomCount}">
                     <div class="room-title">#${roomCount} Xona / Комната</div>
                     <div class="grid-2 form-group">
-                        <div><label>Xona turi</label><select id="type-${roomCount}" onchange="updatePreview(${roomCount})">${typeOptions}</select></div>
-                        <div><label>Uslub</label><select id="design-${roomCount}" onchange="updatePreview(${roomCount})">${styleOptions}</select></div>
+                        <div><label>Xona turi / Тип комнаты</label><select id="type-${roomCount}" onchange="updatePreview(${roomCount})">${typeOptions}</select></div>
+                        <div><label>Uslub / Стиль</label><select id="design-${roomCount}" onchange="updatePreview(${roomCount})">${styleOptions}</select></div>
                     </div>
                     <div class="grid-3 form-group">
-                        <div><label>Uzunligi (m)</label><input type="number" id="length-${roomCount}" placeholder="4" value="4"></div>
-                        <div><label>Kengligi (m)</label><input type="number" id="width-${roomCount}" placeholder="3" value="3"></div>
-                        <div><label>Balandligi (m)</label><input type="number" id="height-${roomCount}" placeholder="2.7" value="2.7"></div>
+                        <div><label>Uzunligi (m) / Длина</label><input type="number" id="length-${roomCount}" placeholder="4" value="4"></div>
+                        <div><label>Kengligi (m) / Ширина</label><input type="number" id="width-${roomCount}" placeholder="3" value="3"></div>
+                        <div><label>Balandligi (m) / Высота</label><input type="number" id="height-${roomCount}" placeholder="2.7" value="2.7"></div>
+                    </div>
+                    <div class="grid-2 form-group">
+                        <div><label>Oynalar soni / Кол-во окон</label><input type="number" id="windows-${roomCount}" placeholder="1" value="1"></div>
+                        <div><label>Eshiklar soni / Кол-во дверей</label><input type="number" id="doors-${roomCount}" placeholder="1" value="1"></div>
                     </div>
                     <div class="preview-box">
                         <img id="room-preview-img-${roomCount}" src="" alt="Dizayn">
@@ -520,10 +538,10 @@
                 cat.items.forEach(item => {
                     categoryHTML += `
                         <div class="huvaydo-card" onclick="openItemDetail('${item.id}')">
-                            <img src="${item.coverImg}" class="huvaydo-thumb" alt="${item.name}" onerror="this.src='images/full-set-khuvaydo-7.jpg'">
+                            <img src="${item.coverImg}" class="huvaydo-thumb" alt="${item.name}">
                             <div class="huvaydo-info">
                                 <div style="font-size: 14px; font-weight: bold; color: var(--primary);">${item.name}</div>
-                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Rasmlar soni: ${item.images.length} ta</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Rasmlar soni / Кол-во фото: ${item.images.length} ta</div>
                             </div>
                         </div>
                     `;
@@ -550,7 +568,7 @@
                 <div>
                     <!-- SLIDER -->
                     <div class="slider-box">
-                        <img id="gallerySliderImg" class="slider-img" src="${currentItemImages[0]}" onerror="this.src='images/full-set-khuvaydo-7.jpg'">
+                        <img id="gallerySliderImg" class="slider-img" src="${currentItemImages[0]}">
                         ${currentItemImages.length > 1 ? `
                             <button class="slider-nav slider-prev" onclick="changeSlide(-1)">❮</button>
                             <button class="slider-nav slider-next" onclick="changeSlide(1)">❯</button>
@@ -561,7 +579,7 @@
                     <div style="font-size: 16px; font-weight: bold; color: var(--primary); margin-top: 15px;">${item.name}</div>
                     
                     <div style="font-size: 12px; color: var(--text-muted); background: var(--bg-main); padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-top: 10px;">
-                        <b>Tavsif:</b><br>${item.desc}
+                        <b>Tavsif / Описание:</b><br>${item.desc}
                     </div>
 
                     <div style="margin-top: 15px; display: flex; gap: 10px;">
