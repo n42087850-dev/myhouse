@@ -134,10 +134,10 @@
 
         .b2b-img-box {
             width: 100%;
-            height: 180px;
+            height: 160px;
             border-radius: 8px;
             overflow: hidden;
-            background: #000;
+            background: #111;
         }
 
         .b2b-img-box img {
@@ -299,7 +299,7 @@
     <div class="b2b-wrapper">
         <div class="b2b-card">
             <div class="b2b-img-box">
-                <img src="images/stroymateriali.jpg" alt="Materials" onerror="this.style.display='none'">
+                <img src="images/stroymateriali.jpg" alt="Stroymateriali">
             </div>
             <div>
                 <div class="b2b-title">STROYMATERIALLAR BUYURTMASI / ЗАКАЗ СТРОЙМАТЕРИАЛОВ</div>
@@ -309,7 +309,7 @@
         
         <div class="b2b-card" style="cursor: pointer;" onclick="openFurnitureModal()">
             <div class="b2b-img-box">
-                <img src="images/bedroom-khuvaydo-full-set-1.jpg" alt="Furniture" onerror="this.src='images/bedroom-khuvaydo-full-set-1.jpg'">
+                <img src="images/bedroom-khuvaydo-full-set-1.jpg" alt="Mebellar">
             </div>
             <div>
                 <div class="b2b-title">MEBELLAR BUYURTMASI / ЗАКАЗ МЕБЕЛИ</div>
@@ -496,13 +496,13 @@
                         <div><label>Uslub / Стиль</label><select id="design-${roomCount}" onchange="updatePreview(${roomCount})">${styleOptions}</select></div>
                     </div>
                     <div class="grid-3 form-group">
-                        <div><label>Uzunligi (m) / Длина</label><input type="number" id="length-${roomCount}" placeholder="4" value="4"></div>
-                        <div><label>Kengligi (m) / Ширина</label><input type="number" id="width-${roomCount}" placeholder="3" value="3"></div>
-                        <div><label>Balandligi (m) / Высота</label><input type="number" id="height-${roomCount}" placeholder="2.7" value="2.7"></div>
+                        <div><label>Uzunligi (m) / Длина</label><input type="number" id="length-${roomCount}"></div>
+                        <div><label>Kengligi (m) / Ширина</label><input type="number" id="width-${roomCount}"></div>
+                        <div><label>Balandligi (m) / Высота</label><input type="number" id="height-${roomCount}"></div>
                     </div>
-                    <div class="grid-2 form-group">
-                        <div><label>Oynalar soni / Кол-во окон</label><input type="number" id="windows-${roomCount}" placeholder="1" value="1"></div>
-                        <div><label>Eshiklar soni / Кол-во дверей</label><input type="number" id="doors-${roomCount}" placeholder="1" value="1"></div>
+                    <div class="form-group">
+                        <label>Oynalar va eshiklar (kv. m) / Окна и двери (кв. м)</label>
+                        <input type="number" id="win-doors-${roomCount}">
                     </div>
                     <div class="preview-box">
                         <img id="room-preview-img-${roomCount}" src="" alt="Dizayn">
@@ -625,7 +625,10 @@
             }
         }
 
-        window.onload = function() { addRoom(); };
+        // Автоматическое добавление первой комнаты при загрузке страницы
+        window.onload = function() { 
+            addRoom(); 
+        };
     </script>
 </body>
 </html>
