@@ -99,7 +99,6 @@
             gap: 8px;
         }
 
-        /* КАРТИНКА ПРЕДПРОСМОТРА БЕЗ ЗАЖАТИЯ И ОБРЕЗКИ */
         .preview-box {
             width: 100%;
             margin-top: 15px;
@@ -183,7 +182,6 @@
             color: var(--accent);
         }
 
-        /* MODAL STYLES FOR HUVAYDO CATALOG */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -322,9 +320,7 @@
     </div>
 
     <!-- КОМНАТЫ -->
-    <div id="rooms-container">
-        <!-- Комнаты генерируются через JS -->
-    </div>
+    <div id="rooms-container"></div>
 
     <button class="btn btn-add" onclick="addRoom()">+ Xona qo'shish / Добавить комнату</button>
 
@@ -358,9 +354,7 @@
                 <h3>HUVAYDO MEBEL KATALOGI</h3>
                 <span class="close-btn" onclick="closeFurnitureModal()">&times;</span>
             </div>
-            <div class="modal-body" id="huvaydoCatalogList">
-                <!-- Подгрузка товаров каталога Huvaydo -->
-            </div>
+            <div class="modal-body" id="huvaydoCatalogList"></div>
         </div>
     </div>
 
@@ -370,12 +364,11 @@
     </div>
 
     <script>
-        const TELEGRAM_BOT_TOKEN = "8940078076:AAER-MoAb3HTJKtDXVkHdrNSRGwv2ekMttI";
-        const TELEGRAM_CHAT_ID = "7200196169";
+        // Ссылка на бэкенд (для локального теста - http://127.0.0.1:8000)
+        const API_URL = "http://127.0.0.1:8000";
 
         let roomCount = 0;
 
-        // 5 ТОЧНЫХ КОМНАТ ПО ИМЕНАМ ФАЙЛОВ
         const roomTypes = {
             bedroom: "Yotoqxona / Спальня",
             living_room: "Mehmonxona / Гостиная",
@@ -384,7 +377,6 @@
             toilet: "Tualet / Туалет"
         };
 
-        // 5 ТОЧНЫХ СТИЛЕЙ ПО ИМЕНАМ ФАЙЛОВ
         const designStyles = {
             ethnic_modern: "Etnik modern",
             japandi: "Japandi",
@@ -393,7 +385,6 @@
             loft: "Loft"
         };
 
-        // КАТАЛОГ МЕБЕЛИ С УКАЗАНИЕМ ТОЧНЫХ ИМЕН ФАЙЛОВ ИЗ РЕПОЗИТОРИЯ
         const huvaydoCatalog = [
             {
                 category: "🛏 Yotoqxona komplekti / Спальный гарнитур (Full Set)",
@@ -484,7 +475,6 @@
             updatePreview(roomCount);
         }
 
-        // ТОЧНАЯ СБОРКА ИМЕНИ ФАЙЛА РЕНДЕРА
         function updatePreview(id) {
             const type = document.getElementById(`type-${id}`).value;
             const style = document.getElementById(`design-${id}`).value;
@@ -493,7 +483,6 @@
             img.src = `images/${type}_${style}.jpg`;
         }
 
-        // CATATLOG FUNCTIONS
         function openFurnitureModal() {
             renderHuvaydoCatalog();
             document.getElementById('furnitureModal').style.display = 'flex';
@@ -539,16 +528,15 @@
             const phone = prompt("Telefon raqamingizni kiriting / Ваш номер (+998...):");
             if (!phone) return;
 
-            const message = `🚀 **Yangi mebel buyurtmasi (MYHOUSE PRO)**\n\n🛋 **Mebel:** ${furnitureName}\n👤 **Mijoz:** ${name}\n📞 **Telefon:** ${phone}\n📅 **Sana:** ${new Date().toLocaleString('uz-UZ')}`;
-
             try {
-                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                const response = await fetch(`${API_URL}/order`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        chat_id: TELEGRAM_CHAT_ID,
-                        text: message,
-                        parse_mode: "Markdown"
+                        item_name: furnitureName,
+                        client_name: name,
+                        client_phone: phone,
+                        category: "Mebel (Huvaydo)"
                     })
                 });
 
@@ -560,7 +548,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                alert("Internet aloqasini tekshiring / Нет соединения с интернетом");
+                alert("Сервер недоступен или отсутствует интернет");
             }
         }
 
