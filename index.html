@@ -299,7 +299,7 @@
     <div class="b2b-wrapper">
         <div class="b2b-card">
             <div class="b2b-img-box">
-                <img src="images/stroymateriali.jpg" alt="Stroymateriali">
+                <img src="./images/stroymateriali.png" alt="Stroymateriali" onerror="this.src='./images/stroymateriali.jpg'">
             </div>
             <div>
                 <div class="b2b-title">STROYMATERIALLAR BUYURTMASI / ЗАКАЗ СТРОЙМАТЕРИАЛОВ</div>
@@ -309,7 +309,7 @@
         
         <div class="b2b-card" style="cursor: pointer;" onclick="openFurnitureModal()">
             <div class="b2b-img-box">
-                <img src="images/bedroom-khuvaydo-full-set-1.jpg" alt="Mebellar">
+                <img src="./images/bedroom-khuvaydo-full-set-1.png" alt="Mebellar" onerror="this.src='./images/bedroom-khuvaydo-full-set-1.jpg'">
             </div>
             <div>
                 <div class="b2b-title">MEBELLAR BUYURTMASI / ЗАКАЗ МЕБЕЛИ</div>
@@ -335,7 +335,6 @@
     </div>
 
     <script>
-        const API_URL = "http://127.0.0.1:8000";
         const TG_BOT_TOKEN = "8940078076:AAER-MoAb3HTJKtDXVkHdrNSRGwv2ekMttI";
         const TG_CHAT_ID = "7200196169";
 
@@ -364,89 +363,89 @@
                     { 
                         id: "set_1",
                         name: "Khuvaydo Full Set #1", 
-                        coverImg: "images/bedroom-khuvaydo-full-set-1.jpg",
+                        coverImg: "./images/bedroom-khuvaydo-full-set-1.png",
                         images: [
-                            "images/bedroom-khuvaydo-full-set-1.jpg",
-                            "images/bed-with-2-nightstands-khuvaydo-1.jpg",
-                            "images/closet-khuvaydo-1.jpg",
-                            "images/dresser-with-stool-khuvaydo-1.jpg",
-                            "images/nightstand-khuvaydo-1.jpg",
-                            "images/tall-nightstand-khuvaydo-1.jpg",
-                            "images/bigger-dresser-khuvaydo-1.jpg"
+                            "./images/bedroom-khuvaydo-full-set-1.png",
+                            "./images/bed-with-2-nightstands-khuvaydo-1.png",
+                            "./images/closet-khuvaydo-1.png",
+                            "./images/dresser-with-stool-khuvaydo-1.png",
+                            "./images/nightstand-khuvaydo-1.png",
+                            "./images/tall-nightstand-khuvaydo-1.png",
+                            "./images/bigger-dresser-khuvaydo-1.png"
                         ],
                         desc: "To'liq yotoqxona garnituri #1: Krovat, Shkaf, Tumbachkalar, Komod va Zerkalo."
                     },
                     { 
                         id: "set_2",
                         name: "Khuvaydo Full Set #2", 
-                        coverImg: "images/bed-with-2-nightstands-khuvaydo-2.jpg",
+                        coverImg: "./images/bed-with-2-nightstands-khuvaydo-2.png",
                         images: [
-                            "images/bed-with-2-nightstands-khuvaydo-2.jpg",
-                            "images/closet-khuvaydo-2.jpg",
-                            "images/dresser-with-stool-khuvaydo-2.jpg",
-                            "images/nightstand-khuvaydo-2.jpg"
+                            "./images/bed-with-2-nightstands-khuvaydo-2.png",
+                            "./images/closet-khuvaydo-2.png",
+                            "./images/dresser-with-stool-khuvaydo-2.png",
+                            "./images/nightstand-khuvaydo-2.png"
                         ],
                         desc: "Zamonaviy yotoqxona to'plami #2."
                     },
                     { 
                         id: "set_3",
                         name: "Khuvaydo Full Set #3", 
-                        coverImg: "images/2-doors-closed-closet-khuvaydo-3.jpg",
+                        coverImg: "./images/2-doors-closed-closet-khuvaydo-3.png",
                         images: [
-                            "images/2-doors-closed-closet-khuvaydo-3.jpg",
-                            "images/left-side-opened-closet-khuvaydo-3.jpg",
-                            "images/right-side-opened-closet-khuvaydo-3.jpg",
-                            "images/dresser-khuvaydo-3.jpg",
-                            "images/nightstand-khuvaydo-3.jpg"
+                            "./images/2-doors-closed-closet-khuvaydo-3.png",
+                            "./images/left-side-opened-closet-khuvaydo-3.png",
+                            "./images/right-side-opened-closet-khuvaydo-3.png",
+                            "./images/dresser-khuvaydo-3.png",
+                            "./images/nightstand-khuvaydo-3.png"
                         ],
                         desc: "Klassik va shinam yotoqxona garnituri #3."
                     },
                     { 
                         id: "set_4",
                         name: "Khuvaydo Full Set #4", 
-                        coverImg: "images/bed-with-2-nightstands-khuvaydo-4.jpg",
+                        coverImg: "./images/bed-with-2-nightstands-khuvaydo-4.png",
                         images: [
-                            "images/bed-with-2-nightstands-khuvaydo-4.jpg",
-                            "images/closet-khuvaydo-4.jpg",
-                            "images/fully-opened-closet-khuvaydo-4.jpg",
-                            "images/dresser-with-stool-khuvaydo-4.jpg",
-                            "images/nightstand-khuvaydo-4.jpg"
+                            "./images/bed-with-2-nightstands-khuvaydo-4.png",
+                            "./images/closet-khuvaydo-4.png",
+                            "./images/fully-opened-closet-khuvaydo-4.png",
+                            "./images/dresser-with-stool-khuvaydo-4.png",
+                            "./images/nightstand-khuvaydo-4.png"
                         ],
                         desc: "Etnik stil elementlariga ega yotoqxona to'plami #4."
                     },
                     { 
                         id: "set_5",
                         name: "Khuvaydo Full Set #5", 
-                        coverImg: "images/bed-with-2-nightstands-khuvaydo-5.jpg",
+                        coverImg: "./images/bed-with-2-nightstands-khuvaydo-5.png",
                         images: [
-                            "images/bed-with-2-nightstands-khuvaydo-5.jpg",
-                            "images/closet-khuvaydo-5.jpg",
-                            "images/fully-opened-closet-khuvaydo-5.jpg",
-                            "images/nightstand-khuvaydo-5.jpg"
+                            "./images/bed-with-2-nightstands-khuvaydo-5.png",
+                            "./images/closet-khuvaydo-5.png",
+                            "./images/fully-opened-closet-khuvaydo-5.png",
+                            "./images/nightstand-khuvaydo-5.png"
                         ],
                         desc: "Shinam va keng yotoqxona garnituri #5."
                     },
                     { 
                         id: "set_7",
                         name: "Khuvaydo Full Set #7", 
-                        coverImg: "images/full-set-khuvaydo-7.jpg",
+                        coverImg: "./images/full-set-khuvaydo-7.png",
                         images: [
-                            "images/full-set-khuvaydo-7.jpg",
-                            "images/closet-khuvaydo-7.jpg",
-                            "images/dresser-khuvaydo-7.jpg"
+                            "./images/full-set-khuvaydo-7.png",
+                            "./images/closet-khuvaydo-7.png",
+                            "./images/dresser-khuvaydo-7.png"
                         ],
                         desc: "Zamonaviy lüks yotoqxona garnituri #7."
                     },
                     { 
                         id: "set_8",
                         name: "Khuvaydo Full Set #8", 
-                        coverImg: "images/full-set-khuvaydo-8.jpg",
+                        coverImg: "./images/full-set-khuvaydo-8.png",
                         images: [
-                            "images/full-set-khuvaydo-8.jpg",
-                            "images/closet-khuvaydo-8.jpg",
-                            "images/dresser-with-stool-khuvaydo-8.jpg",
-                            "images/nightsand-khuvaydo-8.jpg",
-                            "images/tall-nightstand-khuvaydo-8.jpg"
+                            "./images/full-set-khuvaydo-8.png",
+                            "./images/closet-khuvaydo-8.png",
+                            "./images/dresser-with-stool-khuvaydo-8.png",
+                            "./images/nightsand-khuvaydo-8.png",
+                            "./images/tall-nightstand-khuvaydo-8.png"
                         ],
                         desc: "Minimalistik uslubdagi to'liq yotoqxona to'plami #8."
                     }
@@ -458,10 +457,10 @@
                     {
                         id: "set_6",
                         name: "Khuvaydo Sofa Set #6",
-                        coverImg: "images/sofa-with-table-full-set-khuvaydo-6.jpg",
+                        coverImg: "./images/sofa-with-table-full-set-khuvaydo-6.png",
                         images: [
-                            "images/sofa-with-table-full-set-khuvaydo-6.jpg",
-                            "images/sofa-khuvaydo-6.jpg"
+                            "./images/sofa-with-table-full-set-khuvaydo-6.png",
+                            "./images/sofa-khuvaydo-6.png"
                         ],
                         desc: "Mehmonxona uchun yumshoq mebel to'plami #6."
                     }
@@ -470,11 +469,11 @@
             {
                 category: "🍳 Oshxona mebellari / Кухонные гарнитуры",
                 items: [
-                    { id: "k9", name: "Khuvaydo Kitchen #9", coverImg: "images/kitchen-khuvaydo-9.jpg", images: ["images/kitchen-khuvaydo-9.jpg"], desc: "Zamonaviy oshxona garnituri #9." },
-                    { id: "k10", name: "Khuvaydo Kitchen #10", coverImg: "images/kitchen-khuvaydo-10.jpg", images: ["images/kitchen-khuvaydo-10.jpg"], desc: "Keng va qulay oshxona garnituri #10." },
-                    { id: "k11", name: "Khuvaydo Kitchen #11", coverImg: "images/kitchen-khuvaydo-11.jpg", images: ["images/kitchen-khuvaydo-11.jpg"], desc: "Etnik modern uslubidagi oshxona #11." },
-                    { id: "k12", name: "Khuvaydo Kitchen #12", coverImg: "images/kitchen-khuvaydo-12.jpg", images: ["images/kitchen-khuvaydo-12.jpg"], desc: "Kompakt oshxona garnituri #12." },
-                    { id: "k13", name: "Khuvaydo Kitchen #13", coverImg: "images/kitchen-khuvaydo-13.jpg", images: ["images/kitchen-khuvaydo-13.jpg"], desc: "Katta xonadonlar uchun oshxona to'plami #13." }
+                    { id: "k9", name: "Khuvaydo Kitchen #9", coverImg: "./images/kitchen-khuvaydo-9.png", images: ["./images/kitchen-khuvaydo-9.png"], desc: "Zamonaviy oshxona garnituri #9." },
+                    { id: "k10", name: "Khuvaydo Kitchen #10", coverImg: "./images/kitchen-khuvaydo-10.png", images: ["./images/kitchen-khuvaydo-10.png"], desc: "Keng va qulay oshxona garnituri #10." },
+                    { id: "k11", name: "Khuvaydo Kitchen #11", coverImg: "./images/kitchen-khuvaydo-11.png", images: ["./images/kitchen-khuvaydo-11.png"], desc: "Etnik modern uslubidagi oshxona #11." },
+                    { id: "k12", name: "Khuvaydo Kitchen #12", coverImg: "./images/kitchen-khuvaydo-12.png", images: ["./images/kitchen-khuvaydo-12.png"], desc: "Kompakt oshxona garnituri #12." },
+                    { id: "k13", name: "Khuvaydo Kitchen #13", coverImg: "./images/kitchen-khuvaydo-13.png", images: ["./images/kitchen-khuvaydo-13.png"], desc: "Katta xonadonlar uchun oshxona to'plami #13." }
                 ]
             }
         ];
@@ -505,7 +504,7 @@
                         <input type="number" id="win-doors-${roomCount}">
                     </div>
                     <div class="preview-box">
-                        <img id="room-preview-img-${roomCount}" src="" alt="Dizayn">
+                        <img id="room-preview-img-${roomCount}" src="" alt="Dizayn" onerror="this.src=this.src.replace('.png','.jpg')">
                     </div>
                 </div>
             `;
@@ -516,7 +515,7 @@
         function updatePreview(id) {
             const type = document.getElementById(`type-${id}`).value;
             const style = document.getElementById(`design-${id}`).value;
-            document.getElementById(`room-preview-img-${id}`).src = `images/${type}_${style}.jpg`;
+            document.getElementById(`room-preview-img-${id}`).src = `./images/${type}_${style}.png`;
         }
 
         function openFurnitureModal() {
@@ -538,7 +537,7 @@
                 cat.items.forEach(item => {
                     categoryHTML += `
                         <div class="huvaydo-card" onclick="openItemDetail('${item.id}')">
-                            <img src="${item.coverImg}" class="huvaydo-thumb" alt="${item.name}">
+                            <img src="${item.coverImg}" class="huvaydo-thumb" alt="${item.name}" onerror="if(this.src.endsWith('.png')) this.src=this.src.replace('.png','.jpg');">
                             <div class="huvaydo-info">
                                 <div style="font-size: 14px; font-weight: bold; color: var(--primary);">${item.name}</div>
                                 <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Rasmlar soni / Кол-во фото: ${item.images.length} ta</div>
@@ -568,7 +567,7 @@
                 <div>
                     <!-- SLIDER -->
                     <div class="slider-box">
-                        <img id="gallerySliderImg" class="slider-img" src="${currentItemImages[0]}">
+                        <img id="gallerySliderImg" class="slider-img" src="${currentItemImages[0]}" onerror="if(this.src.endsWith('.png')) this.src=this.src.replace('.png','.jpg');">
                         ${currentItemImages.length > 1 ? `
                             <button class="slider-nav slider-prev" onclick="changeSlide(-1)">❮</button>
                             <button class="slider-nav slider-next" onclick="changeSlide(1)">❯</button>
@@ -595,7 +594,8 @@
             if (currentSlideIndex < 0) currentSlideIndex = currentItemImages.length - 1;
             if (currentSlideIndex >= currentItemImages.length) currentSlideIndex = 0;
 
-            document.getElementById('gallerySliderImg').src = currentItemImages[currentSlideIndex];
+            const imgEl = document.getElementById('gallerySliderImg');
+            imgEl.src = currentItemImages[currentSlideIndex];
             document.getElementById('slideCounter').innerText = `${currentSlideIndex + 1} / ${currentItemImages.length}`;
         }
 
@@ -625,7 +625,6 @@
             }
         }
 
-        // Автоматическое добавление первой комнаты при загрузке страницы
         window.onload = function() { 
             addRoom(); 
         };
