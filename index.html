@@ -27,7 +27,7 @@
             background-color: var(--bg-main);
             color: var(--text);
             padding: 15px;
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
             padding-bottom: 60px;
         }
@@ -99,20 +99,21 @@
             gap: 8px;
         }
 
+        /* КАРТИНКА ПРЕДПРОСМОТРА БЕЗ ЗАЖАТИЯ И ОБРЕЗКИ */
         .preview-box {
             width: 100%;
-            height: 200px;
-            border-radius: 8px;
+            margin-top: 15px;
+            border-radius: 10px;
             overflow: hidden;
-            margin-top: 12px;
-            background: var(--bg-main);
-            border: 1px solid var(--border);
+            background: transparent;
         }
 
         .preview-box img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+            object-fit: contain;
         }
 
         .btn {
@@ -157,7 +158,6 @@
 
         .b2b-img-box {
             width: 100%;
-            height: 90px;
             border-radius: 8px;
             overflow: hidden;
             margin-bottom: 8px;
@@ -165,8 +165,10 @@
 
         .b2b-img-box img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            max-height: 140px;
+            object-fit: contain;
+            display: block;
         }
 
         .b2b-title {
@@ -334,7 +336,7 @@
     <div class="b2b-wrapper">
         <div class="b2b-card">
             <div class="b2b-img-box">
-                <img src="images/bedroom_ethnic_modern.jpg" alt="Materials" onerror="this.src='images/bedroom_japandi.jpg'">
+                <img src="images/stroymateriali.jpg" alt="Materials" onerror="this.src='images/kitchen_loft.jpg'">
             </div>
             <div class="b2b-title">STROYMATERIALLAR BUYURTMASI / ЗАКАЗ СТРОЙМАТЕРИАЛОВ</div>
             <div class="b2b-status">ISHLAB CHIQILMOQDA / РАЗРАБАТЫВАЕТСЯ</div>
@@ -455,21 +457,21 @@
                     <div class="grid-3 form-group">
                         <div>
                             <label>Uzunligi (m)</label>
-                            <input type="number" id="length-${roomCount}" value="5" min="0.1" step="0.1">
+                            <input type="number" id="length-${roomCount}" placeholder="5" min="0.1" step="0.1">
                         </div>
                         <div>
                             <label>Kengligi (m)</label>
-                            <input type="number" id="width-${roomCount}" value="4" min="0.1" step="0.1">
+                            <input type="number" id="width-${roomCount}" placeholder="4" min="0.1" step="0.1">
                         </div>
                         <div>
                             <label>Balandligi (m)</label>
-                            <input type="number" id="height-${roomCount}" value="2.8" min="0.1" step="0.1">
+                            <input type="number" id="height-${roomCount}" placeholder="2.8" min="0.1" step="0.1">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Eshik va derazalar (m²)</label>
-                        <input type="number" id="openings-${roomCount}" value="4" min="0" step="0.1">
+                        <input type="number" id="openings-${roomCount}" placeholder="4" min="0" step="0.1">
                     </div>
 
                     <div class="preview-box">
@@ -482,13 +484,12 @@
             updatePreview(roomCount);
         }
 
-        // ТОЧНАЯ СБОРКА ИМЕНИ ФАЙЛА РЕНДЕРА ПО КАРТИНКАМ В ИЗ РЕПОЗИТОРИЯ
+        // ТОЧНАЯ СБОРКА ИМЕНИ ФАЙЛА РЕНДЕРА
         function updatePreview(id) {
             const type = document.getElementById(`type-${id}`).value;
             const style = document.getElementById(`design-${id}`).value;
             const img = document.getElementById(`room-preview-img-${id}`);
             
-            // Путь формируется ровно как у тебя на GitHub: images/room_style.jpg
             img.src = `images/${type}_${style}.jpg`;
         }
 
