@@ -327,10 +327,13 @@
 
         let roomCount = 0;
 
+        // ВЕРНУЛИ ВАННУЮ И ТУАЛЕТ В СПИСОК КОМНАТ
         const roomTypes = {
             bedroom: "Yotoqxona / Спальня",
             living_room: "Mehmonxona / Гостиная",
-            kitchen: "Oshxona / Кухня"
+            kitchen: "Oshxona / Кухня",
+            bathroom: "Vannaxona / Ванная",
+            toilet: "Hojatxona / Туалет"
         };
 
         const designStyles = {
@@ -341,7 +344,6 @@
             loft: "Loft"
         };
 
-        // База данных Khuvaydo (Спальные комплекты #1, #7, #8 и Кухни)
         const huvaydoCatalog = [
             {
                 category: "🛏 Yotoqxona to'plamlari / Спальные гарнитуры",
@@ -362,6 +364,62 @@
                         desc: "To'liq yotoqxona garnituri: Krovat, Shkaf, Tumbachkalar, Komod va Zerkalo."
                     },
                     { 
+                        id: "set_2",
+                        name: "Khuvaydo Full Set #2", 
+                        coverImg: "images/full-set-khuvaydo-2.jpg",
+                        images: [
+                            "images/full-set-khuvaydo-2.jpg",
+                            "images/bed-with-2-nightstands-khuvaydo-2.jpg",
+                            "images/closet-khuvaydo-2.jpg",
+                            "images/dresser-with-stool-khuvaydo-2.jpg"
+                        ],
+                        desc: "Zamonaviy yotoqxona to'plami #2."
+                    },
+                    { 
+                        id: "set_3",
+                        name: "Khuvaydo Full Set #3", 
+                        coverImg: "images/full-set-khuvaydo-3.jpg",
+                        images: [
+                            "images/full-set-khuvaydo-3.jpg",
+                            "images/closet-khuvaydo-3.jpg",
+                            "images/dresser-with-stool-khuvaydo-3.jpg"
+                        ],
+                        desc: "Klassik va shinam yotoqxona garnituri #3."
+                    },
+                    { 
+                        id: "set_4",
+                        name: "Khuvaydo Full Set #4", 
+                        coverImg: "images/full-set-khuvaydo-4.jpg",
+                        images: [
+                            "images/full-set-khuvaydo-4.jpg",
+                            "images/closet-khuvaydo-4.jpg",
+                            "images/dresser-with-stool-khuvaydo-4.jpg"
+                        ],
+                        desc: "Etnik stil elementlariga ega yotoqxona to'plami #4."
+                    },
+                    { 
+                        id: "set_5",
+                        name: "Khuvaydo Full Set #5", 
+                        coverImg: "images/full-set-khuvaydo-5.jpg",
+                        images: [
+                            "images/full-set-khuvaydo-5.jpg",
+                            "images/closet-khuvaydo-5.jpg",
+                            "images/dresser-with-stool-khuvaydo-5.jpg"
+                        ],
+                        desc: "Shinam va keng yotoqxona garnituri #5."
+                    },
+                    { 
+                        id: "set_6",
+                        name: "Khuvaydo Full Set #6", 
+                        coverImg: "images/full-set-khuvaydo-6.jpg",
+                        images: [
+                            "images/full-set-khuvaydo-6.jpg",
+                            "images/closet-khuvaydo-6.jpg",
+                            "images/dresser-with-stool-khuvaydo-6.jpg"
+                        ],
+                        desc: "Minimalistik va zamonaviy yotoqxona garnituri #6."
+                    },
+                    { 
                         id: "set_7",
                         name: "Khuvaydo Full Set #7", 
                         coverImg: "images/full-set-khuvaydo-7.jpg",
@@ -370,7 +428,7 @@
                             "images/closet-khuvaydo-7.jpg",
                             "images/dresser-khuvaydo-7.jpg"
                         ],
-                        desc: "Zamonaviy yotoqxona garnituri: Krovat, Shkaf, Komod."
+                        desc: "Zamonaviy lüks yotoqxona garnituri #7."
                     },
                     { 
                         id: "set_8",
@@ -383,7 +441,7 @@
                             "images/tall-nightstand-khuvaydo-8.jpg",
                             "images/dresser-with-stool-khuvaydo-8.jpg"
                         ],
-                        desc: "Minimalistik uslubdagi to'liq yotoqxona to'plami."
+                        desc: "Minimalistik uslubdagi to'liq yotoqxona to'plami #8."
                     }
                 ]
             },
@@ -393,7 +451,7 @@
                     { id: "k9", name: "Khuvaydo Kitchen #9", coverImg: "images/kitchen-khuvaydo-9.jpg", images: ["images/kitchen-khuvaydo-9.jpg"], desc: "Zamonaviy oshxona garnituri." },
                     { id: "k10", name: "Khuvaydo Kitchen #10", coverImg: "images/kitchen-khuvaydo-10.jpg", images: ["images/kitchen-khuvaydo-10.jpg"], desc: "Keng va qulay oshxona garnituri." },
                     { id: "k11", name: "Khuvaydo Kitchen #11", coverImg: "images/kitchen-khuvaydo-11.jpg", images: ["images/kitchen-khuvaydo-11.jpg"], desc: "Etnik modern uslubidagi oshxona." },
-                    { id: "k12", name: "Khuvaydo Kitchen #12", coverImg: "images/kitchen-khuvaydo-12.jpg", images: ["images/kitchen-khuvaydo-12.jpg"], desc: "Kompakt oshxona гарнитури." },
+                    { id: "k12", name: "Khuvaydo Kitchen #12", coverImg: "images/kitchen-khuvaydo-12.jpg", images: ["images/kitchen-khuvaydo-12.jpg"], desc: "Kompakt oshxona garnituri." },
                     { id: "k13", name: "Khuvaydo Kitchen #13", coverImg: "images/kitchen-khuvaydo-13.jpg", images: ["images/kitchen-khuvaydo-13.jpg"], desc: "Katta xonadonlar uchun oshxona to'plami." }
                 ]
             }
@@ -415,7 +473,7 @@
                         <div><label>Xona turi</label><select id="type-${roomCount}" onchange="updatePreview(${roomCount})">${typeOptions}</select></div>
                         <div><label>Uslub</label><select id="design-${roomCount}" onchange="updatePreview(${roomCount})">${styleOptions}</select></div>
                     </div>
-                    <!-- ПОЛЯ РАЗМЕРОВ ХОНЫ -->
+                    <!-- ПОЛЯ РАЗМЕРОВ КОМНАТЫ -->
                     <div class="grid-3 form-group">
                         <div><label>Uzunligi (m)</label><input type="number" id="length-${roomCount}" placeholder="4" value="4"></div>
                         <div><label>Kengligi (m)</label><input type="number" id="width-${roomCount}" placeholder="3" value="3"></div>
