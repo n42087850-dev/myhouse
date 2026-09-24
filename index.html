@@ -131,8 +131,7 @@
 
         .b2b-img-box img {
             width: 100%;
-            height: 120px;
-            object-fit: cover;
+            height: auto;
             border-radius: 8px;
             display: block;
         }
@@ -140,7 +139,7 @@
         .b2b-title {
             font-size: 11px;
             font-weight: bold;
-            margin: 6px 0 2px 0;
+            margin: 8px 0 2px 0;
         }
 
         .b2b-status { font-size: 10px; color: var(--accent); }
@@ -209,20 +208,20 @@
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 10px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
+            margin-top: 10px;
             cursor: pointer;
         }
 
         .huvaydo-thumb {
-            width: 80px;
-            height: 80px;
-            border-radius: 6px;
-            object-fit: cover;
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
         }
 
-        .huvaydo-info { flex: 1; }
+        .huvaydo-info {
+            margin-top: 8px;
+        }
 
         /* GALLERY SLIDER */
         .slider-box {
@@ -235,8 +234,7 @@
 
         .slider-img {
             width: 100%;
-            height: 280px;
-            object-fit: contain;
+            height: auto;
             display: block;
         }
 
@@ -291,7 +289,6 @@
     <div class="b2b-wrapper">
         <div class="b2b-card">
             <div class="b2b-img-box">
-                <!-- Отдельная картинка для стройматериалов -->
                 <img src="images/stroymateriali.jpg" alt="Materials" onerror="this.src='https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=500'">
             </div>
             <div class="b2b-title">STROYMATERIALLAR BUYURTMASI / ЗАКАЗ СТРОЙМАТЕРИАЛОВ</div>
@@ -344,10 +341,10 @@
             loft: "Loft"
         };
 
-        // База данных гарнитуров Khuvaydo с группировкой по номерам
+        // База данных Khuvaydo (Спальные комплекты #1, #7, #8 и Кухни)
         const huvaydoCatalog = [
             {
-                category: "🛏 Yotoqxona komplektlari / Спальные гарнитуры",
+                category: "🛏 Yotoqxona to'plamlari / Спальные гарнитуры",
                 items: [
                     { 
                         id: "set_1",
@@ -362,9 +359,7 @@
                             "images/tall-nightstand-khuvaydo-1.jpg",
                             "images/bigger-dresser-khuvaydo-1.jpg"
                         ],
-                        size: "Krovat (200x180), Shkaf (240x220), 2 Tumba, Komod, Zerkalo",
-                        price: "19,800,000 UZS",
-                        desc: "To'liq yotoqxona garnituri. Barcha elementlar bir xil dizaynda."
+                        desc: "To'liq yotoqxona garnituri: Krovat, Shkaf, Tumbachkalar, Komod va Zerkalo."
                     },
                     { 
                         id: "set_7",
@@ -375,9 +370,7 @@
                             "images/closet-khuvaydo-7.jpg",
                             "images/dresser-khuvaydo-7.jpg"
                         ],
-                        size: "Krovat, Shkaf, Tumba, Komod",
-                        price: "18,500,000 UZS",
-                        desc: "Zamonaviy lüks yotoqxona garnituri."
+                        desc: "Zamonaviy yotoqxona garnituri: Krovat, Shkaf, Komod."
                     },
                     { 
                         id: "set_8",
@@ -390,20 +383,18 @@
                             "images/tall-nightstand-khuvaydo-8.jpg",
                             "images/dresser-with-stool-khuvaydo-8.jpg"
                         ],
-                        size: "Krovat (200x160), Shkaf, Tumbachkalar",
-                        price: "17,200,000 UZS",
-                        desc: "Minimalistik uslubdagi to'liq to'plam."
+                        desc: "Minimalistik uslubdagi to'liq yotoqxona to'plami."
                     }
                 ]
             },
             {
-                category: "🍳 Suveren Oshxonalar / Кухонные гарнитуры",
+                category: "🍳 Oshxona mebellari / Кухонные гарнитуры",
                 items: [
-                    { id: "k9", name: "Khuvaydo Kitchen #9", coverImg: "images/kitchen-khuvaydo-9.jpg", images: ["images/kitchen-khuvaydo-9.jpg"], size: "3.2m", price: "14,000,000 UZS", desc: "Alohida oshxona гарнитури." },
-                    { id: "k10", name: "Khuvaydo Kitchen #10", coverImg: "images/kitchen-khuvaydo-10.jpg", images: ["images/kitchen-khuvaydo-10.jpg"], size: "4.0m", price: "19,500,000 UZS", desc: "Premium oshxona гарнитури." },
-                    { id: "k11", name: "Khuvaydo Kitchen #11", coverImg: "images/kitchen-khuvaydo-11.jpg", images: ["images/kitchen-khuvaydo-11.jpg"], size: "3.5m", price: "16,000,000 UZS", desc: "Etnik modern oshxona." },
-                    { id: "k12", name: "Khuvaydo Kitchen #12", coverImg: "images/kitchen-khuvaydo-12.jpg", images: ["images/kitchen-khuvaydo-12.jpg"], size: "3.0m", price: "13,500,000 UZS", desc: "Kompakt oshxona." },
-                    { id: "k13", name: "Khuvaydo Kitchen #13", coverImg: "images/kitchen-khuvaydo-13.jpg", images: ["images/kitchen-khuvaydo-13.jpg"], size: "4.2m", price: "21,000,000 UZS", desc: "Katta va keng oshxona." }
+                    { id: "k9", name: "Khuvaydo Kitchen #9", coverImg: "images/kitchen-khuvaydo-9.jpg", images: ["images/kitchen-khuvaydo-9.jpg"], desc: "Zamonaviy oshxona garnituri." },
+                    { id: "k10", name: "Khuvaydo Kitchen #10", coverImg: "images/kitchen-khuvaydo-10.jpg", images: ["images/kitchen-khuvaydo-10.jpg"], desc: "Keng va qulay oshxona garnituri." },
+                    { id: "k11", name: "Khuvaydo Kitchen #11", coverImg: "images/kitchen-khuvaydo-11.jpg", images: ["images/kitchen-khuvaydo-11.jpg"], desc: "Etnik modern uslubidagi oshxona." },
+                    { id: "k12", name: "Khuvaydo Kitchen #12", coverImg: "images/kitchen-khuvaydo-12.jpg", images: ["images/kitchen-khuvaydo-12.jpg"], desc: "Kompakt oshxona гарнитури." },
+                    { id: "k13", name: "Khuvaydo Kitchen #13", coverImg: "images/kitchen-khuvaydo-13.jpg", images: ["images/kitchen-khuvaydo-13.jpg"], desc: "Katta xonadonlar uchun oshxona to'plami." }
                 ]
             }
         ];
@@ -423,6 +414,12 @@
                     <div class="grid-2 form-group">
                         <div><label>Xona turi</label><select id="type-${roomCount}" onchange="updatePreview(${roomCount})">${typeOptions}</select></div>
                         <div><label>Uslub</label><select id="design-${roomCount}" onchange="updatePreview(${roomCount})">${styleOptions}</select></div>
+                    </div>
+                    <!-- ПОЛЯ РАЗМЕРОВ ХОНЫ -->
+                    <div class="grid-3 form-group">
+                        <div><label>Uzunligi (m)</label><input type="number" id="length-${roomCount}" placeholder="4" value="4"></div>
+                        <div><label>Kengligi (m)</label><input type="number" id="width-${roomCount}" placeholder="3" value="3"></div>
+                        <div><label>Balandligi (m)</label><input type="number" id="height-${roomCount}" placeholder="2.7" value="2.7"></div>
                     </div>
                     <div class="preview-box">
                         <img id="room-preview-img-${roomCount}" src="" alt="Dizayn">
@@ -457,12 +454,11 @@
                 let categoryHTML = `<div class="huvaydo-category-title">${cat.category}</div><div>`;
                 cat.items.forEach(item => {
                     categoryHTML += `
-                        <div class="huvaydo-card" onclick="openItemDetail('${item.id}')" style="margin-top: 10px;">
+                        <div class="huvaydo-card" onclick="openItemDetail('${item.id}')">
                             <img src="${item.coverImg}" class="huvaydo-thumb" alt="${item.name}" onerror="this.src='images/full-set-khuvaydo-7.jpg'">
                             <div class="huvaydo-info">
-                                <div style="font-size: 13px; font-weight: bold;">${item.name}</div>
-                                <div style="font-size: 11px; color: var(--text-muted);">Foto soni: ${item.images.length} ta</div>
-                                <div style="font-size: 12px; color: var(--accent); font-weight: bold; margin-top: 4px;">${item.price}</div>
+                                <div style="font-size: 14px; font-weight: bold; color: var(--primary);">${item.name}</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Rasmlar soni: ${item.images.length} ta</div>
                             </div>
                         </div>
                     `;
@@ -497,11 +493,9 @@
                     </div>
                     <div class="slider-counter" id="slideCounter">1 / ${currentItemImages.length}</div>
 
-                    <div style="font-size: 16px; font-weight: bold; color: var(--primary); margin-top: 12px;">${item.name}</div>
-                    <div style="font-size: 14px; font-weight: bold; color: var(--accent); margin: 4px 0;">${item.price}</div>
+                    <div style="font-size: 16px; font-weight: bold; color: var(--primary); margin-top: 15px;">${item.name}</div>
                     
                     <div style="font-size: 12px; color: var(--text-muted); background: var(--bg-main); padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-top: 10px;">
-                        <b>O'lchamlari / Размеры:</b><br>${item.size}<br><br>
                         <b>Tavsif:</b><br>${item.desc}
                     </div>
 
