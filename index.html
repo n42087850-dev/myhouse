@@ -104,7 +104,13 @@
             font-weight: bold;
             width: 100%;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
+        }
+
+        .btn-custom {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
         }
 
         .btn-add {
@@ -295,21 +301,21 @@
     <div style="font-size: 13px; font-weight: bold; color: var(--primary); text-transform: uppercase;">
         YANGI IMKONIYATLAR / НОВЫЕ ВОЗМОЖНОСТИ
     </div>
-    
+
     <div class="b2b-wrapper">
         <div class="b2b-card">
             <div class="b2b-img-box">
-                <img src="./images/stroymateriali.png" alt="Stroymateriali" onerror="this.src='./images/stroymateriali.jpg'">
+                <img src="./images/stroymateriali.jpg" alt="Stroymateriali" loading="lazy" onerror="this.src='./images/stroymateriali.png'">
             </div>
             <div>
                 <div class="b2b-title">STROYMATERIALLAR BUYURTMASI / ЗАКАЗ СТРОЙМАТЕРИАЛОВ</div>
                 <div class="b2b-status">ISHLAB CHIQILMOQDA / РАЗРАБАТЫВАЕТСЯ</div>
             </div>
         </div>
-        
+
         <div class="b2b-card" style="cursor: pointer;" onclick="openFurnitureModal()">
             <div class="b2b-img-box">
-                <img src="./images/bedroom-khuvaydo-full-set-1.png" alt="Mebellar" onerror="this.src='./images/bedroom-khuvaydo-full-set-1.jpg'">
+                <img src="./images/bedroom-khuvaydo-full-set-1.jpg" alt="Mebellar" loading="lazy" onerror="this.src='./images/bedroom-khuvaydo-full-set-1.png'">
             </div>
             <div>
                 <div class="b2b-title">MEBELLAR BUYURTMASI / ЗАКАЗ МЕБЕЛИ</div>
@@ -357,6 +363,39 @@
         };
 
         const huvaydoCatalog = [
+            {
+                category: "🚪 Dehliz / Прихожие гарнитуры",
+                items: [
+                    {
+                        id: "hallway_1",
+                        name: "Khuvaydo Hallway #1",
+                        coverImg: "./images/hallway-khuvaydo-1.jpg",
+                        images: ["./images/hallway-khuvaydo-1.jpg"],
+                        desc: "Frezerovka va shisha vitrinali shkafli prixojaya to'plami."
+                    },
+                    {
+                        id: "hallway_2",
+                        name: "Khuvaydo Hallway #2",
+                        coverImg: "./images/hallway-khuvaydo-2.jpg",
+                        images: ["./images/hallway-khuvaydo-2.jpg"],
+                        desc: "Zamonaviy to'q rangli ochiq kiyim ilgichli prixojaya garnituri."
+                    },
+                    {
+                        id: "hallway_3",
+                        name: "Khuvaydo Hallway #3",
+                        coverImg: "./images/hallway-3.jpg",
+                        images: ["./images/hallway-3.jpg"],
+                        desc: "Yorug' uslubdagi vertikal chiziqli puf va ko'zguli prixojaya."
+                    },
+                    {
+                        id: "hallway_4",
+                        name: "Khuvaydo Hallway #4",
+                        coverImg: "./images/hallway-khuvaydo-4.jpg",
+                        images: ["./images/hallway-khuvaydo-4.jpg"],
+                        desc: "Yog'ochli ochiq tokchaga ega shinam o'rnatma shkaf-prixojaya."
+                    }
+                ]
+            },
             {
                 category: "🛏 Yotoqxona to'plamlari / Спальные гарнитуры",
                 items: [
@@ -504,7 +543,7 @@
                         <input type="number" id="win-doors-${roomCount}">
                     </div>
                     <div class="preview-box">
-                        <img id="room-preview-img-${roomCount}" src="" alt="Dizayn" onerror="this.src=this.src.replace('.png','.jpg')">
+                        <img id="room-preview-img-${roomCount}" src="" alt="Dizayn" onerror="if(this.src.endsWith('.png')) this.src=this.src.replace('.png','.jpg')">
                     </div>
                 </div>
             `;
@@ -515,7 +554,7 @@
         function updatePreview(id) {
             const type = document.getElementById(`type-${id}`).value;
             const style = document.getElementById(`design-${id}`).value;
-            document.getElementById(`room-preview-img-${id}`).src = `./images/${type}_${style}.png`;
+            document.getElementById(`room-preview-img-${id}`).src = `./images/${type}_${style}.jpg`;
         }
 
         function openFurnitureModal() {
@@ -537,7 +576,7 @@
                 cat.items.forEach(item => {
                     categoryHTML += `
                         <div class="huvaydo-card" onclick="openItemDetail('${item.id}')">
-                            <img src="${item.coverImg}" class="huvaydo-thumb" alt="${item.name}" onerror="if(this.src.endsWith('.png')) this.src=this.src.replace('.png','.jpg');">
+                            <img src="${item.coverImg}" class="huvaydo-thumb" alt="${item.name}" loading="lazy" onerror="if(this.src.endsWith('.jpg')) this.src=this.src.replace('.jpg','.png');">
                             <div class="huvaydo-info">
                                 <div style="font-size: 14px; font-weight: bold; color: var(--primary);">${item.name}</div>
                                 <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Rasmlar soni / Кол-во фото: ${item.images.length} ta</div>
@@ -567,7 +606,7 @@
                 <div>
                     <!-- SLIDER -->
                     <div class="slider-box">
-                        <img id="gallerySliderImg" class="slider-img" src="${currentItemImages[0]}" onerror="if(this.src.endsWith('.png')) this.src=this.src.replace('.png','.jpg');">
+                        <img id="gallerySliderImg" class="slider-img" src="${currentItemImages[0]}" onerror="if(this.src.endsWith('.jpg')) this.src=this.src.replace('.jpg','.png');">
                         ${currentItemImages.length > 1 ? `
                             <button class="slider-nav slider-prev" onclick="changeSlide(-1)">❮</button>
                             <button class="slider-nav slider-next" onclick="changeSlide(1)">❯</button>
@@ -581,9 +620,10 @@
                         <b>Tavsif / Описание:</b><br>${item.desc}
                     </div>
 
-                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
+                        <button class="btn" onclick="sendFurnitureOrder('${item.name}', 'Стандартный комплект')">🛍 Buyurtma berish / Заказать комплект</button>
+                        <button class="btn btn-custom" onclick="sendCustomSizeOrder('${item.name}')">📐 O'z o'lchamingizga buyurtma / Заказать под свой размер</button>
                         <button class="btn" style="background: var(--text-muted);" onclick="renderHuvaydoCatalog()">❮ Orqaga / Назад</button>
-                        <button class="btn" onclick="sendFurnitureOrder('${item.name}')">Buyurtma berish / Заказать</button>
                     </div>
                 </div>
             `;
@@ -599,13 +639,13 @@
             document.getElementById('slideCounter').innerText = `${currentSlideIndex + 1} / ${currentItemImages.length}`;
         }
 
-        async function sendFurnitureOrder(furnitureName) {
+        async function sendFurnitureOrder(furnitureName, orderType) {
             const name = prompt("Ismingizni kiriting / Введите ваше имя:");
             if (!name) return;
             const phone = prompt("Telefon raqamingizni kiriting / Ваш номер (+998...):");
             if (!phone) return;
 
-            const textMessage = `🚀 *Yangi buyurtma! (MYHOUSE PRO)*\n\n📦 *Kategoriya:* Mebel (Huvaydo)\n🛋 *Mahsulot:* ${furnitureName}\n👤 *Mijoz:* ${name}\n📞 *Tel:* ${phone}`;
+            const textMessage = `🚀 *Yangi buyurtma! (MYHOUSE PRO)*\n\n📦 *Kategoriya:* Mebel (Huvaydo)\n🛋 *Mahsulot:* ${furnitureName}\n📌 *Turi:* ${orderType}\n👤 *Mijoz:* ${name}\n📞 *Tel:* ${phone}`;
 
             try {
                 const tgRes = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
@@ -625,10 +665,44 @@
             }
         }
 
-        // Автоматически добавляем первую комнату при загрузке страницы
-        window.onload = function() { 
-            addRoom(); 
-        };
+        async function sendCustomSizeOrder(furnitureName) {
+            const width = prompt("Kengligi (см) / Ширина (см):");
+            if (!width) return;
+            const height = prompt("Balandligi (см) / Высота (см):");
+            if (!height) return;
+            const depth = prompt("Chuqurligi (см) / Глубина (см):");
+            if (!depth) return;
+            const note = prompt("Qo'shimcha istaklar / Доп. пожелания (необязательно):") || "Yo'q / Нет";
+
+            const name = prompt("Ismingizni kiriting / Введите ваше имя:");
+            if (!name) return;
+            const phone = prompt("Telefon raqamingizni kiriting / Ваш номер (+998...):");
+            if (!phone) return;
+
+            const textMessage = `🚀 *ИНДИВИДУАЛЬНЫЙ ЗАКАЗ! (MYHOUSE PRO)*\n\n📦 *Mahsulot:* ${furnitureName}\n📐 *O'lchamlar (ШхВхГ):* ${width} x ${height} x ${depth} см\n💬 *Izoh:* ${note}\n👤 *Mijoz:* ${name}\n📞 *Tel:* ${phone}`;
+
+            try {
+                const tgRes = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: TG_CHAT_ID, text: textMessage, parse_mode: "Markdown" })
+                });
+
+                if (tgRes.ok) {
+                    alert("Hisob-kitob uchun so'rov yuborildi! / Заявка на расчет отправлена!");
+                    closeFurnitureModal();
+                } else {
+                    alert("Xatolik yuz berdi / Ошибка отправки");
+                }
+            } catch (e) {
+                alert("Internet ulanishini tekshiring / Проверьте интернет");
+            }
+        }
+
+        // Автоматически добавляем первую комнату при загрузке DOM
+        document.addEventListener("DOMContentLoaded", function() {
+            addRoom();
+        });
     </script>
 </body>
 </html>
