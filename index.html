@@ -652,7 +652,7 @@
                                 <strong>${el.name}</strong><br>
                                 <span style="color: var(--text-muted); font-size: 11px;">📏 ${el.size} (${el.area} м²)</span>
                             </div>
-                            <input type="checkbox" class="spatial-item-check" data-area="${el.area}" data-index="${index}" checked>
+                            <input type="checkbox" class="spatial-item-check" data-name="${el.name}" data-area="${el.area}" data-index="${index}" checked onchange="recalculateSpatialArea()">
                         </div>
                     `;
                 });
@@ -663,7 +663,6 @@
                             📐 PROSTRANSTVENNIY ANALIZ (Влезет / Не влезет)
                         </div>
 
-                        <!-- ПОЛЯ ВВОДА РАЗМЕРОВ КОМНАТЫ АБСОЛЮТНО ПУСТЫЕ -->
                         <div class="room-inputs-box">
                             <div style="font-size: 11px; font-weight: bold; color: var(--text-muted); margin-bottom: 6px;">
                                 🏠 Xonangiz o'lchamlari (метры):
@@ -671,27 +670,24 @@
                             <div class="grid-3" style="margin-bottom: 8px;">
                                 <div>
                                     <label>Uzunligi (L)</label>
-                                    <input type="number" id="modalRoomL" value="" placeholder="Masalan: 4.5" step="0.1">
+                                    <input type="number" id="modalRoomL" value="" placeholder="Masalan: 4.5" step="0.1" oninput="recalculateSpatialArea()">
                                 </div>
                                 <div>
                                     <label>Kengligi (W)</label>
-                                    <input type="number" id="modalRoomW" value="" placeholder="Masalan: 3.5" step="0.1">
+                                    <input type="number" id="modalRoomW" value="" placeholder="Masalan: 3.5" step="0.1" oninput="recalculateSpatialArea()">
                                 </div>
                                 <div>
                                     <label>Balandligi (H)</label>
                                     <input type="number" id="modalRoomH" value="" placeholder="Masalan: 2.8" step="0.1">
                                 </div>
                             </div>
-                            <button class="btn" style="padding: 8px; font-size: 12px;" onclick="recalculateSpatialArea()">
-                                🔄 HISOBLASH / РАССЧИТАТЬ
-                            </button>
                         </div>
 
                         <div class="progress-bar-bg">
                             <div class="progress-bar-fill" id="spatialProgress"></div>
                         </div>
                         <div id="spatialStatusText" style="font-size: 11px; font-weight: bold; margin-top: 4px; color: var(--text-muted);">
-                            Xona o'lchamlarini kiriting va hisoblash tugmasini bosing.
+                            Xona o'lchamlarini kiriting (Masalan: 4.5 va 3.5).
                         </div>
                     </div>
                 `;
@@ -719,7 +715,7 @@
                     ${elementsHTML}
 
                     <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
-                        <button class="btn" onclick="sendFurnitureOrder('${item.name}', 'Стандартный комплект')">🛍 Buyurtma berish / Заказать комплект</button>
+                        <button class="btn" onclick="sendDetailedOrder('${item.name}', 'Komplekt buyurtmasi')">🛍 Buyurtma berish / Заказать комплект</button>
                         <button class="btn btn-custom" onclick="sendCustomSizeOrder('${item.name}')">📐 O'z o'lchamingizga buyurtma / Заказать под свой размер</button>
                         <button class="btn" style="background: var(--text-muted);" onclick="renderHuvaydoCatalog()">❮ Orqaga / Назад</button>
                     </div>
@@ -742,10 +738,10 @@
             if (!roomL || !roomW || roomL <= 0 || roomW <= 0) {
                 if (statusText) {
                     statusText.style.color = 'var(--accent)';
-                    statusText.innerHTML = '⚠️ Iltimos, hisoblash uchun xonaning uzunligi va kengligini kiriting!';
+                    statusText.innerHTML = '⚠️ Xonaning uzunligi va kengligini kiriting!';
                 }
                 if (progressFill) progressFill.style.width = '0%';
-                return;
+                return 0;
             }
 
             const roomArea = roomL * roomW;
@@ -763,21 +759,21 @@
             if (progressFill && statusText) {
                 progressFill.style.width = `${Math.min(percent, 100).toFixed(1)}%`;
 
-                // Реалистичные пороги: До 50% — Отлично, 50-65% — Норма, >65% — Действительно тесно
                 if (percent < 50) {
                     progressFill.style.backgroundColor = 'var(--success)';
                     statusText.style.color = 'var(--success)';
-                    statusText.innerHTML = `✅ Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Keng va juda erkin xona!`;
+                    statusText.innerHTML = `✅ Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Keng va erkin!`;
                 } else if (percent <= 65) {
                     progressFill.style.backgroundColor = 'var(--accent)';
                     statusText.style.color = 'var(--accent)';
-                    statusText.innerHTML = `🟡 Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Standart va shinam joylashuv.`;
+                    statusText.innerHTML = `🟡 Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Standart shinamlik.`;
                 } else {
                     progressFill.style.backgroundColor = 'var(--danger)';
                     statusText.style.color = 'var(--danger)';
-                    statusText.innerHTML = `🛑 Diqqat! Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Xona juda tor bo'lib qolishi mumkin!`;
+                    statusText.innerHTML = `🛑 Diqqat! Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Juda tor bo'lishi mumkin!`;
                 }
             }
+            return percent;
         }
 
         function changeSlide(direction) {
@@ -790,13 +786,37 @@
             document.getElementById('slideCounter').innerText = `${currentSlideIndex + 1} / ${currentItemImages.length}`;
         }
 
-        async function sendFurnitureOrder(furnitureName, orderType) {
+        async function sendDetailedOrder(furnitureName, orderType) {
             const name = prompt("Ismingizni kiriting / Введите ваше имя:");
             if (!name) return;
             const phone = prompt("Telefon raqamingizni kiriting / Ваш номер (+998...):");
             if (!phone) return;
 
-            const textMessage = `🚀 *Yangi buyurtma! (MYHOUSE PRO)*\n\n📦 *Kategoriya:* Mebel (Huvaydo)\n🛋 *Mahsulot:* ${furnitureName}\n📌 *Turi:* ${orderType}\n👤 *Mijoz:* ${name}\n📞 *Tel:* ${phone}`;
+            // Собираем данные по размерам и пространственному анализу
+            const roomL = document.getElementById('modalRoomL')?.value || "Kiritilmagan";
+            const roomW = document.getElementById('modalRoomW')?.value || "Kiritilmagan";
+            const roomH = document.getElementById('modalRoomH')?.value || "Kiritilmagan";
+
+            // Собираем список элементов (что выбрал / убрал клиент)
+            let includedItemsStr = "";
+            const checkboxes = document.querySelectorAll('.spatial-item-check');
+            if (checkboxes.length > 0) {
+                checkboxes.forEach(cb => {
+                    const itemName = cb.getAttribute('data-name');
+                    const statusIcon = cb.checked ? "✅" : "❌ (O'chirilgan)";
+                    includedItemsStr += `\n• ${itemName}: ${statusIcon}`;
+                });
+            } else {
+                includedItemsStr = "\n• Standart to'plam";
+            }
+
+            const textMessage = `🚀 *YANGI BUYURTMA (MYHOUSE PRO)*\n\n` +
+                                `📦 *Mahsulot:* ${furnitureName}\n` +
+                                `📌 *Turi:* ${orderType}\n\n` +
+                                `🏠 *Xona o'lchamlari:* L=${roomL}m, W=${roomW}m, H=${roomH}m\n` +
+                                `🧩 *Konstruktor elementlari:*` + `${includedItemsStr}\n\n` +
+                                `👤 *Mijoz:* ${name}\n` +
+                                `📞 *Tel:* ${phone}`;
 
             try {
                 const tgRes = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
@@ -830,7 +850,12 @@
             const phone = prompt("Telefon raqamingizni kiriting / Ваш номер (+998...):");
             if (!phone) return;
 
-            const textMessage = `🚀 *ИНДИВИДУАЛЬНЫЙ ЗАКАЗ! (MYHOUSE PRO)*\n\n📦 *Mahsulot:* ${furnitureName}\n📐 *O'lchamlar (ШхВхГ):* ${width} x ${height} x ${depth} см\n💬 *Izoh:* ${note}\n👤 *Mijoz:* ${name}\n📞 *Tel:* ${phone}`;
+            const textMessage = `🚀 *INDIVIDUAL BUYURTMA (MYHOUSE PRO)*\n\n` +
+                                `📦 *Mahsulot:* ${furnitureName}\n` +
+                                `📐 *O'lchamlar (ШхВхГ):* ${width} x ${height} x ${depth} см\n` +
+                                `💬 *Izoh:* ${note}\n\n` +
+                                `👤 *Mijoz:* ${name}\n` +
+                                `📞 *Tel:* ${phone}`;
 
             try {
                 const tgRes = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
