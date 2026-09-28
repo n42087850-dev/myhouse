@@ -763,18 +763,19 @@
             if (progressFill && statusText) {
                 progressFill.style.width = `${Math.min(percent, 100).toFixed(1)}%`;
 
-                if (percent < 38) {
+                // Реалистичные пороги: До 50% — Отлично, 50-65% — Норма, >65% — Действительно тесно
+                if (percent < 50) {
                     progressFill.style.backgroundColor = 'var(--success)';
                     statusText.style.color = 'var(--success)';
-                    statusText.innerHTML = `✅ Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Keng va erkin prokhodlar kafolatlanadi!`;
-                } else if (percent <= 50) {
+                    statusText.innerHTML = `✅ Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Keng va juda erkin xona!`;
+                } else if (percent <= 65) {
                     progressFill.style.backgroundColor = 'var(--accent)';
                     statusText.style.color = 'var(--accent)';
-                    statusText.innerHTML = `⚠️ Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Zich joylashuv, lekin qulay.`;
+                    statusText.innerHTML = `🟡 Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Standart va shinam joylashuv.`;
                 } else {
                     progressFill.style.backgroundColor = 'var(--danger)';
                     statusText.style.color = 'var(--danger)';
-                    statusText.innerHTML = `🛑 Diqqat! Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Xona torayib ketishi mumkin!`;
+                    statusText.innerHTML = `🛑 Diqqat! Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Xona juda tor bo'lib qolishi mumkin!`;
                 }
             }
         }
