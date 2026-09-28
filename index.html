@@ -13,6 +13,8 @@
             --text: #f8fafc;
             --text-muted: #94a3b8;
             --border: #3a506b;
+            --success: #10b981;
+            --danger: #ef4444;
         }
 
         * {
@@ -277,21 +279,64 @@
             margin-top: 6px;
         }
 
-        .item-spec-box {
+        /* SPATIAL ANALYSIS STYLES */
+        .spatial-box {
             background: var(--bg-main);
+            border: 1px solid var(--primary);
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+
+        .spatial-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .room-inputs-box {
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
 
-        .item-element-card {
-            border-bottom: 1px solid var(--border);
-            padding: 8px 0;
+        .progress-bar-bg {
+            background: var(--bg-card);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 8px 0;
+            border: 1px solid var(--border);
         }
 
-        .item-element-card:last-child {
-            border-bottom: none;
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--success);
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .element-checkbox-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }
+
+        .element-checkbox-item input {
+            width: auto;
+            cursor: pointer;
         }
 
         .footer {
@@ -341,7 +386,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО HUVAYDO -->
+    <!-- MODAL HUVAYDO -->
     <div class="modal-overlay" id="furnitureModal">
         <div class="modal-container">
             <div class="modal-header">
@@ -384,177 +429,99 @@
             {
                 category: "🚪 Dehliz / Прихожие гарнитуры",
                 items: [
-                    {
-                        id: "hallway_1",
-                        name: "Khuvaydo Hallway #1",
-                        coverImg: "./images/hallway-khuvaydo-1.jpg",
-                        images: ["./images/hallway-khuvaydo-1.jpg"],
-                        desc: "Frezerovka va shisha vitrinali shkafli prixojaya to'plami."
-                    },
-                    {
-                        id: "hallway_2",
-                        name: "Khuvaydo Hallway #2",
-                        coverImg: "./images/hallway-khuvaydo-2.jpg",
-                        images: ["./images/hallway-khuvaydo-2.jpg"],
-                        desc: "Zamonaviy to'q rangli ochiq kiyim ilgichli prixojaya garnituri."
-                    },
-                    {
-                        id: "hallway_3",
-                        name: "Khuvaydo Hallway #3",
-                        coverImg: "./images/hallway-3.jpg",
-                        images: ["./images/hallway-3.jpg"],
-                        desc: "Yorug' uslubdagi vertikal chiziqli puf va ko'zguli prixojaya."
-                    },
-                    {
-                        id: "hallway_4",
-                        name: "Khuvaydo Hallway #4",
-                        coverImg: "./images/hallway-khuvaydo-4.jpg",
-                        images: ["./images/hallway-khuvaydo-4.jpg"],
-                        desc: "Yog'ochli ochiq tokchaga ega shinam o'rnatma shkaf-prixojaya."
-                    }
+                    { id: "hallway_1", name: "Khuvaydo Hallway #1", coverImg: "./images/hallway-khuvaydo-1.jpg", images: ["./images/hallway-khuvaydo-1.jpg"], desc: "Frezerovka va shisha vitrinali shkafli prixojaya to'plami." },
+                    { id: "hallway_2", name: "Khuvaydo Hallway #2", coverImg: "./images/hallway-khuvaydo-2.jpg", images: ["./images/hallway-khuvaydo-2.jpg"], desc: "Zamonaviy to'q rangli ochiq kiyim ilgichli prixojaya garnituri." },
+                    { id: "hallway_3", name: "Khuvaydo Hallway #3", coverImg: "./images/hallway-3.jpg", images: ["./images/hallway-3.jpg"], desc: "Yorug' uslubdagi vertikal chiziqli puf va ko'zguli prixojaya." },
+                    { id: "hallway_4", name: "Khuvaydo Hallway #4", coverImg: "./images/hallway-khuvaydo-4.jpg", images: ["./images/hallway-khuvaydo-4.jpg"], desc: "Yog'ochli ochiq tokchaga ega shinam o'rnatma shkaf-prixojaya." }
                 ]
             },
             {
                 category: "🛏 Yotoqxona to'plamlari / Спальные гарнитуры",
                 items: [
                     { 
-                        id: "set_1",
-                        name: "Khuvaydo Full Set #1", 
-                        material: "LMDF (Крашеный МДФ)",
+                        id: "set_1", name: "Khuvaydo Full Set #1", material: "LMDF (Крашеный МДФ)",
                         coverImg: "./images/bedroom-khuvaydo-full-set-1.jpg",
-                        images: [
-                            "./images/bedroom-khuvaydo-full-set-1.jpg",
-                            "./images/bed-with-2-nightstands-khuvaydo-1.jpg",
-                            "./images/closet-khuvaydo-1.jpg",
-                            "./images/dresser-with-stool-khuvaydo-1.jpg",
-                            "./images/nightstand-khuvaydo-1.jpg",
-                            "./images/tall-nightstand-khuvaydo-1.jpg",
-                            "./images/bigger-dresser-khuvaydo-1.jpg"
-                        ],
+                        images: ["./images/bedroom-khuvaydo-full-set-1.jpg", "./images/bed-with-2-nightstands-khuvaydo-1.jpg", "./images/closet-khuvaydo-1.jpg", "./images/dresser-with-stool-khuvaydo-1.jpg", "./images/nightstand-khuvaydo-1.jpg", "./images/tall-nightstand-khuvaydo-1.jpg", "./images/bigger-dresser-khuvaydo-1.jpg"],
                         desc: "To'liq yotoqxona garnituri #1.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "220 × 220 × 65 см" },
-                            { name: "Кровать (Bed)", size: "Габарит: 185 × 220 см (Матрас: 175 × 210 см)" },
-                            { name: "Трюмо / Макияжный стол", size: "110 × 45 см" },
-                            { name: "Прикроватная тумба", size: "60 × 45 см" },
-                            { name: "Комод / Честер", size: "70 × 110 × 45 см" }
+                            { name: "Шкаф (Closet)", size: "220 × 220 × 65 см", area: 1.43 },
+                            { name: "Кровать (Bed)", size: "185 × 220 см (Матрас 175 × 210)", area: 4.07 },
+                            { name: "Трюмо / Макияжный стол", size: "110 × 45 см", area: 0.50 },
+                            { name: "Прикроватная тумба (2 шт)", size: "60 × 45 см", area: 0.54 },
+                            { name: "Комод / Честер", size: "70 × 110 × 45 см", area: 0.32 }
                         ]
                     },
                     { 
-                        id: "set_2",
-                        name: "Khuvaydo Full Set #2", 
-                        material: "LMDF (Крашеный МДФ)",
+                        id: "set_2", name: "Khuvaydo Full Set #2", material: "LMDF (Крашеный МДФ)",
                         coverImg: "./images/bed-with-2-nightstands-khuvaydo-2.jpg",
-                        images: [
-                            "./images/bed-with-2-nightstands-khuvaydo-2.jpg",
-                            "./images/closet-khuvaydo-2.jpg",
-                            "./images/dresser-with-stool-khuvaydo-2.jpg",
-                            "./images/nightstand-khuvaydo-2.jpg"
-                        ],
+                        images: ["./images/bed-with-2-nightstands-khuvaydo-2.jpg", "./images/closet-khuvaydo-2.jpg", "./images/dresser-with-stool-khuvaydo-2.jpg", "./images/nightstand-khuvaydo-2.jpg"],
                         desc: "Zamonaviy yotoqxona to'plami #2.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "210 × 220 × 65 см" },
-                            { name: "Кровать (Bed)", size: "Габарит: 200 × 220 см (Матрас: 175 × 210 см)" },
-                            { name: "Трюмо / Макияжный стол", size: "140 × 45 см" },
-                            { name: "Прикроватная тумба", size: "55 × 60 × 45 см" }
+                            { name: "Шкаф (Closet)", size: "210 × 220 × 65 см", area: 1.37 },
+                            { name: "Кровать (Bed)", size: "200 × 220 см (Матрас 175 × 210)", area: 4.40 },
+                            { name: "Трюмо / Макияжный стол", size: "140 × 45 см", area: 0.63 },
+                            { name: "Прикроватная тумба (2 шт)", size: "55 × 60 × 45 см", area: 0.50 }
                         ]
                     },
                     { 
-                        id: "set_3",
-                        name: "Khuvaydo Full Set #3", 
-                        material: "LMDF (Крашеный МДФ)",
+                        id: "set_3", name: "Khuvaydo Full Set #3", material: "LMDF (Крашеный МДФ)",
                         coverImg: "./images/2-doors-closed-closet-khuvaydo-3.jpg",
-                        images: [
-                            "./images/2-doors-closed-closet-khuvaydo-3.jpg",
-                            "./images/left-side-opened-closet-khuvaydo-3.jpg",
-                            "./images/right-side-opened-closet-khuvaydo-3.jpg",
-                            "./images/dresser-khuvaydo-3.jpg",
-                            "./images/nightstand-khuvaydo-3.jpg"
-                        ],
+                        images: ["./images/2-doors-closed-closet-khuvaydo-3.jpg", "./images/left-side-opened-closet-khuvaydo-3.jpg", "./images/right-side-opened-closet-khuvaydo-3.jpg", "./images/dresser-khuvaydo-3.jpg", "./images/nightstand-khuvaydo-3.jpg"],
                         desc: "Klassik va shinam yotoqxona garnituri #3.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "195 × 220 × 65 см" },
-                            { name: "Кровать (Bed)", size: "Габарит: 170 × 220 см (Матрас: 155 × 210 см)" },
-                            { name: "Трюмо / Макияжный стол", size: "130 × 45 см" },
-                            { name: "Прикроватная тумба", size: "57 × 60 × 45 см" }
+                            { name: "Шкаф (Closet)", size: "195 × 220 × 65 см", area: 1.27 },
+                            { name: "Кровать (Bed)", size: "170 × 220 см (Матрас 155 × 210)", area: 3.74 },
+                            { name: "Трюмо / Макияжный стол", size: "130 × 45 см", area: 0.59 },
+                            { name: "Прикроватная тумба (2 шт)", size: "57 × 60 × 45 см", area: 0.51 }
                         ]
                     },
                     { 
-                        id: "set_4",
-                        name: "Khuvaydo Full Set #4", 
-                        material: "LDSP (ЛДСП)",
+                        id: "set_4", name: "Khuvaydo Full Set #4", material: "LDSP (ЛДСП)",
                         coverImg: "./images/bed-with-2-nightstands-khuvaydo-4.jpg",
-                        images: [
-                            "./images/bed-with-2-nightstands-khuvaydo-4.jpg",
-                            "./images/closet-khuvaydo-4.jpg",
-                            "./images/fully-opened-closet-khuvaydo-4.jpg",
-                            "./images/dresser-with-stool-khuvaydo-4.jpg",
-                            "./images/nightstand-khuvaydo-4.jpg"
-                        ],
+                        images: ["./images/bed-with-2-nightstands-khuvaydo-4.jpg", "./images/closet-khuvaydo-4.jpg", "./images/fully-opened-closet-khuvaydo-4.jpg", "./images/dresser-with-stool-khuvaydo-4.jpg", "./images/nightstand-khuvaydo-4.jpg"],
                         desc: "Etnik stil elementlariga ega yotoqxona to'plami #4.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "260 × 220 × 65 см" },
-                            { name: "Кровать (Bed)", size: "Габарит: 185 × 220 см (Матрас: 175 × 210 см)" },
-                            { name: "Трюмо / Макияжный стол", size: "140 × 45 см" },
-                            { name: "Прикроватная тумба", size: "60 × 50 × 45 см" }
+                            { name: "Шкаф (Closet)", size: "260 × 220 × 65 см", area: 1.69 },
+                            { name: "Кровать (Bed)", size: "185 × 220 см (Матрас 175 × 210)", area: 4.07 },
+                            { name: "Трюмо / Макияжный стол", size: "140 × 45 см", area: 0.63 },
+                            { name: "Прикроватная тумба (2 шт)", size: "60 × 50 × 45 см", area: 0.54 }
                         ]
                     },
                     { 
-                        id: "set_5",
-                        name: "Khuvaydo Full Set #5", 
-                        material: "LDSP + LMDF (ЛДСП + Крашеный МДФ)",
+                        id: "set_5", name: "Khuvaydo Full Set #5", material: "LDSP + LMDF (ЛДСП + МДФ)",
                         coverImg: "./images/bed-with-2-nightstands-khuvaydo-5.jpg",
-                        images: [
-                            "./images/bed-with-2-nightstands-khuvaydo-5.jpg",
-                            "./images/closet-khuvaydo-5.jpg",
-                            "./images/fully-opened-closet-khuvaydo-5.jpg",
-                            "./images/nightstand-khuvaydo-5.jpg"
-                        ],
+                        images: ["./images/bed-with-2-nightstands-khuvaydo-5.jpg", "./images/closet-khuvaydo-5.jpg", "./images/fully-opened-closet-khuvaydo-5.jpg", "./images/nightstand-khuvaydo-5.jpg"],
                         desc: "Shinam va keng yotoqxona garnituri #5.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "200 × 220 × 60 см" },
-                            { name: "Кровать (Bed)", size: "Габарит: 185 × 220 см (Матрас: 175 × 210 см)" },
-                            { name: "Трюмо / Макияжный стол", size: "140 × 45 см" },
-                            { name: "Прикроватная тумба", size: "60 × 50 × 45 см" }
+                            { name: "Шкаф (Closet)", size: "200 × 220 × 60 см", area: 1.20 },
+                            { name: "Кровать (Bed)", size: "185 × 220 см (Матрас 175 × 210)", area: 4.07 },
+                            { name: "Трюмо / Макияжный стол", size: "140 × 45 см", area: 0.63 },
+                            { name: "Прикроватная тумба (2 шт)", size: "60 × 50 × 45 см", area: 0.54 }
                         ]
                     },
                     { 
-                        id: "set_7",
-                        name: "Khuvaydo Full Set #7", 
-                        material: "LMDF (Крашеный МДФ)",
+                        id: "set_7", name: "Khuvaydo Full Set #7", material: "LMDF (Крашеный МДФ)",
                         coverImg: "./images/full-set-khuvaydo-7.jpg",
-                        images: [
-                            "./images/full-set-khuvaydo-7.jpg",
-                            "./images/closet-khuvaydo-7.jpg",
-                            "./images/dresser-khuvaydo-7.jpg"
-                        ],
+                        images: ["./images/full-set-khuvaydo-7.jpg", "./images/closet-khuvaydo-7.jpg", "./images/dresser-khuvaydo-7.jpg"],
                         desc: "Zamonaviy lüks yotoqxona garnituri #7.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "240 × 220 × 60 см" },
-                            { name: "Кровать (Bed)", size: "Габарит: 260 × 220 см (Матрас: 175 × 210 см)" },
-                            { name: "Трюмо / Макияжный стол", size: "120 × 45 см" },
-                            { name: "Прикроватная тумба", size: "50 × 45 см" }
+                            { name: "Шкаф (Closet)", size: "240 × 220 × 60 см", area: 1.44 },
+                            { name: "Кровать (Bed)", size: "260 × 220 см (Матрас 175 × 210)", area: 5.72 },
+                            { name: "Трюмо / Макияжный стол", size: "120 × 45 см", area: 0.54 },
+                            { name: "Прикроватная тумба (2 шт)", size: "50 × 45 см", area: 0.45 }
                         ]
                     },
                     { 
-                        id: "set_8",
-                        name: "Khuvaydo Full Set #8", 
-                        material: "LDSP (ЛДСП)",
+                        id: "set_8", name: "Khuvaydo Full Set #8", material: "LDSP (ЛДСП)",
                         coverImg: "./images/full-set-khuvaydo-8.jpg",
-                        images: [
-                            "./images/full-set-khuvaydo-8.jpg",
-                            "./images/closet-khuvaydo-8.jpg",
-                            "./images/dresser-with-stool-khuvaydo-8.jpg",
-                            "./images/nightsand-khuvaydo-8.jpg",
-                            "./images/tall-nightstand-khuvaydo-8.jpg"
-                        ],
+                        images: ["./images/full-set-khuvaydo-8.jpg", "./images/closet-khuvaydo-8.jpg", "./images/dresser-with-stool-khuvaydo-8.jpg", "./images/nightsand-khuvaydo-8.jpg", "./images/tall-nightstand-khuvaydo-8.jpg"],
                         desc: "Minimalistik uslubdagi to'liq yotoqxona to'plami #8.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "200 × 220 × 60 см" },
-                            { name: "Кровать (Bed)", size: "Габарит: 170 × 220 см (Матрас: 155 × 210 см)" },
-                            { name: "Трюмо / Макияжный стол", size: "130 × 50 см" },
-                            { name: "Прикроватная тумба", size: "45 × 40 × 50 см" },
-                            { name: "Комод / Честер", size: "110 × 70 × 45 см" }
+                            { name: "Шкаф (Closet)", size: "200 × 220 × 60 см", area: 1.20 },
+                            { name: "Кровать (Bed)", size: "170 × 220 см (Матрас 155 × 210)", area: 3.74 },
+                            { name: "Трюмо / Макияжный стол", size: "130 × 50 см", area: 0.65 },
+                            { name: "Прикроватная тумба (2 шт)", size: "45 × 40 × 50 см", area: 0.45 },
+                            { name: "Комод / Честер", size: "110 × 70 × 45 см", area: 0.50 }
                         ]
                     }
                 ]
@@ -562,16 +529,7 @@
             {
                 category: "🛋 Yumshoq mebellar / Мягкая мебель",
                 items: [
-                    {
-                        id: "set_6",
-                        name: "Khuvaydo Sofa Set #6",
-                        coverImg: "./images/sofa-with-table-full-set-khuvaydo-6.jpg",
-                        images: [
-                            "./images/sofa-with-table-full-set-khuvaydo-6.jpg",
-                            "./images/sofa-khuvaydo-6.jpg"
-                        ],
-                        desc: "Mehmonxona uchun yumshoq mebel to'plami #6."
-                    }
+                    { id: "set_6", name: "Khuvaydo Sofa Set #6", coverImg: "./images/sofa-with-table-full-set-khuvaydo-6.jpg", images: ["./images/sofa-with-table-full-set-khuvaydo-6.jpg", "./images/sofa-khuvaydo-6.jpg"], desc: "Mehmonxona uchun yumshoq mebel to'plami #6." }
                 ]
             },
             {
@@ -680,25 +638,63 @@
 
             document.getElementById('modalCatalogTitle').innerText = item.name;
 
-            // Генерируем блок элементов с размерами (если они есть)
             let elementsHTML = '';
             if (item.elements && item.elements.length > 0) {
                 elementsHTML += `
-                    <div class="item-spec-box">
-                        <div style="font-size: 12px; font-weight: bold; color: var(--primary); margin-bottom: 6px;">
-                            📐 ЭЛЕМЕНТЫ И РАЗМЕРЫ КОМПЛЕКТА:
-                        </div>
-                        ${item.material ? `<div style="font-size: 11px; color: var(--accent); margin-bottom: 8px;"><b>Материал:</b> ${item.material}</div>` : ''}
+                    <div style="font-size: 12px; font-weight: bold; color: var(--primary); margin-top: 15px; margin-bottom: 8px;">
+                        🧩 KONSTRUKTOR & GABARITLAR (Включить / Исключить):
+                    </div>
                 `;
-                item.elements.forEach(el => {
+                item.elements.forEach((el, index) => {
                     elementsHTML += `
-                        <div class="item-element-card">
-                            <div style="font-size: 12px; font-weight: bold; color: var(--text);">${el.name}</div>
-                            <div style="font-size: 11px; color: var(--text-muted);">📏 ${el.size}</div>
+                        <div class="element-checkbox-item">
+                            <div>
+                                <strong>${el.name}</strong><br>
+                                <span style="color: var(--text-muted); font-size: 11px;">📏 ${el.size} (${el.area} м²)</span>
+                            </div>
+                            <input type="checkbox" class="spatial-item-check" data-area="${el.area}" data-index="${index}" checked>
                         </div>
                     `;
                 });
-                elementsHTML += `</div>`;
+
+                elementsHTML += `
+                    <div class="spatial-box" id="spatialBox">
+                        <div class="spatial-title">
+                            📐 PROSTRANSTVENNIY ANALIZ (Влезет / Не влезет)
+                        </div>
+
+                        <!-- ПОЛЯ ВВОДА РАЗМЕРОВ КОМНАТЫ АБСОЛЮТНО ПУСТЫЕ -->
+                        <div class="room-inputs-box">
+                            <div style="font-size: 11px; font-weight: bold; color: var(--text-muted); margin-bottom: 6px;">
+                                🏠 Xonangiz o'lchamlari (метры):
+                            </div>
+                            <div class="grid-3" style="margin-bottom: 8px;">
+                                <div>
+                                    <label>Uzunligi (L)</label>
+                                    <input type="number" id="modalRoomL" value="" placeholder="Masalan: 4.5" step="0.1">
+                                </div>
+                                <div>
+                                    <label>Kengligi (W)</label>
+                                    <input type="number" id="modalRoomW" value="" placeholder="Masalan: 3.5" step="0.1">
+                                </div>
+                                <div>
+                                    <label>Balandligi (H)</label>
+                                    <input type="number" id="modalRoomH" value="" placeholder="Masalan: 2.8" step="0.1">
+                                </div>
+                            </div>
+                            <button class="btn" style="padding: 8px; font-size: 12px;" onclick="recalculateSpatialArea()">
+                                🔄 HISOBLASH / РАССЧИТАТЬ
+                            </button>
+                        </div>
+
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="spatialProgress"></div>
+                        </div>
+                        <div id="spatialStatusText" style="font-size: 11px; font-weight: bold; margin-top: 4px; color: var(--text-muted);">
+                            Xona o'lchamlarini kiriting va hisoblash tugmasini bosing.
+                        </div>
+                    </div>
+                `;
             }
 
             listContainer.innerHTML = `
@@ -714,6 +710,7 @@
                     <div class="slider-counter" id="slideCounter">1 / ${currentItemImages.length}</div>
 
                     <div style="font-size: 16px; font-weight: bold; color: var(--primary); margin-top: 15px;">${item.name}</div>
+                    ${item.material ? `<div style="font-size: 11px; color: var(--accent); margin-top: 2px;"><b>Material:</b> ${item.material}</div>` : ''}
                     
                     <div style="font-size: 12px; color: var(--text-muted); background: var(--bg-main); padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-top: 10px;">
                         <b>Tavsif / Описание:</b><br>${item.desc}
@@ -730,6 +727,56 @@
             `;
 
             listContainer.scrollTop = 0;
+        }
+
+        function recalculateSpatialArea() {
+            const roomLInput = document.getElementById('modalRoomL')?.value;
+            const roomWInput = document.getElementById('modalRoomW')?.value;
+            
+            const roomL = parseFloat(roomLInput);
+            const roomW = parseFloat(roomWInput);
+
+            const progressFill = document.getElementById('spatialProgress');
+            const statusText = document.getElementById('spatialStatusText');
+
+            if (!roomL || !roomW || roomL <= 0 || roomW <= 0) {
+                if (statusText) {
+                    statusText.style.color = 'var(--accent)';
+                    statusText.innerHTML = '⚠️ Iltimos, hisoblash uchun xonaning uzunligi va kengligini kiriting!';
+                }
+                if (progressFill) progressFill.style.width = '0%';
+                return;
+            }
+
+            const roomArea = roomL * roomW;
+            const checkboxes = document.querySelectorAll('.spatial-item-check');
+            let selectedFurnitureArea = 0;
+
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    selectedFurnitureArea += parseFloat(cb.getAttribute('data-area')) || 0;
+                }
+            });
+
+            const percent = roomArea > 0 ? (selectedFurnitureArea / roomArea) * 100 : 0;
+
+            if (progressFill && statusText) {
+                progressFill.style.width = `${Math.min(percent, 100).toFixed(1)}%`;
+
+                if (percent < 38) {
+                    progressFill.style.backgroundColor = 'var(--success)';
+                    statusText.style.color = 'var(--success)';
+                    statusText.innerHTML = `✅ Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Keng va erkin prokhodlar kafolatlanadi!`;
+                } else if (percent <= 50) {
+                    progressFill.style.backgroundColor = 'var(--accent)';
+                    statusText.style.color = 'var(--accent)';
+                    statusText.innerHTML = `⚠️ Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Zich joylashuv, lekin qulay.`;
+                } else {
+                    progressFill.style.backgroundColor = 'var(--danger)';
+                    statusText.style.color = 'var(--danger)';
+                    statusText.innerHTML = `🛑 Diqqat! Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Xona torayib ketishi mumkin!`;
+                }
+            }
         }
 
         function changeSlide(direction) {
