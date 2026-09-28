@@ -345,6 +345,7 @@
         const TG_CHAT_ID = "7200196169";
 
         let roomCount = 0;
+        let modalScrollTop = 0; // Переменная для хранения позиции скролла списка
 
         const roomTypes = {
             bedroom: "Yotoqxona / Спальня",
@@ -559,7 +560,6 @@
 
         function openFurnitureModal() {
             renderHuvaydoCatalog();
-            document.getElementById('modalCatalogTitle').innerText = "HUVAYDO MEBEL KATALOGI";
             document.getElementById('furnitureModal').style.display = 'flex';
         }
 
@@ -568,6 +568,7 @@
         }
 
         function renderHuvaydoCatalog() {
+            document.getElementById('modalCatalogTitle').innerText = "HUVAYDO MEBEL KATALOGI";
             const listContainer = document.getElementById('huvaydoCatalogList');
             if (!listContainer) return;
             
@@ -590,9 +591,18 @@
                 categoryHTML += `</div>`;
                 listContainer.innerHTML += categoryHTML;
             });
+
+            // Восстанавливаем сохранённую позицию скролла списка
+            setTimeout(() => {
+                listContainer.scrollTop = modalScrollTop;
+            }, 0);
         }
 
         function openItemDetail(itemId) {
+            // Сохраняем текущую позицию скролла в каталоге
+            const listContainer = document.getElementById('huvaydoCatalogList');
+            modalScrollTop = listContainer.scrollTop;
+
             let item = null;
             huvaydoCatalog.forEach(cat => {
                 cat.items.forEach(i => { if(i.id === itemId) item = i; });
@@ -603,7 +613,6 @@
             currentSlideIndex = 0;
 
             document.getElementById('modalCatalogTitle').innerText = item.name;
-            const listContainer = document.getElementById('huvaydoCatalogList');
 
             listContainer.innerHTML = `
                 <div>
@@ -630,6 +639,9 @@
                     </div>
                 </div>
             `;
+
+            // Поднимаем окно в самый верх при просмотре конкретного товара
+            listContainer.scrollTop = 0;
         }
 
         function changeSlide(direction) {
