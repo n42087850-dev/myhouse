@@ -403,7 +403,7 @@
     </div>
 
     <script>
-        const TG_BOT_TOKEN = "8940078076:AAER-MoAb3HTJKtDXVkHdrNSRGwv2ekMttI";
+        const TG_BOT_TOKEN = "8940078076:AAERcBvxmqFRsas-IbsFxWch_NHoaXM_hbg";
         const TG_CHAT_ID = "7200196169";
 
         let roomCount = 0;
@@ -792,12 +792,10 @@
             const phone = prompt("Telefon raqamingizni kiriting / Ваш номер (+998...):");
             if (!phone) return;
 
-            // Собираем данные по размерам и пространственному анализу
             const roomL = document.getElementById('modalRoomL')?.value || "Kiritilmagan";
             const roomW = document.getElementById('modalRoomW')?.value || "Kiritilmagan";
             const roomH = document.getElementById('modalRoomH')?.value || "Kiritilmagan";
 
-            // Собираем список элементов (что выбрал / убрал клиент)
             let includedItemsStr = "";
             const checkboxes = document.querySelectorAll('.spatial-item-check');
             if (checkboxes.length > 0) {
