@@ -6,168 +6,184 @@
     <title>MYHOUSE PRO — Калькулятор ремонта и мебели</title>
     <style>
         :root {
-            --primary: #1A365D;
-            --accent: #D69E2E;
-            --accent-green: #2F855A;
-            --bg-main: #F7FAFC;
-            --card-bg: #FFFFFF;
-            --text: #2D3748;
-            --text-muted: #718096;
-            --border: #E2E8F0;
-            --success: #38A169;
-            --danger: #E53E3E;
+            --bg-main: #0B132B;
+            --card-bg: #111C38;
+            --card-border: #1F2D5A;
+            --primary-blue: #1C2B4B;
+            --accent-cyan: #38BDF8;
+            --accent-gold: #EAB308;
+            --accent-green: #10B981;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --input-bg: #090F22;
+            --input-border: #1E293B;
+            --modal-bg: #111C38;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
             background-color: var(--bg-main);
-            color: var(--text);
+            color: var(--text-main);
             line-height: 1.5;
             padding-bottom: 60px;
         }
 
         .header {
-            background-color: var(--primary);
-            color: white;
-            padding: 20px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px 15px 15px 15px;
+            background: linear-gradient(180deg, #070C1E 0%, var(--bg-main) 100%);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
 
         .container {
-            max-width: 900px;
-            margin: 20px auto;
+            max-width: 800px;
+            margin: 0 auto;
             padding: 0 15px;
         }
 
-        /* 1. Интро-подсказка */
+        /* 1. Интро-подсказка в стиле тёмной темы */
         .intro-banner {
-            background: #E6FFFA;
-            border-left: 5px solid #319795;
-            padding: 15px 20px;
-            border-radius: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            padding: 16px;
+            border-radius: 12px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .intro-banner .uz-text {
-            color: #234E52;
+            color: #6EE7B7;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13.5px;
             margin-bottom: 8px;
+            line-height: 1.4;
         }
 
         .intro-banner .ru-text {
-            color: #2C7A7B;
-            font-size: 13.5px;
+            color: #A7F3D0;
+            font-size: 13px;
+            line-height: 1.4;
         }
 
         /* Карточки комнат */
         .room-card {
             background: var(--card-bg);
-            border: 2px solid var(--border);
-            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
             padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            transition: border-color 0.3s;
-        }
-
-        .room-card:hover {
-            border-color: #CBD5E0;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
         }
 
         .room-title {
             font-size: 18px;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--accent-cyan);
             margin-bottom: 15px;
-            border-bottom: 2px solid var(--bg-main);
-            padding-bottom: 8px;
         }
 
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
         @media(max-width: 600px) {
             .grid-2, .grid-3 { grid-template-columns: 1fr; }
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 14px;
         }
 
         label {
             display: block;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 500;
             color: var(--text-muted);
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
 
         input[type="text"], input[type="number"], select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
+            padding: 12px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            color: var(--text-main);
             font-size: 14px;
             outline: none;
+            transition: border-color 0.2s;
         }
 
         input:focus, select:focus {
-            border-color: var(--primary);
+            border-color: var(--accent-cyan);
         }
 
+        /* ПРЕВЬЮ КАРТИНКИ В ПОЛНЫЙ РАЗМЕР БЕЗ ОГРАНИЧЕНИЙ И РАМОК */
         .preview-box {
             margin-top: 15px;
-            text-align: center;
-            border-radius: 8px;
+            width: 100%;
+            border-radius: 12px;
             overflow: hidden;
-            background: #EDF2F7;
-            max-height: 250px;
+            background: transparent;
         }
 
         .preview-box img {
             width: 100%;
-            height: 200px;
-            object-fit: cover;
+            height: auto;
             display: block;
+            border-radius: 12px;
+            object-fit: contain;
         }
 
         /* Кнопки */
         .btn {
-            background: var(--primary);
-            color: white;
+            background: var(--accent-cyan);
+            color: #0F172A;
             border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
+            padding: 14px 20px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 14px;
             width: 100%;
-            transition: opacity 0.2s;
+            transition: all 0.2s;
+            text-align: center;
         }
 
-        .btn:hover { opacity: 0.9; }
+        .btn:active { transform: scale(0.98); }
 
         .btn-calc {
             background: var(--accent-green);
-            font-size: 16px;
-            margin-top: 10px;
+            color: #FFFFFF;
+            font-size: 15px;
+            margin-top: 15px;
         }
 
         .btn-secondary {
-            background: #718096;
+            background: #1E293B;
+            color: var(--accent-cyan);
+            border: 1px solid var(--card-border);
         }
 
         .btn-custom {
-            background: var(--accent);
+            background: var(--accent-gold);
+            color: #0F172A;
         }
 
         .top-nav-bar {
@@ -177,32 +193,35 @@
             margin-bottom: 20px;
         }
 
-        /* Модальные окна */
+        /* Модальное окно */
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(4px);
             z-index: 1000;
             justify-content: center;
             align-items: center;
         }
 
         .modal-content {
-            background: white;
-            width: 90%;
+            background: var(--modal-bg);
+            border: 1px solid var(--card-border);
+            width: 92%;
             max-width: 650px;
             max-height: 90vh;
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 20px;
             overflow-y: auto;
             position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
         }
 
         .close-modal {
             position: absolute;
             top: 15px; right: 15px;
-            font-size: 20px;
+            font-size: 22px;
             cursor: pointer;
             color: var(--text-muted);
         }
@@ -210,82 +229,98 @@
         .huvaydo-category-title {
             font-size: 15px;
             font-weight: bold;
-            color: var(--primary);
-            margin: 15px 0 8px 0;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 4px;
+            color: var(--accent-gold);
+            margin: 18px 0 10px 0;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 6px;
         }
 
         .huvaydo-card {
             display: flex;
             gap: 12px;
             align-items: center;
-            padding: 8px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin-bottom: 8px;
+            padding: 10px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            margin-bottom: 10px;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
-        .huvaydo-card:hover { background: var(--bg-main); }
-        .huvaydo-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
+        .huvaydo-thumb { 
+            width: 70px; 
+            height: auto; 
+            max-height: 70px;
+            border-radius: 8px; 
+            object-fit: cover; 
+        }
 
-        /* Слайдер */
+        /* Слайдер мебели без ограничений */
         .slider-box {
             position: relative;
             width: 100%;
-            height: 250px;
-            background: #000;
-            border-radius: 8px;
+            background: transparent;
+            border-radius: 12px;
             overflow: hidden;
+            margin-bottom: 10px;
         }
-        .slider-img { width: 100%; height: 100%; object-fit: contain; }
+
+        .slider-img { 
+            width: 100%; 
+            height: auto; 
+            display: block; 
+            border-radius: 12px;
+            object-fit: contain; 
+        }
+
         .slider-nav {
             position: absolute;
             top: 50%; transform: translateY(-50%);
-            background: rgba(0,0,0,0.5); color: white;
-            border: none; padding: 10px; cursor: pointer;
+            background: rgba(15, 23, 42, 0.7); color: white;
+            border: none; padding: 12px 14px; cursor: pointer;
+            border-radius: 50%;
+            font-size: 16px;
         }
-        .slider-prev { left: 5px; }
-        .slider-next { right: 5px; }
-        .slider-counter { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+        .slider-prev { left: 8px; }
+        .slider-next { right: 8px; }
+        .slider-counter { text-align: center; font-size: 12px; color: var(--text-muted); margin-bottom: 15px; }
 
         .element-checkbox-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px;
-            background: var(--bg-main);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            margin-bottom: 6px;
-            font-size: 12px;
+            padding: 10px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
         }
 
         .spatial-box {
-            background: #FFF5F5;
-            border: 1px dashed var(--danger);
-            padding: 12px;
-            border-radius: 8px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px dashed #EF4444;
+            padding: 14px;
+            border-radius: 10px;
             margin-top: 15px;
         }
-        .spatial-title { font-size: 12px; font-weight: bold; color: var(--danger); margin-bottom: 8px; }
-        .progress-bar-bg { width: 100%; height: 10px; background: #E2E8F0; border-radius: 5px; overflow: hidden; margin-top: 5px; }
+
+        .spatial-title { font-size: 13px; font-weight: bold; color: #FCA5A5; margin-bottom: 10px; }
+        .progress-bar-bg { width: 100%; height: 10px; background: var(--input-bg); border-radius: 5px; overflow: hidden; margin-top: 8px; }
         .progress-bar-fill { height: 100%; width: 0%; transition: width 0.3s, background-color 0.3s; }
 
-        /* Итоговая смета на странице 2 */
         .estimate-item {
             display: flex;
             justify-content: space-between;
             font-size: 13px;
-            padding: 6px 0;
-            border-bottom: 1px dashed var(--border);
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--card-border);
         }
 
         .footer {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 40px;
             font-size: 12px;
             color: var(--text-muted);
         }
@@ -294,16 +329,16 @@
 <body>
 
     <div class="header">
-        <h2>MYHOUSE PRO</h2>
-        <p style="font-size: 12px; opacity: 0.8;">Smart Renovation & Furniture Estimator</p>
+        <h1>MYHOUSE PRO</h1>
+        <p>Xonadon ta'miri va mebellar kalkulyatori</p>
     </div>
 
     <div class="container">
 
-        <!-- ================= СТРАНИЦА 1: ВВОД ПАРАМЕТРОВ КОМНАТ ================= -->
+        <!-- ================= СТРАНИЦА 1 ================= -->
         <div id="page-1">
             
-            <!-- 1. Интро-подсказка на 2-х языках -->
+            <!-- Интро-подсказка -->
             <div class="intro-banner">
                 <div class="uz-text">
                     💡 Ta'mirlamoqchi bo'lgan xona turini va uslubini tanlang, o'lchamlarini (uzunligi, kengligi, balandligi) hamda deraza va eshiklar yig'indi hajmini kiriting. Agar bir nechta xonani ta'mirlamoqchi bo'lsangiz, "Xona qo'shish" tugmasini bosing.
@@ -313,34 +348,34 @@
                 </div>
             </div>
 
-            <!-- Контейнер для динамических карточек комнат -->
+            <!-- Контейнер комнат -->
             <div id="rooms-container"></div>
 
-            <div style="display: flex; gap: 10px; margin-bottom: 25px;">
-                <button class="btn btn-secondary" onclick="addRoom()">➕ Xona qo'shish / Добавить комнату</button>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">
+                <button class="btn btn-secondary" onclick="addRoom()">+ Xona qo'shish / Добавить комнату</button>
                 <button class="btn btn-custom" onclick="openFurnitureModal()">🛋 Mebel katalogi / Каталог мебели</button>
             </div>
         </div>
 
 
-        <!-- ================= СТРАНИЦА 2: ВОПРОСЫ И РАСЧЕТ СМЕТЫ ================= -->
+        <!-- ================= СТРАНИЦА 2 ================= -->
         <div id="page-2" style="display: none;">
             
             <div class="top-nav-bar">
-                <button class="btn btn-secondary" style="width: auto;" onclick="goToPage(1)">❮ Изменить размеры / O'lchamlarni o'zgartirish</button>
-                <span style="font-weight: bold; color: var(--primary);">Шаг 2 из 2 / 2-qadam</span>
+                <button class="btn btn-secondary" style="width: auto; padding: 10px 14px; font-size: 12px;" onclick="goToPage(1)">❮ O'lchamlarni o'zgartirish</button>
+                <span style="font-weight: bold; color: var(--accent-cyan); font-size: 13px;">2-qadam / Шаг 2 из 2</span>
             </div>
 
-            <!-- Изолированные блоки вопросов под каждую комнату -->
+            <!-- Блоки вопросов в рамках -->
             <div id="questions-container"></div>
 
-            <!-- Изолированная смета по комнатам -->
+            <!-- Изолированная смета -->
             <div id="estimate-results-container"></div>
 
         </div>
 
         <div class="footer">
-            <p><span>NODIRJON SOBIROV</span> — Founder & Lead Developer</p>
+            <p><b style="color: var(--text-main);">NODIRJON SOBIROV</b> — Founder & Lead Developer</p>
             <p>© 2026 MYHOUSE PRO. All Rights Reserved.</p>
         </div>
     </div>
@@ -350,7 +385,7 @@
     <div class="modal" id="furnitureModal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeFurnitureModal()">&times;</span>
-            <div id="modalCatalogTitle" style="font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px;">
+            <div id="modalCatalogTitle" style="font-size: 16px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 15px;">
                 HUVAYDO MEBEL KATALOGI
             </div>
             <div id="huvaydoCatalogList"></div>
@@ -400,7 +435,7 @@
                         id: "set_1", name: "Khuvaydo Full Set #1", material: "LMDF (Крашеный МДФ)",
                         coverImg: "./images/bedroom-khuvaydo-full-set-1.jpg",
                         images: ["./images/bedroom-khuvaydo-full-set-1.jpg", "./images/bed-with-2-nightstands-khuvaydo-1.jpg", "./images/closet-khuvaydo-1.jpg", "./images/dresser-with-stool-khuvaydo-1.jpg", "./images/nightstand-khuvaydo-1.jpg", "./images/tall-nightstand-khuvaydo-1.jpg", "./images/bigger-dresser-khuvaydo-1.jpg"],
-                        desc: "To'liq yotoqxona garnituri #1.",
+                        desc: "To'liq yotoqxona garnituri #1: Krovat, Shkaf, Tumbachkalar, Komod va Zerkalo.",
                         elements: [
                             { name: "Шкаф (Closet)", size: "220 × 220 × 65 см", area: 1.43 },
                             { name: "Кровать (Bed)", size: "185 × 220 см (Матрас 175 × 210)", area: 4.07 },
@@ -505,7 +540,6 @@
         let currentSlideIndex = 0;
         let currentItemImages = [];
 
-        // Добавление новой комнаты
         function addRoom() {
             roomCount++;
             const container = document.getElementById('rooms-container');
@@ -528,11 +562,13 @@
                         <label>Oynalar va eshiklar (kv. m) / Окна и двери (кв. м)</label>
                         <input type="number" id="win-doors-${roomCount}" placeholder="4.0" step="0.1">
                     </div>
+                    
+                    <!-- Превью во весь размер без рамок -->
                     <div class="preview-box">
                         <img id="room-preview-img-${roomCount}" src="" alt="Dizayn">
                     </div>
-                    <!-- 2. Кнопка «Рассчитать» прямо под превью -->
-                    <button class="btn btn-calc" onclick="processPage1AndGoToPage2()">🧮 Hisoblash / Рассчитать</button>
+
+                    <button class="btn btn-calc" onclick="processPage1AndGoToPage2()">📊 Hisoblash / Рассчитать</button>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', roomHTML);
@@ -545,7 +581,6 @@
             document.getElementById(`room-preview-img-${id}`).src = `./images/${type}_${style}.jpg`;
         }
 
-        // Переключение между страницами 1 и 2
         function goToPage(pageNumber) {
             if (pageNumber === 1) {
                 document.getElementById('page-1').style.display = 'block';
@@ -554,7 +589,6 @@
             }
         }
 
-        // Обработка данных 1-й страницы и генерация вопросов на 2-й странице
         function processPage1AndGoToPage2() {
             roomsData = [];
             let isValid = true;
@@ -601,7 +635,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 3. Умные вопросы под каждую комнату в рамках
         function renderPage2Questions() {
             const qContainer = document.getElementById('questions-container');
             qContainer.innerHTML = '';
@@ -609,9 +642,7 @@
             roomsData.forEach(room => {
                 let questionsHTML = '';
 
-                // ROOM PROFILES / Фильтры по типам комнат
                 if (room.type === 'bathroom' || room.type === 'toilet') {
-                    // Санузел / Ванная
                     questionsHTML = `
                         <div class="form-group">
                             <label>Гидроизоляция пола / Pol gidroizolatsiyasi:</label>
@@ -629,7 +660,6 @@
                         </div>
                     `;
                 } else if (room.type === 'kitchen') {
-                    // Кухня
                     questionsHTML = `
                         <div class="form-group">
                             <label>Напольное покрытие / Pol qoplamasi:</label>
@@ -647,7 +677,6 @@
                         </div>
                     `;
                 } else {
-                    // Спальня / Гостиная
                     questionsHTML = `
                         <div class="form-group">
                             <label>Напольное покрытие / Pol qoplamasi:</label>
@@ -667,12 +696,12 @@
                 }
 
                 const cardHTML = `
-                    <div class="room-card" style="border: 2px solid var(--primary);">
+                    <div class="room-card" style="border: 1px solid var(--accent-cyan);">
                         <div class="room-title">
-                            📍 Вопросы для ремонта: ${room.typeName} (#${room.id})
+                            📍 Vo'prosy dlya ta'mir: ${room.typeName} (#${room.id})
                         </div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
-                            📏 Площадь пола: <b>${room.floorArea.toFixed(1)} м²</b> | Стены: <b>${room.wallArea.toFixed(1)} м²</b>
+                            📏 Maydoni: <b>${room.floorArea.toFixed(1)} m²</b> | Devorlar: <b>${room.wallArea.toFixed(1)} m²</b>
                         </div>
                         ${questionsHTML}
                     </div>
@@ -682,17 +711,16 @@
 
             qContainer.insertAdjacentHTML('beforeend', `
                 <button class="btn btn-calc" style="margin-bottom: 25px;" onclick="calculateFinalEstimate()">
-                    📊 Сформировать смету / Smetani hisoblash
+                    📋 Smetani shakllantirish / Сформировать смету
                 </button>
             `);
         }
 
-        // Расчет и выведение изолированной сметы по комнатам
         function calculateFinalEstimate() {
             const resContainer = document.getElementById('estimate-results-container');
             resContainer.innerHTML = `
-                <h3 style="color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--primary); padding-bottom: 5px;">
-                    📋 Итоговая смета стройматериалов / Yakuniy qurilish smetasi
+                <h3 style="color: var(--accent-cyan); margin-bottom: 15px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
+                    📋 Yakuniy qurilish smetasi / Итоговая смета
                 </h3>
             `;
 
@@ -704,57 +732,57 @@
                     const tileType = document.getElementById(`q-tile-${room.id}`)?.value;
 
                     if (isHydro) {
-                        items.push({ name: "Гидроизоляционная мастика", qty: `${(room.floorArea * 1.5).toFixed(1)} кг` });
+                        items.push({ name: "Gidroizolatsiya mastikasi", qty: `${(room.floorArea * 1.5).toFixed(1)} kg` });
                     }
-                    items.push({ name: `Плитка (${tileType === 'keramogranit' ? 'Керамогранит' : 'Кафель'}) + 10% запас`, qty: `${(room.wallArea + room.floorArea * 1.1).toFixed(1)} м²` });
-                    items.push({ name: "Плиточный клей (мешки 25кг)", qty: `${Math.ceil((room.wallArea + room.floorArea) / 4)} шт` });
-                    items.push({ name: "Влагостойкая затирка для швов", qty: `${Math.ceil((room.wallArea + room.floorArea) / 10)} кг` });
+                    items.push({ name: `Plitka (${tileType === 'keramogranit' ? 'Keramogranit' : 'Kafel'}) + 10% zaxira`, qty: `${(room.wallArea + room.floorArea * 1.1).toFixed(1)} m²` });
+                    items.push({ name: "Plitka yelim kley (25kg qop)", qty: `${Math.ceil((room.wallArea + room.floorArea) / 4)} ta` });
+                    items.push({ name: "Zatirka (choklar uchun)", qty: `${Math.ceil((room.wallArea + room.floorArea) / 10)} kg` });
 
                 } else {
                     const floorType = document.getElementById(`q-floor-${room.id}`)?.value;
                     const wallType = document.getElementById(`q-wall-${room.id}`)?.value;
 
                     if (floorType === 'laminate' || floorType === 'parquet') {
-                        items.push({ name: `${floorType === 'laminate' ? 'Ламинат' : 'Паркет'} (+ 5% запас)`, qty: `${(room.floorArea * 1.05).toFixed(1)} м²` });
-                        items.push({ name: "Подложка под напольное покрытие", qty: `${room.floorArea.toFixed(1)} м²` });
-                        items.push({ name: "Плинтус напольный", qty: `${(2 * (room.length + room.width)).toFixed(1)} м.п.` });
+                        items.push({ name: `${floorType === 'laminate' ? 'Laminat' : 'Parket'} (+ 5% zaxira)`, qty: `${(room.floorArea * 1.05).toFixed(1)} m²` });
+                        items.push({ name: "Podlojka (taglik)", qty: `${room.floorArea.toFixed(1)} m²` });
+                        items.push({ name: "Plintus", qty: `${(2 * (room.length + room.width)).toFixed(1)} m.p.` });
                     } else if (floorType === 'tile') {
-                        items.push({ name: "Керамогранит для кухни (+ 10% запас)", qty: `${(room.floorArea * 1.1).toFixed(1)} м²` });
+                        items.push({ name: "Oshxona uchun keramogranit (+ 10% zaxira)", qty: `${(room.floorArea * 1.1).toFixed(1)} m²` });
                     }
 
                     if (wallType === 'wallpaper') {
-                        items.push({ name: "Обои (рулоны 1.06m x 10m)", qty: `${Math.ceil(room.wallArea / 10)} рул.` });
-                        items.push({ name: "Клей обойный", qty: `${Math.ceil(room.wallArea / 50)} пач.` });
+                        items.push({ name: "Oboy (rulon 1.06m x 10m)", qty: `${Math.ceil(room.wallArea / 10)} rulon` });
+                        items.push({ name: "Oboy kleyi", qty: `${Math.ceil(room.wallArea / 50)} pachka` });
                     } else {
-                        items.push({ name: "Интерьерная краска (в 2 слоя)", qty: `${(room.wallArea * 0.25).toFixed(1)} л` });
-                        items.push({ name: "Финишная шпатлевка", qty: `${Math.ceil(room.wallArea / 12)} меш.` });
+                        items.push({ name: "Devor bo'yog'i (2 qatlam)", qty: `${(room.wallArea * 0.25).toFixed(1)} l` });
+                        items.push({ name: "Shpatlevka", qty: `${Math.ceil(room.wallArea / 12)} qop` });
                     }
-                    items.push({ name: "Грунтовка глубокого проникновения", qty: `${(room.wallArea * 0.15).toFixed(1)} л` });
+                    items.push({ name: "Gruntovka", qty: `${(room.wallArea * 0.15).toFixed(1)} l` });
                 }
 
                 let itemsHTML = '';
-                let telegramText = `🏠 *Смета для: ${room.typeName} (#${room.id})*\n`;
+                let telegramText = `🏠 *Smeta: ${room.typeName} (#${room.id})*\n`;
 
                 items.forEach(it => {
                     itemsHTML += `
                         <div class="estimate-item">
                             <span>• ${it.name}</span>
-                            <b>${it.qty}</b>
+                            <b style="color: var(--accent-cyan);">${it.qty}</b>
                         </div>
                     `;
                     telegramText += `• ${it.name}: ${it.qty}\n`;
                 });
 
                 const roomEstimateHTML = `
-                    <div class="room-card" style="background: #FAFAFA;">
+                    <div class="room-card">
                         <div class="room-title" style="color: var(--accent-green); font-size: 16px;">
-                            Для помещения: ${room.typeName} (#${room.id})
+                            ${room.typeName} (#${room.id}) uchun smeta
                         </div>
                         <div style="margin-bottom: 15px;">
                             ${itemsHTML}
                         </div>
-                        <button class="btn btn-secondary" style="font-size: 12px; padding: 8px 12px;" onclick="sendSingleEstimateToTG('${encodeURIComponent(telegramText)}')">
-                            ✈️ Отправить смету этой комнаты в Telegram
+                        <button class="btn btn-secondary" style="font-size: 12px; padding: 10px 12px;" onclick="sendSingleEstimateToTG('${encodeURIComponent(telegramText)}')">
+                            ✈️ Smetani Telegramga yuborish
                         </button>
                     </div>
                 `;
@@ -764,13 +792,12 @@
             resContainer.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Отправка индивидуальной сметы в Telegram
         async function sendSingleEstimateToTG(encodedText) {
             const text = decodeURIComponent(encodedText);
-            const phone = prompt("Введите ваш номер телефона для связи (+998...): / Tel raqamingiz:");
+            const phone = prompt("Telefon raqamingizni kiriting (+998...):");
             if (!phone) return;
 
-            const fullMessage = `${text}\n📞 *Клиент:* ${phone}`;
+            const fullMessage = `${text}\n📞 *Mijoz:* ${phone}`;
 
             try {
                 const tgRes = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
@@ -780,17 +807,17 @@
                 });
 
                 if (tgRes.ok) {
-                    alert("Смета успешно отправлена! / Smeta yuborildi!");
+                    alert("Smeta Telegramga muvaffaqiyatli yuborildi!");
                 } else {
-                    alert(" Ошибка отправки");
+                    alert("Xatolik yuz berdi");
                 }
             } catch (e) {
-                alert(" Проверьте интернет-соединение");
+                alert("Internet ulanishini tekshiring");
             }
         }
 
 
-        /* ================= ЛОГИКА МЕБЕЛЬНОГО МОДАЛЬНОГО ОКНА ================= */
+        /* ================= МЕБЕЛЬНЫЙ МОДАЛ ================= */
         function openFurnitureModal() {
             renderHuvaydoCatalog();
             document.getElementById('furnitureModal').style.display = 'flex';
@@ -815,8 +842,8 @@
                         <div class="huvaydo-card" onclick="openItemDetail('${item.id}')">
                             <img src="${imageSrc}" class="huvaydo-thumb" alt="${item.name}">
                             <div class="huvaydo-info">
-                                <div style="font-size: 14px; font-weight: bold; color: var(--primary);">${item.name}</div>
-                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Rasmlar soni / Кол-во фото: ${item.images ? item.images.length : 1} ta</div>
+                                <div style="font-size: 14px; font-weight: bold; color: var(--text-main);">${item.name}</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Rasmlar soni: ${item.images ? item.images.length : 1} ta</div>
                             </div>
                         </div>
                     `;
@@ -848,16 +875,16 @@
             let elementsHTML = '';
             if (item.elements && item.elements.length > 0) {
                 elementsHTML += `
-                    <div style="font-size: 12px; font-weight: bold; color: var(--primary); margin-top: 15px; margin-bottom: 8px;">
-                        🧩 KONSTRUKTOR & GABARITLAR (Включить / Исключить):
+                    <div style="font-size: 12px; font-weight: bold; color: var(--accent-cyan); margin-top: 15px; margin-bottom: 8px;">
+                        🧩 KONSTRUKTOR & GABARITLAR:
                     </div>
                 `;
                 item.elements.forEach((el, index) => {
                     elementsHTML += `
                         <div class="element-checkbox-item">
                             <div>
-                                <strong>${el.name}</strong><br>
-                                <span style="color: var(--text-muted); font-size: 11px;">📏 ${el.size} (${el.area} м²)</span>
+                                <strong style="color: var(--text-main);">${el.name}</strong><br>
+                                <span style="color: var(--text-muted); font-size: 11px;">📏 ${el.size} (${el.area} m²)</span>
                             </div>
                             <input type="checkbox" class="spatial-item-check" data-name="${el.name}" data-area="${el.area}" data-index="${index}" checked onchange="recalculateSpatialArea()">
                         </div>
@@ -872,20 +899,20 @@
 
                         <div class="room-inputs-box">
                             <div style="font-size: 11px; font-weight: bold; color: var(--text-muted); margin-bottom: 6px;">
-                                🏠 Xonangiz o'lchamlari (метры):
+                                🏠 Xonangiz o'lchamlari (m):
                             </div>
                             <div class="grid-3" style="margin-bottom: 8px;">
                                 <div>
                                     <label>Uzunligi (L)</label>
-                                    <input type="number" id="modalRoomL" value="" placeholder="4.5" step="0.1" oninput="recalculateSpatialArea()">
+                                    <input type="number" id="modalRoomL" placeholder="4.5" step="0.1" oninput="recalculateSpatialArea()">
                                 </div>
                                 <div>
                                     <label>Kengligi (W)</label>
-                                    <input type="number" id="modalRoomW" value="" placeholder="3.5" step="0.1" oninput="recalculateSpatialArea()">
+                                    <input type="number" id="modalRoomW" placeholder="3.5" step="0.1" oninput="recalculateSpatialArea()">
                                 </div>
                                 <div>
                                     <label>Balandligi (H)</label>
-                                    <input type="number" id="modalRoomH" value="" placeholder="2.8" step="0.1">
+                                    <input type="number" id="modalRoomH" placeholder="2.8" step="0.1">
                                 </div>
                             </div>
                         </div>
@@ -893,7 +920,7 @@
                         <div class="progress-bar-bg">
                             <div class="progress-bar-fill" id="spatialProgress"></div>
                         </div>
-                        <div id="spatialStatusText" style="font-size: 11px; font-weight: bold; margin-top: 4px; color: var(--text-muted);">
+                        <div id="spatialStatusText" style="font-size: 11px; font-weight: bold; margin-top: 6px; color: var(--text-muted);">
                             Xona o'lchamlarini kiriting (Masalan: 4.5 va 3.5).
                         </div>
                     </div>
@@ -902,7 +929,7 @@
 
             listContainer.innerHTML = `
                 <div>
-                    <!-- SLIDER -->
+                    <!-- SLIDER В ПОЛНЫЙ РАЗМЕР -->
                     <div class="slider-box">
                         <img id="gallerySliderImg" class="slider-img" src="${currentItemImages[0]}" alt="${item.name}">
                         ${currentItemImages.length > 1 ? `
@@ -912,10 +939,10 @@
                     </div>
                     <div class="slider-counter" id="slideCounter">1 / ${currentItemImages.length}</div>
 
-                    <div style="font-size: 16px; font-weight: bold; color: var(--primary); margin-top: 15px;">${item.name}</div>
-                    ${item.material ? `<div style="font-size: 11px; color: var(--accent); margin-top: 2px;"><b>Material:</b> ${item.material}</div>` : ''}
+                    <div style="font-size: 16px; font-weight: bold; color: var(--accent-cyan);">${item.name}</div>
+                    ${item.material ? `<div style="font-size: 11px; color: var(--accent-gold); margin-top: 2px;"><b>Material:</b> ${item.material}</div>` : ''}
                     
-                    <div style="font-size: 12px; color: var(--text-muted); background: var(--bg-main); padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-top: 10px;">
+                    <div style="font-size: 12px; color: var(--text-muted); background: var(--input-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--input-border); margin-top: 10px;">
                         <b>Tavsif / Описание:</b><br>${item.desc}
                     </div>
 
@@ -924,7 +951,7 @@
                     <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
                         <button class="btn" onclick="sendDetailedOrder('${item.name}', 'Komplekt buyurtmasi')">🛍 Buyurtma berish / Заказать комплект</button>
                         <button class="btn btn-custom" onclick="sendCustomSizeOrder('${item.name}')">📐 O'z o'lchamingizga buyurtma / Заказать под свой размер</button>
-                        <button class="btn" style="background: var(--text-muted);" onclick="renderHuvaydoCatalog()">❮ Orqaga / Назад</button>
+                        <button class="btn btn-secondary" onclick="renderHuvaydoCatalog()">❮ Orqaga / Назад</button>
                     </div>
                 </div>
             `;
@@ -944,7 +971,7 @@
 
             if (!roomL || !roomW || roomL <= 0 || roomW <= 0) {
                 if (statusText) {
-                    statusText.style.color = 'var(--accent)';
+                    statusText.style.color = 'var(--accent-gold)';
                     statusText.innerHTML = '⚠️ Xonaning uzunligi va kengligini kiriting!';
                 }
                 if (progressFill) progressFill.style.width = '0%';
@@ -967,17 +994,17 @@
                 progressFill.style.width = `${Math.min(percent, 100).toFixed(1)}%`;
 
                 if (percent < 50) {
-                    progressFill.style.backgroundColor = 'var(--success)';
-                    statusText.style.color = 'var(--success)';
-                    statusText.innerHTML = `✅ Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Keng va erkin!`;
+                    progressFill.style.backgroundColor = 'var(--accent-green)';
+                    statusText.style.color = 'var(--accent-green)';
+                    statusText.innerHTML = `✅ Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} m² / ${roomArea.toFixed(1)} m²). Keng va erkin!`;
                 } else if (percent <= 65) {
-                    progressFill.style.backgroundColor = 'var(--accent)';
-                    statusText.style.color = 'var(--accent)';
-                    statusText.innerHTML = `🟡 Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Standart shinamlik.`;
+                    progressFill.style.backgroundColor = 'var(--accent-gold)';
+                    statusText.style.color = 'var(--accent-gold)';
+                    statusText.innerHTML = `🟡 Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} m² / ${roomArea.toFixed(1)} m²). Standart shinamlik.`;
                 } else {
-                    progressFill.style.backgroundColor = 'var(--danger)';
-                    statusText.style.color = 'var(--danger)';
-                    statusText.innerHTML = `🛑 Diqqat! Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} м² / ${roomArea.toFixed(1)} м²). Juda tor bo'lishi mumkin!`;
+                    progressFill.style.backgroundColor = '#EF4444';
+                    statusText.style.color = '#EF4444';
+                    statusText.innerHTML = `🛑 Diqqat! Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} m² / ${roomArea.toFixed(1)} m²). Juda tor bo'lishi mumkin!`;
                 }
             }
             return percent;
@@ -996,7 +1023,7 @@
         async function sendDetailedOrder(furnitureName, orderType) {
             const name = prompt("Ismingizni kiriting / Введите ваше имя:");
             if (!name) return;
-            const phone = prompt("Telefon raqamingizni kiriting / Ваш номер (+998...):");
+            const phone = prompt("Telefon raqamingizni kiriting (+998...):");
             if (!phone) return;
 
             const roomL = document.getElementById('modalRoomL')?.value || "Kiritilmagan";
@@ -1034,10 +1061,10 @@
                     alert("Muvaffaqiyatli yuborildi! / Заказ успешно отправлен!");
                     closeFurnitureModal();
                 } else {
-                    alert("Xatolik yuz berdi / Ошибка отправки");
+                    alert("Xatolik yuz berdi");
                 }
             } catch (e) {
-                alert("Internet ulanishini tekshiring / Проверьте интернет");
+                alert("Internet ulanishini tekshiring");
             }
         }
 
@@ -1048,11 +1075,11 @@
             if (!height) return;
             const depth = prompt("Chuqurligi (см) / Глубина (см):");
             if (!depth) return;
-            const note = prompt("Qo'shimcha istaklar / Доп. пожелания (необязательно):") || "Yo'q / Нет";
+            const note = prompt("Qo'shimcha istaklar (необязательно):") || "Yo'q";
 
             const name = prompt("Ismingizni kiriting / Введите ваше имя:");
             if (!name) return;
-            const phone = prompt("Telefon raqamingizni kiriting / Ваш номер (+998...):");
+            const phone = prompt("Telefon raqamingizni kiriting (+998...):");
             if (!phone) return;
 
             const textMessage = `🚀 *INDIVIDUAL BUYURTMA (MYHOUSE PRO)*\n\n` +
@@ -1070,13 +1097,13 @@
                 });
 
                 if (tgRes.ok) {
-                    alert("Hisob-kitob uchun so'rov yuborildi! / Заявка на расчет отправлена!");
+                    alert("Hisob-kitob uchun so'rov yuborildi!");
                     closeFurnitureModal();
                 } else {
-                    alert("Xatolik yuz berdi / Ошибка отправки");
+                    alert("Xatolik yuz berdi");
                 }
             } catch (e) {
-                alert("Internet ulanishini tekshiring / Проверьте интернет");
+                alert("Internet ulanishini tekshiring");
             }
         }
 
