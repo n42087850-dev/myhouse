@@ -88,13 +88,40 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
         .room-title {
             font-size: 18px;
             font-weight: 700;
             color: var(--accent-cyan);
-            margin-bottom: 15px;
+        }
+
+        .remove-room-btn {
+            background: #EF4444;
+            color: #FFFFFF;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .remove-room-btn:hover {
+            background: #DC2626;
         }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -167,8 +194,8 @@
         .btn-calc {
             background: var(--accent-green);
             color: #FFFFFF;
-            font-size: 15px;
-            margin-top: 15px;
+            font-size: 16px;
+            margin-top: 10px;
         }
 
         .btn-secondary {
@@ -230,24 +257,30 @@
             padding-bottom: 6px;
         }
 
+        /* КРУПНЫЕ КАРТОЧКИ МЕБЕЛИ КАК НА 2-М ИЗОБРАЖЕНИИ */
         .huvaydo-card {
             display: flex;
-            gap: 12px;
-            align-items: center;
-            padding: 10px;
+            flex-direction: column;
+            padding: 12px;
             background: var(--input-bg);
             border: 1px solid var(--input-border);
-            border-radius: 10px;
-            margin-bottom: 10px;
+            border-radius: 12px;
+            margin-bottom: 16px;
             cursor: pointer;
+            overflow: hidden;
         }
 
         .huvaydo-thumb { 
-            width: 70px; 
+            width: 100%; 
             height: auto; 
-            max-height: 70px;
+            max-height: 380px;
             border-radius: 8px; 
             object-fit: cover; 
+            margin-bottom: 10px;
+        }
+
+        .huvaydo-info {
+            padding: 4px 2px;
         }
 
         .slider-box {
@@ -346,6 +379,8 @@
             <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">
                 <button class="btn btn-secondary" onclick="addRoom()">+ Xona qo'shish / Добавить комнату</button>
                 <button class="btn btn-custom" onclick="openFurnitureModal()">🛋 Mebel katalogi / Каталог мебели</button>
+                <!-- Единая кнопка рассчитать для всех комнат -->
+                <button class="btn btn-calc" onclick="processPage1AndGoToPage2()">📊 Hisoblash / Рассчитать</button>
             </div>
         </div>
 
@@ -388,7 +423,7 @@
         const TG_BOT_TOKEN = "8940078076:AAEymug05M0Q0Hph6az-denQouUs66trvno";
         const TG_CHAT_ID = "7200196169";
 
-        let roomCount = 0;
+        let roomCounter = 0;
         let modalScrollTop = 0;
         let roomsData = [];
 
@@ -531,37 +566,62 @@
         let currentItemImages = [];
 
         function addRoom() {
-            roomCount++;
+            roomCounter++;
+            const currentId = roomCounter;
             const container = document.getElementById('rooms-container');
             let typeOptions = ''; for (let key in roomTypes) typeOptions += `<option value="${key}">${roomTypes[key]}</option>`;
             let styleOptions = ''; for (let key in designStyles) styleOptions += `<option value="${key}">${designStyles[key]}</option>`;
 
+            // Кнопка удаления показывается только со 2-й добавленной комнаты
+            const isFirst = container.children.length === 0;
+            const removeBtnHTML = isFirst ? '' : `<button class="remove-room-btn" onclick="removeRoom(${currentId})" title="Удалить">✕</button>`;
+
             const roomHTML = `
-                <div class="room-card" id="room-${roomCount}">
-                    <div class="room-title">#${roomCount} Xona / Комната</div>
+                <div class="room-card" id="room-${currentId}">
+                    <div class="room-header">
+                        <div class="room-title">#${container.children.length + 1} Xona / Комната</div>
+                        ${removeBtnHTML}
+                    </div>
                     <div class="grid-2 form-group">
-                        <div><label>Xona turi / Тип комнаты</label><select id="type-${roomCount}" onchange="updatePreview(${roomCount})">${typeOptions}</select></div>
-                        <div><label>Uslub / Стиль</label><select id="design-${roomCount}" onchange="updatePreview(${roomCount})">${styleOptions}</select></div>
+                        <div><label>Xona turi / Тип комнаты</label><select id="type-${currentId}" onchange="updatePreview(${currentId})">${typeOptions}</select></div>
+                        <div><label>Uslub / Стиль</label><select id="design-${currentId}" onchange="updatePreview(${currentId})">${styleOptions}</select></div>
                     </div>
                     <div class="grid-3 form-group">
-                        <div><label>Uzunligi (m) / Длина</label><input type="number" id="length-${roomCount}" placeholder="4.5" step="0.1"></div>
-                        <div><label>Kengligi (m) / Ширина</label><input type="number" id="width-${roomCount}" placeholder="3.5" step="0.1"></div>
-                        <div><label>Balandligi (m) / Высота</label><input type="number" id="height-${roomCount}" placeholder="2.8" step="0.1"></div>
+                        <div><label>Uzunligi (m) / Длина</label><input type="number" id="length-${currentId}" placeholder="4.5" step="0.1"></div>
+                        <div><label>Kengligi (m) / Ширина</label><input type="number" id="width-${currentId}" placeholder="3.5" step="0.1"></div>
+                        <div><label>Balandligi (m) / Высота</label><input type="number" id="height-${currentId}" placeholder="2.8" step="0.1"></div>
                     </div>
                     <div class="form-group">
                         <label>Oynalar va eshiklar (kv. m) / Окна и двери (кв. м)</label>
-                        <input type="number" id="win-doors-${roomCount}" placeholder="4.0" step="0.1">
+                        <input type="number" id="win-doors-${currentId}" placeholder="4.0" step="0.1">
                     </div>
                     
                     <div class="preview-box">
-                        <img id="room-preview-img-${roomCount}" src="" alt="Dizayn">
+                        <img id="room-preview-img-${currentId}" src="" alt="Dizayn">
                     </div>
-
-                    <button class="btn btn-calc" onclick="processPage1AndGoToPage2()">📊 Hisoblash / Рассчитать</button>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', roomHTML);
-            updatePreview(roomCount);
+            updatePreview(currentId);
+            reindexRoomTitles();
+        }
+
+        function removeRoom(id) {
+            const el = document.getElementById(`room-${id}`);
+            if (el) {
+                el.remove();
+                reindexRoomTitles();
+            }
+        }
+
+        function reindexRoomTitles() {
+            const roomCards = document.querySelectorAll('#rooms-container .room-card');
+            roomCards.forEach((card, idx) => {
+                const titleEl = card.querySelector('.room-title');
+                if (titleEl) {
+                    titleEl.innerText = `#${idx + 1} Xona / Комната`;
+                }
+            });
         }
 
         function updatePreview(id) {
@@ -581,29 +641,35 @@
         function processPage1AndGoToPage2() {
             roomsData = [];
             let isValid = true;
+            const roomCards = document.querySelectorAll('#rooms-container .room-card');
 
-            for (let i = 1; i <= roomCount; i++) {
-                const roomEl = document.getElementById(`room-${i}`);
-                if (!roomEl) continue;
+            if (roomCards.length === 0) {
+                alert("Пожалуйста, добавьте хотя бы одну комнату!");
+                return;
+            }
 
-                const length = parseFloat(document.getElementById(`length-${i}`).value);
-                const width = parseFloat(document.getElementById(`width-${i}`).value);
-                const height = parseFloat(document.getElementById(`height-${i}`).value) || 2.8;
-                const winDoors = parseFloat(document.getElementById(`win-doors-${i}`).value) || 0;
-                const type = document.getElementById(`type-${i}`).value;
-                const style = document.getElementById(`design-${i}`).value;
+            roomCards.forEach((card, index) => {
+                const id = card.id.replace('room-', '');
+
+                const length = parseFloat(document.getElementById(`length-${id}`).value);
+                const width = parseFloat(document.getElementById(`width-${id}`).value);
+                const height = parseFloat(document.getElementById(`height-${id}`).value) || 2.8;
+                const winDoors = parseFloat(document.getElementById(`win-doors-${id}`).value) || 0;
+                const type = document.getElementById(`type-${id}`).value;
+                const style = document.getElementById(`design-${id}`).value;
 
                 if (!length || !width || length <= 0 || width <= 0) {
-                    alert(`Пожалуйста, укажите длину и ширину для комнаты #${i}! / #${i} xona o'lchamlarini kiriting!`);
+                    alert(`Пожалуйста, укажите длину и ширину для комнаты #${index + 1}! / #${index + 1} xona o'lchamlarini kiriting!`);
                     isValid = false;
-                    break;
+                    return;
                 }
 
                 const floorArea = length * width;
                 const wallArea = (2 * (length + width) * height) - winDoors;
 
                 roomsData.push({
-                    id: i,
+                    id: id,
+                    displayIndex: index + 1,
                     type: type,
                     typeName: roomTypes[type],
                     style: style,
@@ -614,7 +680,7 @@
                     floorArea: floorArea,
                     wallArea: Math.max(wallArea, 0)
                 });
-            }
+            });
 
             if (!isValid || roomsData.length === 0) return;
 
@@ -736,7 +802,7 @@
                 const cardHTML = `
                     <div class="room-card" style="border: 1px solid var(--accent-cyan);">
                         <div class="room-title">
-                            📍 Та'mirlash savollari / Вопросы для ремонта: ${room.typeName} (#${room.id})
+                            📍 Та'mirlash savollari / Вопросы для ремонта: ${room.typeName} (#${room.displayIndex})
                         </div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
                             📏 Maydoni / Площадь: <b>${room.floorArea.toFixed(1)} m²</b> | Devorlar / Стены: <b>${room.wallArea.toFixed(1)} m²</b>
@@ -762,7 +828,15 @@
                 </h3>
             `;
 
+            let overallTotals = {};
+            let totalFloorAreaAll = 0;
+            let totalWallAreaAll = 0;
+            let fullTelegramText = `🏠 *BUTUN UY BO'YICHA UMUMIY SMETA (MYHOUSE PRO)*\n\n`;
+
             roomsData.forEach(room => {
+                totalFloorAreaAll += room.floorArea;
+                totalWallAreaAll += room.wallArea;
+
                 let items = [];
 
                 const floorState = document.getElementById(`q-floor-state-${room.id}`)?.value;
@@ -774,114 +848,163 @@
 
                 // 1. Подготовка пола
                 if (floorState === 'raw') {
-                    items.push({ name: "Наливной пол / Самонивелир (Стяжка)", qty: `${Math.ceil(room.floorArea * 12)} kg` });
+                    items.push({ name: "Наливной пол / Самонивелир (Стяжка)", qty: Math.ceil(room.floorArea * 12), unit: "kg" });
                 } else if (floorState === 'old') {
-                    items.push({ name: "Демонтаж старого пола + подшивка", qty: `${room.floorArea.toFixed(1)} m²` });
-                    items.push({ name: "Выравнивающая смесь для пола", qty: `${Math.ceil(room.floorArea * 6)} kg` });
+                    items.push({ name: "Демонтаж старого пола + подшивка", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
+                    items.push({ name: "Выравнивающая смесь для пола", qty: Math.ceil(room.floorArea * 6), unit: "kg" });
                 }
 
                 // 2. Чистовой пол
                 if (floorFinish === 'laminate') {
-                    items.push({ name: "Ламинат (+ 5% запас)", qty: `${(room.floorArea * 1.05).toFixed(1)} m²` });
-                    items.push({ name: "Подложка под ламинат", qty: `${room.floorArea.toFixed(1)} m²` });
-                    items.push({ name: "Плинтус напольный", qty: `${(2 * (room.length + room.width)).toFixed(1)} m.p.` });
+                    items.push({ name: "Ламинат (+ 5% запас)", qty: parseFloat((room.floorArea * 1.05).toFixed(1)), unit: "m²" });
+                    items.push({ name: "Подложка под ламинат", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
+                    items.push({ name: "Плинтус напольный", qty: parseFloat((2 * (room.length + room.width)).toFixed(1)), unit: "m.p." });
                 } else if (floorFinish === 'spc') {
-                    items.push({ name: "Кварц-винил / SPC (+ 5% запас)", qty: `${(room.floorArea * 1.05).toFixed(1)} m²` });
-                    items.push({ name: "Специальная подложка SPC", qty: `${room.floorArea.toFixed(1)} m²` });
-                    items.push({ name: "Плинтус напольный", qty: `${(2 * (room.length + room.width)).toFixed(1)} m.p.` });
+                    items.push({ name: "Кварц-винил / SPC (+ 5% запас)", qty: parseFloat((room.floorArea * 1.05).toFixed(1)), unit: "m²" });
+                    items.push({ name: "Специальная подложка SPC", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
+                    items.push({ name: "Плинтус напольный", qty: parseFloat((2 * (room.length + room.width)).toFixed(1)), unit: "m.p." });
                 } else if (floorFinish === 'parquet') {
-                    items.push({ name: "Паркетная доска (+ 7% запас)", qty: `${(room.floorArea * 1.07).toFixed(1)} m²` });
-                    items.push({ name: "Клей / Подложка для паркета", qty: `${room.floorArea.toFixed(1)} m²` });
-                    items.push({ name: "Плинтус деревянный / МДФ", qty: `${(2 * (room.length + room.width)).toFixed(1)} m.p.` });
+                    items.push({ name: "Паркетная доска (+ 7% запас)", qty: parseFloat((room.floorArea * 1.07).toFixed(1)), unit: "m²" });
+                    items.push({ name: "Клей / Подложка для паркета", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
+                    items.push({ name: "Плинтус деревянный / МДФ", qty: parseFloat((2 * (room.length + room.width)).toFixed(1)), unit: "m.p." });
                 } else if (floorFinish === 'linoleum') {
-                    items.push({ name: "Линолеум (+ 5% запас)", qty: `${(room.floorArea * 1.05).toFixed(1)} m²` });
-                    items.push({ name: "Плинтус напольный", qty: `${(2 * (room.length + room.width)).toFixed(1)} m.p.` });
+                    items.push({ name: "Линолеум (+ 5% запас)", qty: parseFloat((room.floorArea * 1.05).toFixed(1)), unit: "m²" });
+                    items.push({ name: "Плинтус напольный", qty: parseFloat((2 * (room.length + room.width)).toFixed(1)), unit: "m.p." });
                 } else if (floorFinish === 'tile' || floorFinish === 'hydro_tile') {
                     if (floorFinish === 'hydro_tile') {
-                        items.push({ name: "Гидроизоляционная мастика", qty: `${(room.floorArea * 1.5).toFixed(1)} kg` });
+                        items.push({ name: "Гидроизоляционная мастика", qty: parseFloat((room.floorArea * 1.5).toFixed(1)), unit: "kg" });
                     }
-                    items.push({ name: "Плитка / Керамогранит для пола (+ 10%)", qty: `${(room.floorArea * 1.1).toFixed(1)} m²` });
-                    items.push({ name: "Клей для плитки (25 кг)", qty: `${Math.ceil(room.floorArea / 4)} меш.` });
+                    items.push({ name: "Плитка / Керамогранит для пола (+ 10%)", qty: parseFloat((room.floorArea * 1.1).toFixed(1)), unit: "m²" });
+                    items.push({ name: "Клей для плитки (25 кг)", qty: Math.ceil(room.floorArea / 4), unit: "меш." });
                 }
 
                 // 3. Подготовка стен
                 if (wallState === 'raw') {
-                    items.push({ name: "Штукатурка гипсовая (Штукатурка)", qty: `${Math.ceil(room.wallArea * 10)} kg` });
-                    items.push({ name: "Шпатлевка базовый + финиш", qty: `${Math.ceil(room.wallArea / 8)} меш.` });
+                    items.push({ name: "Штукатурка гипсовая (Штукатурка)", qty: Math.ceil(room.wallArea * 10), unit: "kg" });
+                    items.push({ name: "Шпатлевка базовый + финиш", qty: Math.ceil(room.wallArea / 8), unit: "меш." });
                 } else if (wallState === 'old') {
-                    items.push({ name: "Демонтаж старых обоев / краски", qty: `${room.wallArea.toFixed(1)} m²` });
-                    items.push({ name: "Шпатлевка финишная", qty: `${Math.ceil(room.wallArea / 12)} меш.` });
+                    items.push({ name: "Демонтаж старых обоев / краски", qty: parseFloat(room.wallArea.toFixed(1)), unit: "m²" });
+                    items.push({ name: "Шпатлевка финишная", qty: Math.ceil(room.wallArea / 12), unit: "меш." });
                 } else if (wallState === 'plastered') {
-                    items.push({ name: "Финишная шпатлевка для выравнивания", qty: `${Math.ceil(room.wallArea / 15)} меш.` });
+                    items.push({ name: "Финишная шпатлевка для выравнивания", qty: Math.ceil(room.wallArea / 15), unit: "меш." });
                 }
 
                 // 4. Чистовая отделка стен
                 if (wallFinish === 'wallpaper') {
-                    items.push({ name: "Обои (рулон 1.06м x 10м)", qty: `${Math.ceil(room.wallArea / 10)} рул.` });
-                    items.push({ name: "Клей для обоев", qty: `${Math.ceil(room.wallArea / 45)} пач.` });
+                    items.push({ name: "Обои (рулон 1.06м x 10м)", qty: Math.ceil(room.wallArea / 10), unit: "рул." });
+                    items.push({ name: "Клей для обоев", qty: Math.ceil(room.wallArea / 45), unit: "пач." });
                 } else if (wallFinish === 'paint') {
-                    items.push({ name: "Краска интерьерная (в 2 слоя)", qty: `${(room.wallArea * 0.25).toFixed(1)} л` });
-                    items.push({ name: "Спец. паутинка / Стеклохолст", qty: `${(room.wallArea * 1.05).toFixed(1)} m²` });
+                    items.push({ name: "Краска интерьерная (в 2 слоя)", qty: parseFloat((room.wallArea * 0.25).toFixed(1)), unit: "л" });
+                    items.push({ name: "Спец. паутинка / Стеклохолст", qty: parseFloat((room.wallArea * 1.05).toFixed(1)), unit: "m²" });
                 } else if (wallFinish === 'plaster') {
-                    items.push({ name: "Декоративная штукатурка / Панели", qty: `${room.wallArea.toFixed(1)} m²` });
-                    items.push({ name: "Защитный лак / Воск", qty: `${(room.wallArea * 0.1).toFixed(1)} л` });
+                    items.push({ name: "Декоративная штукатурка / Панели", qty: parseFloat(room.wallArea.toFixed(1)), unit: "m²" });
+                    items.push({ name: "Защитный лак / Воск", qty: parseFloat((room.wallArea * 0.1).toFixed(1)), unit: "л" });
                 } else if (wallFinish === 'tile' || wallFinish === 'keramogranit') {
-                    items.push({ name: `Плитка стен (${wallFinish === 'keramogranit' ? 'Керамогранит' : 'Кафель'}) + 10%`, qty: `${(room.wallArea * 1.1).toFixed(1)} m²` });
-                    items.push({ name: "Клей плиточный (25кг)", qty: `${Math.ceil(room.wallArea / 4)} меш.` });
-                    items.push({ name: "Затирка для швов", qty: `${Math.ceil(room.wallArea / 10)} kg` });
+                    items.push({ name: `Плитка стен (${wallFinish === 'keramogranit' ? 'Керамогранит' : 'Кафель'}) + 10%`, qty: parseFloat((room.wallArea * 1.1).toFixed(1)), unit: "m²" });
+                    items.push({ name: "Клей плиточный (25кг)", qty: Math.ceil(room.wallArea / 4), unit: "меш." });
+                    items.push({ name: "Затирка для швов", qty: Math.ceil(room.wallArea / 10), unit: "kg" });
                 }
 
                 // 5. Отделка потолка
                 if (ceilingState === 'old') {
-                    items.push({ name: "Зачистка / Подготовка поверхности потолка", qty: `${room.floorArea.toFixed(1)} m²` });
+                    items.push({ name: "Зачистка / Подготовка поверхности потолка", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
                 }
 
                 if (ceilingFinish === 'stretch') {
-                    items.push({ name: "Натяжной потолок (ПВХ/Ткань)", qty: `${room.floorArea.toFixed(1)} m²` });
-                    items.push({ name: "Профиль и багет для потолка", qty: `${(2 * (room.length + room.width)).toFixed(1)} m.p.` });
+                    items.push({ name: "Натяжной потолок (ПВХ/Ткань)", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
+                    items.push({ name: "Профиль и багет для потолка", qty: parseFloat((2 * (room.length + room.width)).toFixed(1)), unit: "m.p." });
                 } else if (ceilingFinish === 'drywall') {
-                    items.push({ name: "Гипсокартон потолочный (ГКЛ 9.5 мм)", qty: `${Math.ceil(room.floorArea / 3)} листов` });
-                    items.push({ name: "Профиль металлический (CD/UD)", qty: `${(2 * (room.length + room.width) * 1.5).toFixed(1)} m.p.` });
-                    items.push({ name: "Краска потолочная белая", qty: `${(room.floorArea * 0.25).toFixed(1)} л` });
+                    items.push({ name: "Гипсокартон потолочный (ГКЛ 9.5 мм)", qty: Math.ceil(room.floorArea / 3), unit: "листов" });
+                    items.push({ name: "Профиль металлический (CD/UD)", qty: parseFloat((2 * (room.length + room.width) * 1.5).toFixed(1)), unit: "m.p." });
+                    items.push({ name: "Краска потолочная белая", qty: parseFloat((room.floorArea * 0.25).toFixed(1)), unit: "л" });
                 } else if (ceilingFinish === 'paint') {
-                    items.push({ name: "Шпатлевка финишная для потолка", qty: `${Math.ceil(room.floorArea / 10)} меш.` });
-                    items.push({ name: "Краска потолочная водно-дисперсионная", qty: `${(room.floorArea * 0.25).toFixed(1)} л` });
+                    items.push({ name: "Шпатлевка финишная для потолка", qty: Math.ceil(room.floorArea / 10), unit: "меш." });
+                    items.push({ name: "Краска потолочная водно-дисперсионная", qty: parseFloat((room.floorArea * 0.25).toFixed(1)), unit: "л" });
                 } else if (ceilingFinish === 'slat') {
-                    items.push({ name: "Реечный металлический потолок", qty: `${room.floorArea.toFixed(1)} m²` });
+                    items.push({ name: "Реечный металлический потолок", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
                 }
 
                 // Общий грунт
-                items.push({ name: "Грунтовка глубокого проникновения", qty: `${((room.wallArea + (room.floorArea * 2)) * 0.15).toFixed(1)} л` });
+                items.push({ name: "Грунтовка глубокого проникновения", qty: parseFloat(((room.wallArea + (room.floorArea * 2)) * 0.15).toFixed(1)), unit: "л" });
 
                 let itemsHTML = '';
-                let telegramText = `🏠 *Smeta: ${room.typeName} (#${room.id})*\n`;
+                let singleRoomTG = `🏠 *Smeta: ${room.typeName} (#${room.displayIndex})*\n`;
 
                 items.forEach(it => {
+                    const key = `${it.name}||${it.unit}`;
+                    if (!overallTotals[key]) {
+                        overallTotals[key] = { name: it.name, qty: 0, unit: it.unit };
+                    }
+                    overallTotals[key].qty += it.qty;
+
                     itemsHTML += `
                         <div class="estimate-item">
                             <span>• ${it.name}</span>
-                            <b style="color: var(--accent-cyan);">${it.qty}</b>
+                            <b style="color: var(--accent-cyan);">${it.qty} ${it.unit}</b>
                         </div>
                     `;
-                    telegramText += `• ${it.name}: ${it.qty}\n`;
+                    singleRoomTG += `• ${it.name}: ${it.qty} ${it.unit}\n`;
                 });
+
+                fullTelegramText += `📍 *${room.typeName} (#${room.displayIndex})*\n` +
+                                   `📏 Maydoni: ${room.floorArea.toFixed(1)} m² | Devorlar: ${room.wallArea.toFixed(1)} m²\n${singleRoomTG.replace(/^🏠 .*\n/, '')}\n`;
 
                 const roomEstimateHTML = `
                     <div class="room-card">
                         <div class="room-title" style="color: var(--accent-green); font-size: 16px;">
-                            ${room.typeName} (#${room.id}) uchun smeta
+                            ${room.typeName} (#${room.displayIndex}) uchun smeta
                         </div>
                         <div style="margin-bottom: 15px;">
                             ${itemsHTML}
                         </div>
-                        <button class="btn btn-secondary" style="font-size: 12px; padding: 10px 12px;" onclick="sendSingleEstimateToTG('${encodeURIComponent(telegramText)}')">
-                            ✈️ Smetani Telegramga yuborish
+                        <button class="btn btn-secondary" style="font-size: 12px; padding: 10px 12px;" onclick="sendSingleEstimateToTG('${encodeURIComponent(singleRoomTG)}')">
+                            ✈ Smetani Telegramga yuborish
                         </button>
                     </div>
                 `;
                 resContainer.insertAdjacentHTML('beforeend', roomEstimateHTML);
             });
 
+            // Формирование общей сводной карточки
+            let overallHTML = '';
+            let summaryTG = `📊 *UMUMIY MATERIAL SHAKLI (ИТОГОВЫЙ РАСЧЕТ НА ВЕСЬ ОБЪЕКТ):*\n`;
+            summaryTG += `🏠 Xonalar soni: ${roomsData.length} ta\n`;
+            summaryTG += `📐 Umumiy pol maydoni: ${totalFloorAreaAll.toFixed(1)} m²\n`;
+            summaryTG += `🧱 Umumiy devor maydoni: ${totalWallAreaAll.toFixed(1)} m²\n\n`;
+
+            for (let k in overallTotals) {
+                const item = overallTotals[k];
+                const displayQty = (typeof item.qty === 'number' && !Number.isInteger(item.qty)) ? item.qty.toFixed(1) : item.qty;
+                
+                overallHTML += `
+                    <div class="estimate-item">
+                        <span style="font-weight: 600;">• ${item.name}</span>
+                        <b style="color: var(--accent-gold); font-size: 14px;">${displayQty} ${item.unit}</b>
+                    </div>
+                `;
+                summaryTG += `• ${item.name}: ${displayQty} ${item.unit}\n`;
+            }
+
+            fullTelegramText = summaryTG + `\n------------------------\n\n` + fullTelegramText;
+
+            const totalSummaryCardHTML = `
+                <div class="room-card" style="border: 2px solid var(--accent-gold); background: #182243;">
+                    <div class="room-title" style="color: var(--accent-gold); font-size: 18px; text-align: center; margin-bottom: 10px;">
+                        🏆 ОБЩИЙ ИТОГОВЫЙ РАСЧЕТ ПО ВСЕЙ КВАРТИРЕ
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted); text-align: center; margin-bottom: 15px;">
+                        🏠 Xonalar soni: <b>${roomsData.length}</b> | 📐 Umumiy pol maydoni: <b>${totalFloorAreaAll.toFixed(1)} m²</b> | 🧱 Devorlar: <b>${totalWallAreaAll.toFixed(1)} m²</b>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        ${overallHTML}
+                    </div>
+                    <button class="btn btn-custom" style="font-size: 15px; padding: 14px 16px;" onclick="sendAllEstimatesToTG('${encodeURIComponent(fullTelegramText)}')">
+                        ✈ Yuborish (Butun uy smetasi) / Отправить общую смету в Telegram
+                    </button>
+                </div>
+            `;
+
+            resContainer.insertAdjacentHTML('afterbegin', totalSummaryCardHTML);
             resContainer.scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -901,6 +1024,32 @@
 
                 if (tgRes.ok) {
                     alert("Smeta Telegramga muvaffaqiyatli yuborildi!");
+                } else {
+                    alert("Xatolik yuz berdi");
+                }
+            } catch (e) {
+                alert("Internet ulanishini tekshiring");
+            }
+        }
+
+        async function sendAllEstimatesToTG(encodedText) {
+            const text = decodeURIComponent(encodedText);
+            const name = prompt("Ismingizni kiriting / Введите ваше имя:");
+            if (!name) return;
+            const phone = prompt("Telefon raqamingizni kiriting (+998...):");
+            if (!phone) return;
+
+            const fullMessage = `${text}\n👤 *Mijoz:* ${name}\n📞 *Tel:* ${phone}`;
+
+            try {
+                const tgRes = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: TG_CHAT_ID, text: fullMessage, parse_mode: "Markdown" })
+                });
+
+                if (tgRes.ok) {
+                    alert("Butun uy bo'yicha umumiy smeta Telegramga muvaffaqiyatli yuborildi!");
                 } else {
                     alert("Xatolik yuz berdi");
                 }
@@ -935,8 +1084,8 @@
                         <div class="huvaydo-card" onclick="openItemDetail('${item.id}')">
                             <img src="${imageSrc}" class="huvaydo-thumb" alt="${item.name}">
                             <div class="huvaydo-info">
-                                <div style="font-size: 14px; font-weight: bold; color: var(--text-main);">${item.name}</div>
-                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Rasmlar soni: ${item.images ? item.images.length : 1} ta</div>
+                                <div style="font-size: 15px; font-weight: bold; color: var(--text-main);">${item.name}</div>
+                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Rasmlar soni: ${item.images ? item.images.length : 1} ta</div>
                             </div>
                         </div>
                     `;
