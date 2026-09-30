@@ -645,51 +645,70 @@
                 if (room.type === 'bathroom' || room.type === 'toilet') {
                     questionsHTML = `
                         <div class="form-group">
-                            <label>Гидроизоляция пола / Pol gidroizolatsiyasi:</label>
-                            <select id="q-hydro-${room.id}">
-                                <option value="yes">Нужна (Защита от протечек)</option>
-                                <option value="no">Не нужна</option>
+                            <label>1. Pol (Hozirgi holati) / Пол (Нынешнее состояние):</label>
+                            <select id="q-floor-state-${room.id}">
+                                <option value="raw">Черновой бетон / Стяжка (Qora beton)</option>
+                                <option value="old">Старое покрытие - демонтаж (Eski qoplama)</option>
+                                <option value="ready">Ровное готовое основание (Tayyor tekis zamin)</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Тип плитки / Plitka turi:</label>
-                            <select id="q-tile-${room.id}">
-                                <option value="keramogranit">Керамогранит (Повышенная прочность)</option>
-                                <option value="tile">Керамическая плитка (Стандарт)</option>
-                            </select>
-                        </div>
-                    `;
-                } else if (room.type === 'kitchen') {
-                    questionsHTML = `
-                        <div class="form-group">
-                            <label>Напольное покрытие / Pol qoplamasi:</label>
-                            <select id="q-floor-${room.id}">
-                                <option value="laminate">Влагостойкий ламинат</option>
-                                <option value="tile">Керамогранит / Плитка</option>
+                            <label>2. Pol (Ta'mirlash) / Пол (Ремонт):</label>
+                            <select id="q-floor-finish-${room.id}">
+                                <option value="tile">Керамогранит / Plitka</option>
+                                <option value="hydro_tile">Гидроизоляция + Керумогранит</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Отделка стен / Devor qoplamasi:</label>
-                            <select id="q-wall-${room.id}">
-                                <option value="paint">Моющаяся краска</option>
-                                <option value="wallpaper">Моющиеся обои</option>
+                            <label>3. Devorlar (Hozirgi holati) / Стены (Нынешнее состояние):</label>
+                            <select id="q-wall-state-${room.id}">
+                                <option value="raw">Черновая кладка / кирпич (G'isht/Beton)</option>
+                                <option value="old">Старая плитка/краска (Eski qoplama)</option>
+                                <option value="plastered">Оштукатурены (Shtukaturka qilingan)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>4. Devorlar (Ta'mirlash) / Стены (Ремонт):</label>
+                            <select id="q-wall-finish-${room.id}">
+                                <option value="tile">Керамическая плитка / Keramika plitka</option>
+                                <option value="keramogranit">Керамогранит (Katta formatli)</option>
                             </select>
                         </div>
                     `;
                 } else {
+                    // Для Спальни (bedroom), Гостиной (living_room), Кухни (kitchen)
                     questionsHTML = `
                         <div class="form-group">
-                            <label>Напольное покрытие / Pol qoplamasi:</label>
-                            <select id="q-floor-${room.id}">
-                                <option value="laminate">Ламинат 33 класс</option>
-                                <option value="parquet">Паркетная доска</option>
+                            <label>1. Pol (Нынешнее состояние) / Pol (Hozirgi holati):</label>
+                            <select id="q-floor-state-${room.id}">
+                                <option value="raw">Черновой бетон / Стяжка (Qora beton / Styajka)</option>
+                                <option value="old">Старое покрытие (демонтаж) / Eski qoplama (demontaj)</option>
+                                <option value="ready">Ровное готовое основание / Tayyor tekis zamin</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Отделка стен / Devor qoplamasi:</label>
-                            <select id="q-wall-${room.id}">
-                                <option value="wallpaper">Обои</option>
-                                <option value="paint">Краска под шпатлевку</option>
+                            <label>2. Пол (Ремонт) / Pol (Ta'mirlash):</label>
+                            <select id="q-floor-finish-${room.id}">
+                                <option value="laminate">Ламинат / Laminat</option>
+                                <option value="spc">Кварц-винил / SPC (Kvars-vinil)</option>
+                                <option value="parquet">Паркетная доска / Parquet</option>
+                                <option value="linoleum">Линолеум / Linoleum</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>3. Стены (Нынешнее состояние) / Devorlar (Hozirgi holati):</label>
+                            <select id="q-wall-state-${room.id}">
+                                <option value="raw">Черновая кладка (кирпич/бетон) / Qora g'isht yoki beton</option>
+                                <option value="old">Старые обои/краска / Eski oboy yoki bo'yoq</option>
+                                <option value="plastered">Оштукатурены, но не выровнены / Shtukaturka qilingan, lek tekislanmagan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>4. Стены (Ремонт) / Devorlar (Ta'mirlash):</label>
+                            <select id="q-wall-finish-${room.id}">
+                                <option value="wallpaper">Поклеить обои / Oboy yopishtirish</option>
+                                <option value="paint">Покраска стен / Devorlarni bo'yash</option>
+                                <option value="plaster">Декоративная штукатурка / Панели (Dekorativ shtukaturka)</option>
                             </select>
                         </div>
                     `;
@@ -698,10 +717,10 @@
                 const cardHTML = `
                     <div class="room-card" style="border: 1px solid var(--accent-cyan);">
                         <div class="room-title">
-                            📍 Vo'prosy dlya ta'mir: ${room.typeName} (#${room.id})
+                            📍 Та'mirlash savollari / Вопросы для ремонта: ${room.typeName} (#${room.id})
                         </div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
-                            📏 Maydoni: <b>${room.floorArea.toFixed(1)} m²</b> | Devorlar: <b>${room.wallArea.toFixed(1)} m²</b>
+                            📏 Maydoni / Площадь: <b>${room.floorArea.toFixed(1)} m²</b> | Devorlar / Стены: <b>${room.wallArea.toFixed(1)} m²</b>
                         </div>
                         ${questionsHTML}
                     </div>
@@ -727,38 +746,72 @@
             roomsData.forEach(room => {
                 let items = [];
 
-                if (room.type === 'bathroom' || room.type === 'toilet') {
-                    const isHydro = document.getElementById(`q-hydro-${room.id}`)?.value === 'yes';
-                    const tileType = document.getElementById(`q-tile-${room.id}`)?.value;
+                const floorState = document.getElementById(`q-floor-state-${room.id}`)?.value;
+                const floorFinish = document.getElementById(`q-floor-finish-${room.id}`)?.value;
+                const wallState = document.getElementById(`q-wall-state-${room.id}`)?.value;
+                const wallFinish = document.getElementById(`q-wall-finish-${room.id}`)?.value;
 
-                    if (isHydro) {
-                        items.push({ name: "Gidroizolatsiya mastikasi", qty: `${(room.floorArea * 1.5).toFixed(1)} kg` });
-                    }
-                    items.push({ name: `Plitka (${tileType === 'keramogranit' ? 'Keramogranit' : 'Kafel'}) + 10% zaxira`, qty: `${(room.wallArea + room.floorArea * 1.1).toFixed(1)} m²` });
-                    items.push({ name: "Plitka yelim kley (25kg qop)", qty: `${Math.ceil((room.wallArea + room.floorArea) / 4)} ta` });
-                    items.push({ name: "Zatirka (choklar uchun)", qty: `${Math.ceil((room.wallArea + room.floorArea) / 10)} kg` });
-
-                } else {
-                    const floorType = document.getElementById(`q-floor-${room.id}`)?.value;
-                    const wallType = document.getElementById(`q-wall-${room.id}`)?.value;
-
-                    if (floorType === 'laminate' || floorType === 'parquet') {
-                        items.push({ name: `${floorType === 'laminate' ? 'Laminat' : 'Parket'} (+ 5% zaxira)`, qty: `${(room.floorArea * 1.05).toFixed(1)} m²` });
-                        items.push({ name: "Podlojka (taglik)", qty: `${room.floorArea.toFixed(1)} m²` });
-                        items.push({ name: "Plintus", qty: `${(2 * (room.length + room.width)).toFixed(1)} m.p.` });
-                    } else if (floorType === 'tile') {
-                        items.push({ name: "Oshxona uchun keramogranit (+ 10% zaxira)", qty: `${(room.floorArea * 1.1).toFixed(1)} m²` });
-                    }
-
-                    if (wallType === 'wallpaper') {
-                        items.push({ name: "Oboy (rulon 1.06m x 10m)", qty: `${Math.ceil(room.wallArea / 10)} rulon` });
-                        items.push({ name: "Oboy kleyi", qty: `${Math.ceil(room.wallArea / 50)} pachka` });
-                    } else {
-                        items.push({ name: "Devor bo'yog'i (2 qatlam)", qty: `${(room.wallArea * 0.25).toFixed(1)} l` });
-                        items.push({ name: "Shpatlevka", qty: `${Math.ceil(room.wallArea / 12)} qop` });
-                    }
-                    items.push({ name: "Gruntovka", qty: `${(room.wallArea * 0.15).toFixed(1)} l` });
+                // 1. Подготовка пола
+                if (floorState === 'raw') {
+                    items.push({ name: "Наливной пол / Самонивелир (Стяжка)", qty: `${Math.ceil(room.floorArea * 12)} kg` });
+                } else if (floorState === 'old') {
+                    items.push({ name: "Демонтаж старого пола + подшивка", qty: `${room.floorArea.toFixed(1)} m²` });
+                    items.push({ name: "Выравнивающая смесь для пола", qty: `${Math.ceil(room.floorArea * 6)} kg` });
                 }
+
+                // 2. Чистовой пол
+                if (floorFinish === 'laminate') {
+                    items.push({ name: "Ламинат (+ 5% запас)", qty: `${(room.floorArea * 1.05).toFixed(1)} m²` });
+                    items.push({ name: "Подложка под ламинат", qty: `${room.floorArea.toFixed(1)} m²` });
+                    items.push({ name: "Плинтус напольный", qty: `${(2 * (room.length + room.width)).toFixed(1)} m.p.` });
+                } else if (floorFinish === 'spc') {
+                    items.push({ name: "Кварц-винил / SPC (+ 5% запас)", qty: `${(room.floorArea * 1.05).toFixed(1)} m²` });
+                    items.push({ name: "Специальная подложка SPC", qty: `${room.floorArea.toFixed(1)} m²` });
+                    items.push({ name: "Плинтус напольный", qty: `${(2 * (room.length + room.width)).toFixed(1)} m.p.` });
+                } else if (floorFinish === 'parquet') {
+                    items.push({ name: "Паркетная доска (+ 7% запас)", qty: `${(room.floorArea * 1.07).toFixed(1)} m²` });
+                    items.push({ name: "Клей / Подложка для паркета", qty: `${room.floorArea.toFixed(1)} m²` });
+                    items.push({ name: "Плинтус деревянный / МДФ", qty: `${(2 * (room.length + room.width)).toFixed(1)} m.p.` });
+                } else if (floorFinish === 'linoleum') {
+                    items.push({ name: "Линолеум (+ 5% запас)", qty: `${(room.floorArea * 1.05).toFixed(1)} m²` });
+                    items.push({ name: "Плинтус напольный", qty: `${(2 * (room.length + room.width)).toFixed(1)} m.p.` });
+                } else if (floorFinish === 'tile' || floorFinish === 'hydro_tile') {
+                    if (floorFinish === 'hydro_tile') {
+                        items.push({ name: "Гидроизоляционная мастика", qty: `${(room.floorArea * 1.5).toFixed(1)} kg` });
+                    }
+                    items.push({ name: "Плитка / Керамогранит для пола (+ 10%)", qty: `${(room.floorArea * 1.1).toFixed(1)} m²` });
+                    items.push({ name: "Клей для плитки (25 кг)", qty: `${Math.ceil(room.floorArea / 4)} меш.` });
+                }
+
+                // 3. Подготовка стен
+                if (wallState === 'raw') {
+                    items.push({ name: "Штукатурка гипсовая (Штукатурка)", qty: `${Math.ceil(room.wallArea * 10)} kg` });
+                    items.push({ name: "Шпатлевка базовый + финиш", qty: `${Math.ceil(room.wallArea / 8)} меш.` });
+                } else if (wallState === 'old') {
+                    items.push({ name: "Демонтаж старых обоев / краски", qty: `${room.wallArea.toFixed(1)} m²` });
+                    items.push({ name: "Шпатлевка финишная", qty: `${Math.ceil(room.wallArea / 12)} меш.` });
+                } else if (wallState === 'plastered') {
+                    items.push({ name: "Финишная шпатлевка для выравнивания", qty: `${Math.ceil(room.wallArea / 15)} меш.` });
+                }
+
+                // 4. Чистовая отделка стен
+                if (wallFinish === 'wallpaper') {
+                    items.push({ name: "Обои (рулон 1.06м x 10м)", qty: `${Math.ceil(room.wallArea / 10)} рул.` });
+                    items.push({ name: "Клей для обоев", qty: `${Math.ceil(room.wallArea / 45)} пач.` });
+                } else if (wallFinish === 'paint') {
+                    items.push({ name: "Краска интерьерная (в 2 слоя)", qty: `${(room.wallArea * 0.25).toFixed(1)} л` });
+                    items.push({ name: "Спец. паутинка / Стеклохолст", qty: `${(room.wallArea * 1.05).toFixed(1)} m²` });
+                } else if (wallFinish === 'plaster') {
+                    items.push({ name: "Декоративная штукатурка / Панели", qty: `${room.wallArea.toFixed(1)} m²` });
+                    items.push({ name: "Защитный лак / Воск", qty: `${(room.wallArea * 0.1).toFixed(1)} л` });
+                } else if (wallFinish === 'tile' || wallFinish === 'keramogranit') {
+                    items.push({ name: `Плитка стен (${wallFinish === 'keramogranit' ? 'Керамогранит' : 'Кафель'}) + 10%`, qty: `${(room.wallArea * 1.1).toFixed(1)} m²` });
+                    items.push({ name: "Клей плиточный (25кг)", qty: `${Math.ceil(room.wallArea / 4)} меш.` });
+                    items.push({ name: "Затирка для швов", qty: `${Math.ceil(room.wallArea / 10)} kg` });
+                }
+
+                // Общий грунт
+                items.push({ name: "Грунтовка глубокого проникновения", qty: `${((room.wallArea + room.floorArea) * 0.15).toFixed(1)} л` });
 
                 let itemsHTML = '';
                 let telegramText = `🏠 *Smeta: ${room.typeName} (#${room.id})*\n`;
