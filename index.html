@@ -59,7 +59,6 @@
             padding: 0 15px;
         }
 
-        /* 1. Интро-подсказка в стиле тёмной темы */
         .intro-banner {
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid var(--accent-green);
@@ -82,7 +81,6 @@
             line-height: 1.4;
         }
 
-        /* Карточки комнат */
         .room-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -134,7 +132,6 @@
             border-color: var(--accent-cyan);
         }
 
-        /* ПРЕВЬЮ КАРТИНКИ В ПОЛНЫЙ РАЗМЕР БЕЗ ОГРАНИЧЕНИЙ И РАМОК */
         .preview-box {
             margin-top: 15px;
             width: 100%;
@@ -151,7 +148,6 @@
             object-fit: contain;
         }
 
-        /* Кнопки */
         .btn {
             background: var(--accent-cyan);
             color: #0F172A;
@@ -193,7 +189,6 @@
             margin-bottom: 20px;
         }
 
-        /* Модальное окно */
         .modal {
             display: none;
             position: fixed;
@@ -255,7 +250,6 @@
             object-fit: cover; 
         }
 
-        /* Слайдер мебели без ограничений */
         .slider-box {
             position: relative;
             width: 100%;
@@ -338,7 +332,6 @@
         <!-- ================= СТРАНИЦА 1 ================= -->
         <div id="page-1">
             
-            <!-- Интро-подсказка -->
             <div class="intro-banner">
                 <div class="uz-text">
                     💡 Ta'mirlamoqchi bo'lgan xona turini va uslubini tanlang, o'lchamlarini (uzunligi, kengligi, balandligi) hamda deraza va eshiklar yig'indi hajmini kiriting. Agar bir nechta xonani ta'mirlamoqchi bo'lsangiz, "Xona qo'shish" tugmasini bosing.
@@ -348,7 +341,6 @@
                 </div>
             </div>
 
-            <!-- Контейнер комнат -->
             <div id="rooms-container"></div>
 
             <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">
@@ -366,10 +358,8 @@
                 <span style="font-weight: bold; color: var(--accent-cyan); font-size: 13px;">2-qadam / Шаг 2 из 2</span>
             </div>
 
-            <!-- Блоки вопросов в рамках -->
             <div id="questions-container"></div>
 
-            <!-- Изолированная смета -->
             <div id="estimate-results-container"></div>
 
         </div>
@@ -563,7 +553,6 @@
                         <input type="number" id="win-doors-${roomCount}" placeholder="4.0" step="0.1">
                     </div>
                     
-                    <!-- Превью во весь размер без рамок -->
                     <div class="preview-box">
                         <img id="room-preview-img-${roomCount}" src="" alt="Dizayn">
                     </div>
@@ -656,7 +645,7 @@
                             <label>2. Pol (Ta'mirlash) / Пол (Ремонт):</label>
                             <select id="q-floor-finish-${room.id}">
                                 <option value="tile">Керамогранит / Plitka</option>
-                                <option value="hydro_tile">Гидроизоляция + Керумогранит</option>
+                                <option value="hydro_tile">Гидроизоляция + Керамогранит</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -674,9 +663,23 @@
                                 <option value="keramogranit">Керамогранит (Katta formatli)</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label>5. Shift (Hozirgi holati) / Потолок (Нынешнее состояние):</label>
+                            <select id="q-ceiling-state-${room.id}">
+                                <option value="raw">Черновой бетон / Qora beton</option>
+                                <option value="old">Старая отделка (Eski qoplama)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>6. Shift (Ta'mirlash) / Потолок (Ремонт):</label>
+                            <select id="q-ceiling-finish-${room.id}">
+                                <option value="stretch">Натяжной потолок / Tortma shift</option>
+                                <option value="slat">Реечный / Металлический потолок</option>
+                                <option value="paint">Влагостойкая покраска / Bo'yoq</option>
+                            </select>
+                        </div>
                     `;
                 } else {
-                    // Для Спальни (bedroom), Гостиной (living_room), Кухни (kitchen)
                     questionsHTML = `
                         <div class="form-group">
                             <label>1. Pol (Нынешнее состояние) / Pol (Hozirgi holati):</label>
@@ -709,6 +712,22 @@
                                 <option value="wallpaper">Поклеить обои / Oboy yopishtirish</option>
                                 <option value="paint">Покраска стен / Devorlarni bo'yash</option>
                                 <option value="plaster">Декоративная штукатурка / Панели (Dekorativ shtukaturka)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>5. Потолок (Нынешнее состояние) / Shift (Hozirgi holati):</label>
+                            <select id="q-ceiling-state-${room.id}">
+                                <option value="raw">Черновой плита / Qora beton</option>
+                                <option value="old">Старая краска / Побелка (Eski bo'yoq)</option>
+                                <option value="ready">Ровное готовое основание / Tayyor tekis zamin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>6. Потолок (Ремонт) / Shift (Ta'mirlash):</label>
+                            <select id="q-ceiling-finish-${room.id}">
+                                <option value="stretch">Натяжной потолок / Tortma shift</option>
+                                <option value="drywall">Гипсокартон с покраской / Gipsokarton</option>
+                                <option value="paint">Шпатлевка + Покраска / Bo'yash</option>
                             </select>
                         </div>
                     `;
@@ -750,6 +769,8 @@
                 const floorFinish = document.getElementById(`q-floor-finish-${room.id}`)?.value;
                 const wallState = document.getElementById(`q-wall-state-${room.id}`)?.value;
                 const wallFinish = document.getElementById(`q-wall-finish-${room.id}`)?.value;
+                const ceilingState = document.getElementById(`q-ceiling-state-${room.id}`)?.value;
+                const ceilingFinish = document.getElementById(`q-ceiling-finish-${room.id}`)?.value;
 
                 // 1. Подготовка пола
                 if (floorState === 'raw') {
@@ -810,8 +831,27 @@
                     items.push({ name: "Затирка для швов", qty: `${Math.ceil(room.wallArea / 10)} kg` });
                 }
 
+                // 5. Отделка потолка
+                if (ceilingState === 'old') {
+                    items.push({ name: "Зачистка / Подготовка поверхности потолка", qty: `${room.floorArea.toFixed(1)} m²` });
+                }
+
+                if (ceilingFinish === 'stretch') {
+                    items.push({ name: "Натяжной потолок (ПВХ/Ткань)", qty: `${room.floorArea.toFixed(1)} m²` });
+                    items.push({ name: "Профиль и багет для потолка", qty: `${(2 * (room.length + room.width)).toFixed(1)} m.p.` });
+                } else if (ceilingFinish === 'drywall') {
+                    items.push({ name: "Гипсокартон потолочный (ГКЛ 9.5 мм)", qty: `${Math.ceil(room.floorArea / 3)} листов` });
+                    items.push({ name: "Профиль металлический (CD/UD)", qty: `${(2 * (room.length + room.width) * 1.5).toFixed(1)} m.p.` });
+                    items.push({ name: "Краска потолочная белая", qty: `${(room.floorArea * 0.25).toFixed(1)} л` });
+                } else if (ceilingFinish === 'paint') {
+                    items.push({ name: "Шпатлевка финишная для потолка", qty: `${Math.ceil(room.floorArea / 10)} меш.` });
+                    items.push({ name: "Краска потолочная водно-дисперсионная", qty: `${(room.floorArea * 0.25).toFixed(1)} л` });
+                } else if (ceilingFinish === 'slat') {
+                    items.push({ name: "Реечный металлический потолок", qty: `${room.floorArea.toFixed(1)} m²` });
+                }
+
                 // Общий грунт
-                items.push({ name: "Грунтовка глубокого проникновения", qty: `${((room.wallArea + room.floorArea) * 0.15).toFixed(1)} л` });
+                items.push({ name: "Грунтовка глубокого проникновения", qty: `${((room.wallArea + (room.floorArea * 2)) * 0.15).toFixed(1)} л` });
 
                 let itemsHTML = '';
                 let telegramText = `🏠 *Smeta: ${room.typeName} (#${room.id})*\n`;
@@ -982,7 +1022,6 @@
 
             listContainer.innerHTML = `
                 <div>
-                    <!-- SLIDER В ПОЛНЫЙ РАЗМЕР -->
                     <div class="slider-box">
                         <img id="gallerySliderImg" class="slider-img" src="${currentItemImages[0]}" alt="${item.name}">
                         ${currentItemImages.length > 1 ? `
