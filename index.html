@@ -257,7 +257,7 @@
             padding-bottom: 6px;
         }
 
-        /* КРУПНЫЕ КАРТОЧКИ МЕБЕЛИ КАК НА 2-М ИЗОБРАЖЕНИИ */
+        /* КАРТОЧКИ МЕБЕЛИ: ИСПРАВЛЕННОЕ ПОЛНОЕ ОТОБРАЖЕНИЕ КАРТИНОК */
         .huvaydo-card {
             display: flex;
             flex-direction: column;
@@ -273,10 +273,11 @@
         .huvaydo-thumb { 
             width: 100%; 
             height: auto; 
-            max-height: 380px;
+            max-height: none;
             border-radius: 8px; 
-            object-fit: cover; 
+            object-fit: contain; 
             margin-bottom: 10px;
+            display: block;
         }
 
         .huvaydo-info {
@@ -379,7 +380,6 @@
             <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">
                 <button class="btn btn-secondary" onclick="addRoom()">+ Xona qo'shish / Добавить комнату</button>
                 <button class="btn btn-custom" onclick="openFurnitureModal()">🛋 Mebel katalogi / Каталог мебели</button>
-                <!-- Единая кнопка рассчитать для всех комнат -->
                 <button class="btn btn-calc" onclick="processPage1AndGoToPage2()">📊 Hisoblash / Рассчитать</button>
             </div>
         </div>
@@ -572,7 +572,6 @@
             let typeOptions = ''; for (let key in roomTypes) typeOptions += `<option value="${key}">${roomTypes[key]}</option>`;
             let styleOptions = ''; for (let key in designStyles) styleOptions += `<option value="${key}">${designStyles[key]}</option>`;
 
-            // Кнопка удаления показывается только со 2-й добавленной комнаты
             const isFirst = container.children.length === 0;
             const removeBtnHTML = isFirst ? '' : `<button class="remove-room-btn" onclick="removeRoom(${currentId})" title="Удалить">✕</button>`;
 
@@ -846,7 +845,6 @@
                 const ceilingState = document.getElementById(`q-ceiling-state-${room.id}`)?.value;
                 const ceilingFinish = document.getElementById(`q-ceiling-finish-${room.id}`)?.value;
 
-                // 1. Подготовка пола
                 if (floorState === 'raw') {
                     items.push({ name: "Наливной пол / Самонивелир (Стяжка)", qty: Math.ceil(room.floorArea * 12), unit: "kg" });
                 } else if (floorState === 'old') {
@@ -854,7 +852,6 @@
                     items.push({ name: "Выравнивающая смесь для пола", qty: Math.ceil(room.floorArea * 6), unit: "kg" });
                 }
 
-                // 2. Чистовой пол
                 if (floorFinish === 'laminate') {
                     items.push({ name: "Ламинат (+ 5% запас)", qty: parseFloat((room.floorArea * 1.05).toFixed(1)), unit: "m²" });
                     items.push({ name: "Подложка под ламинат", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
@@ -878,7 +875,6 @@
                     items.push({ name: "Клей для плитки (25 кг)", qty: Math.ceil(room.floorArea / 4), unit: "меш." });
                 }
 
-                // 3. Подготовка стен
                 if (wallState === 'raw') {
                     items.push({ name: "Штукатурка гипсовая (Штукатурка)", qty: Math.ceil(room.wallArea * 10), unit: "kg" });
                     items.push({ name: "Шпатлевка базовый + финиш", qty: Math.ceil(room.wallArea / 8), unit: "меш." });
@@ -889,7 +885,6 @@
                     items.push({ name: "Финишная шпатлевка для выравнивания", qty: Math.ceil(room.wallArea / 15), unit: "меш." });
                 }
 
-                // 4. Чистовая отделка стен
                 if (wallFinish === 'wallpaper') {
                     items.push({ name: "Обои (рулон 1.06м x 10м)", qty: Math.ceil(room.wallArea / 10), unit: "рул." });
                     items.push({ name: "Клей для обоев", qty: Math.ceil(room.wallArea / 45), unit: "пач." });
@@ -905,7 +900,6 @@
                     items.push({ name: "Затирка для швов", qty: Math.ceil(room.wallArea / 10), unit: "kg" });
                 }
 
-                // 5. Отделка потолка
                 if (ceilingState === 'old') {
                     items.push({ name: "Зачистка / Подготовка поверхности потолка", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
                 }
@@ -924,7 +918,6 @@
                     items.push({ name: "Реечный металлический потолок", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
                 }
 
-                // Общий грунт
                 items.push({ name: "Грунтовка глубокого проникновения", qty: parseFloat(((room.wallArea + (room.floorArea * 2)) * 0.15).toFixed(1)), unit: "л" });
 
                 let itemsHTML = '';
@@ -965,7 +958,6 @@
                 resContainer.insertAdjacentHTML('beforeend', roomEstimateHTML);
             });
 
-            // Формирование общей сводной карточки
             let overallHTML = '';
             let summaryTG = `📊 *UMUMIY MATERIAL SHAKLI (ИТОГОВЫЙ РАСЧЕТ НА ВЕСЬ ОБЪЕКТ):*\n`;
             summaryTG += `🏠 Xonalar soni: ${roomsData.length} ta\n`;
