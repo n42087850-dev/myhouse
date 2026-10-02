@@ -248,9 +248,8 @@
             color: var(--text-muted);
         }
 
-        /* Стиль для универсального модального окна контактов */
         .order-modal-content {
-            max-width: 420px;
+            max-width: 450px;
         }
 
         .modal-actions {
@@ -436,18 +435,7 @@
             </h3>
             
             <div id="customDimensionsBox" style="display: none;">
-                <div class="form-group">
-                    <label>Kengligi (см) / Ширина (см):</label>
-                    <input type="number" id="custWidth" placeholder="200">
-                </div>
-                <div class="form-group">
-                    <label>Balandligi (см) / Высота (см):</label>
-                    <input type="number" id="custHeight" placeholder="220">
-                </div>
-                <div class="form-group">
-                    <label>Chuqurligi (см) / Глубина (см):</label>
-                    <input type="number" id="custDepth" placeholder="60">
-                </div>
+                <div id="elementsCustomFields"></div>
                 <div class="form-group">
                     <label>Izoh / Комментарий:</label>
                     <input type="text" id="custNote" placeholder="Aloxida istaklar / Особые пожелания">
@@ -478,9 +466,10 @@
         const TG_CHAT_ID = "-1003917851495";
 
         let roomCounter = 0;
-        let modalScrollTop = 0;
+        let catalogScrollPosition = 0;
         let roomsData = [];
         let currentOrderAction = null;
+        let activeItemData = null;
 
         const roomTypes = {
             bedroom: "Yotoqxona / Спальня",
@@ -501,6 +490,7 @@
         const huvaydoCatalog = [
             {
                 category: "🚪 Dehliz / Прихожие гарнитуры",
+                type: "hallway",
                 items: [
                     { id: "hallway_1", name: "Khuvaydo Hallway #1", coverImg: "./images/hallway-khuvaydo-1.jpg", images: ["./images/hallway-khuvaydo-1.jpg"], desc: "Frezerovka va shisha vitrinali shkafli dahliz to'plami." },
                     { id: "hallway_2", name: "Khuvaydo Hallway #2", coverImg: "./images/hallway-khuvaydo-2.jpg", images: ["./images/hallway-khuvaydo-2.jpg"], desc: "Zamonaviy to'q rangli ochiq kiyim ilgichli dahliz garnituri." },
@@ -510,6 +500,7 @@
             },
             {
                 category: "🛏 Yotoqxona to'plamlari / Спальные гарнитуры",
+                type: "bedroom_set",
                 items: [
                     { 
                         id: "set_1", name: "Khuvaydo Full Set #1", material: "LMDF (Крашеный МДФ)",
@@ -517,11 +508,11 @@
                         images: ["./images/bedroom-khuvaydo-full-set-1.jpg", "./images/bed-with-2-nightstands-khuvaydo-1.jpg", "./images/closet-khuvaydo-1.jpg", "./images/dresser-with-stool-khuvaydo-1.jpg", "./images/nightstand-khuvaydo-1.jpg", "./images/tall-nightstand-khuvaydo-1.jpg", "./images/bigger-dresser-khuvaydo-1.jpg"],
                         desc: "To'liq yotoqxona garnituri #1: Krovat, Shkaf, Tumbachkalar, Komod va Zerkalo.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "220 × 220 × 65 см", area: 1.43 },
-                            { name: "Кровать (Bed)", size: "185 × 220 см (Матрас 175 × 210)", area: 4.07 },
-                            { name: "Трюмо / Макияжный стол", size: "110 × 45 см", area: 0.50 },
-                            { name: "Прикроватная тумба (2 шт)", size: "60 × 45 см", area: 0.54 },
-                            { name: "Комод / Честер", size: "70 × 110 × 45 см", area: 0.32 }
+                            { name: "Шкаф (Closet)", size: "Ширина: 220 см", area: 1.43 },
+                            { name: "Кровать (Bed)", size: "Ширина: 185 см", area: 4.07 },
+                            { name: "Трюмо / Макияжный стол", size: "Ширина: 110 см", area: 0.50 },
+                            { name: "Прикроватная тумба (2 шт)", size: "60 × 45 см", area: 0.54, isNightstand: true },
+                            { name: "Комод / Честер", size: "Ширина: 70 см", area: 0.32 }
                         ]
                     },
                     { 
@@ -530,10 +521,10 @@
                         images: ["./images/bed-with-2-nightstands-khuvaydo-2.jpg", "./images/closet-khuvaydo-2.jpg", "./images/dresser-with-stool-khuvaydo-2.jpg", "./images/nightstand-khuvaydo-2.jpg"],
                         desc: "Zamonaviy yotoqxona to'plami #2.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "210 × 220 × 65 см", area: 1.37 },
-                            { name: "Кровать (Bed)", size: "200 × 220 см (Матрас 175 × 210)", area: 4.40 },
-                            { name: "Трюмо / Макияжный стол", size: "140 × 45 см", area: 0.63 },
-                            { name: "Прикроватная тумба (2 шт)", size: "55 × 60 × 45 см", area: 0.50 }
+                            { name: "Шкаф (Closet)", size: "Ширина: 210 см", area: 1.37 },
+                            { name: "Кровать (Bed)", size: "Ширина: 200 см", area: 4.40 },
+                            { name: "Трюмо / Макияжный стол", size: "Ширина: 140 см", area: 0.63 },
+                            { name: "Прикроватная тумба (2 шт)", size: "55 × 60 × 45 см", area: 0.50, isNightstand: true }
                         ]
                     },
                     { 
@@ -542,10 +533,10 @@
                         images: [  "./images/bed-with-2-nightstands-khuvaydo-3.jpg", "./images/2-doors-closed-closet-khuvaydo-3.jpg", "./images/left-side-opened-closet-khuvaydo-3.jpg", "./images/right-side-opened-closet-khuvaydo-3.jpg", "./images/dresser-khuvaydo-3.jpg", "./images/nightstand-khuvaydo-3.jpg"],
                         desc: "Klassik va shinam yotoqxona garnituri #3.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "195 × 220 × 65 см", area: 1.27 },
-                            { name: "Кровать (Bed)", size: "170 × 220 см (Матрас 155 × 210)", area: 3.74 },
-                            { name: "Трюмо / Макияжный стол", size: "130 × 45 см", area: 0.59 },
-                            { name: "Прикроватная тумба (2 шт)", size: "57 × 60 × 45 см", area: 0.51 }
+                            { name: "Шкаф (Closet)", size: "Ширина: 195 см", area: 1.27 },
+                            { name: "Кровать (Bed)", size: "Ширина: 170 см", area: 3.74 },
+                            { name: "Трюмо / Макияжный стол", size: "Ширина: 130 см", area: 0.59 },
+                            { name: "Прикроватная тумба (2 шт)", size: "57 × 60 × 45 см", area: 0.51, isNightstand: true }
                         ]
                     },
                     { 
@@ -554,10 +545,10 @@
                         images: ["./images/bed-with-2-nightstands-khuvaydo-4.jpg", "./images/closet-khuvaydo-4.jpg", "./images/fully-opened-closet-khuvaydo-4.jpg", "./images/dresser-with-stool-khuvaydo-4.jpg", "./images/nightstand-khuvaydo-4.jpg"],
                         desc: "Etnik stil elementlariga ega yotoqxona to'plami #4.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "260 × 220 × 65 см", area: 1.69 },
-                            { name: "Кровать (Bed)", size: "185 × 220 см (Матрас 175 × 210)", area: 4.07 },
-                            { name: "Трюмо / Макияжный стол", size: "140 × 45 см", area: 0.63 },
-                            { name: "Прикроватная тумба (2 шт)", size: "60 × 50 × 45 см", area: 0.54 }
+                            { name: "Шкаф (Closet)", size: "Ширина: 260 см", area: 1.69 },
+                            { name: "Кровать (Bed)", size: "Ширина: 185 см", area: 4.07 },
+                            { name: "Трюмо / Макияжный стол", size: "Ширина: 140 см", area: 0.63 },
+                            { name: "Прикроватная тумба (2 шт)", size: "60 × 50 × 45 см", area: 0.54, isNightstand: true }
                         ]
                     },
                     { 
@@ -566,10 +557,10 @@
                         images: ["./images/bed-with-2-nightstands-khuvaydo-5.jpg", "./images/closet-khuvaydo-5.jpg", "./images/fully-opened-closet-khuvaydo-5.jpg", "./images/nightstand-khuvaydo-5.jpg"],
                         desc: "Shinam va keng yotoqxona garnituri #5.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "200 × 220 × 60 см", area: 1.20 },
-                            { name: "Кровать (Bed)", size: "185 × 220 см (Матрас 175 × 210)", area: 4.07 },
-                            { name: "Трюмо / Макияжный стол", size: "140 × 45 см", area: 0.63 },
-                            { name: "Прикроватная тумба (2 шт)", size: "60 × 50 × 45 см", area: 0.54 }
+                            { name: "Шкаф (Closet)", size: "Ширина: 200 см", area: 1.20 },
+                            { name: "Кровать (Bed)", size: "Ширина: 185 см", area: 4.07 },
+                            { name: "Трюмо / Макияжный стол", size: "Ширина: 140 см", area: 0.63 },
+                            { name: "Прикроватная тумба (2 шт)", size: "60 × 50 × 45 см", area: 0.54, isNightstand: true }
                         ]
                     },
                     { 
@@ -578,10 +569,10 @@
                         images: ["./images/full-set-khuvaydo-7.jpg", "./images/closet-khuvaydo-7.jpg", "./images/dresser-khuvaydo-7.jpg"],
                         desc: "Zamonaviy lüks yotoqxona garnituri #7.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "240 × 220 × 60 см", area: 1.44 },
-                            { name: "Кровать (Bed)", size: "260 × 220 см (Матрас 175 × 210)", area: 5.72 },
-                            { name: "Трюмо / Макияжный стол", size: "120 × 45 см", area: 0.54 },
-                            { name: "Прикроватная тумба (2 шт)", size: "50 × 45 см", area: 0.45 }
+                            { name: "Шкаф (Closet)", size: "Ширина: 240 см", area: 1.44 },
+                            { name: "Кровать (Bed)", size: "Ширина: 260 см", area: 5.72 },
+                            { name: "Трюмо / Макияжный стол", size: "Ширина: 120 см", area: 0.54 },
+                            { name: "Прикроватная тумба (2 шт)", size: "50 × 45 см", area: 0.45, isNightstand: true }
                         ]
                     },
                     { 
@@ -590,23 +581,25 @@
                         images: ["./images/full-set-khuvaydo-8.jpg", "./images/closet-khuvaydo-8.jpg", "./images/dresser-with-stool-khuvaydo-8.jpg", "./images/nightsand-khuvaydo-8.jpg", "./images/tall-nightstand-khuvaydo-8.jpg"],
                         desc: "Minimalistik uslubdagi to'liq yotoqxona to'plami #8.",
                         elements: [
-                            { name: "Шкаф (Closet)", size: "200 × 220 × 60 см", area: 1.20 },
-                            { name: "Кровать (Bed)", size: "170 × 220 см (Матрас 155 × 210)", area: 3.74 },
-                            { name: "Трюмо / Макияжный стол", size: "130 × 50 см", area: 0.65 },
-                            { name: "Прикроватная тумба (2 шт)", size: "45 × 40 × 50 см", area: 0.45 },
-                            { name: "Комод / Честер", size: "110 × 70 × 45 см", area: 0.50 }
+                            { name: "Шкаф (Closet)", size: "Ширина: 200 см", area: 1.20 },
+                            { name: "Кровать (Bed)", size: "Ширина: 170 см", area: 3.74 },
+                            { name: "Трюмо / Макияжный стол", size: "Ширина: 130 см", area: 0.65 },
+                            { name: "Прикроватная тумба (2 шт)", size: "45 × 40 × 50 см", area: 0.45, isNightstand: true },
+                            { name: "Комод / Честер", size: "Ширина: 110 см", area: 0.50 }
                         ]
                     }
                 ]
             },
             {
                 category: "🛋 Yumshoq mebellar / Мягкая мебель",
+                type: "sofa",
                 items: [
                     { id: "set_6", name: "Khuvaydo Sofa Set #6", coverImg: "./images/sofa-with-table-full-set-khuvaydo-6.jpg", images: ["./images/sofa-with-table-full-set-khuvaydo-6.jpg", "./images/sofa-khuvaydo-6.jpg"], desc: "Mehmonxona uchun yumshoq mebel to'plami #6." }
                 ]
             },
             {
                 category: "🍳 Oshxona mebellari / Кухонные гарнитуры",
+                type: "kitchen",
                 items: [
                     { id: "k9", name: "Khuvaydo Kitchen #9", coverImg: "./images/kitchen-khuvaydo-9.jpg", images: ["./images/kitchen-khuvaydo-9.jpg"], desc: "Zamonaviy oshxona garnituri #9." },
                     { id: "k10", name: "Khuvaydo Kitchen #10", coverImg: "./images/kitchen-khuvaydo-10.jpg", images: ["./images/kitchen-khuvaydo-10.jpg"], desc: "Keng va qulay oshxona garnituri #10." },
@@ -1058,8 +1051,10 @@
 
         /* ================= МЕБЕЛЬНЫЙ МОДАЛ ================= */
         function openFurnitureModal() {
+            const modalContent = document.querySelector('#furnitureModal .modal-content');
             renderHuvaydoCatalog();
             document.getElementById('furnitureModal').style.display = 'flex';
+            if (modalContent) modalContent.scrollTop = 0;
         }
 
         function closeFurnitureModal() {
@@ -1091,21 +1086,33 @@
                 listContainer.innerHTML += categoryHTML;
             });
 
-            setTimeout(() => {
-                listContainer.scrollTop = modalScrollTop;
-            }, 0);
+            const modalContent = document.querySelector('#furnitureModal .modal-content');
+            if (modalContent) {
+                setTimeout(() => {
+                    modalContent.scrollTop = catalogScrollPosition;
+                }, 0);
+            }
         }
 
         function openItemDetail(itemId) {
-            const listContainer = document.getElementById('huvaydoCatalogList');
-            modalScrollTop = listContainer.scrollTop;
+            const modalContent = document.querySelector('#furnitureModal .modal-content');
+            if (modalContent) {
+                catalogScrollPosition = modalContent.scrollTop;
+            }
 
             let item = null;
+            let catType = "";
             huvaydoCatalog.forEach(cat => {
-                cat.items.forEach(i => { if(i.id === itemId) item = i; });
+                cat.items.forEach(i => { 
+                    if(i.id === itemId) {
+                        item = i;
+                        catType = cat.type;
+                    } 
+                });
             });
             if(!item) return;
 
+            activeItemData = item;
             currentItemImages = item.images;
             currentSlideIndex = 0;
 
@@ -1123,7 +1130,7 @@
                         <div class="element-checkbox-item">
                             <div>
                                 <strong style="color: var(--text-main);">${el.name}</strong><br>
-                                <span style="color: var(--text-muted); font-size: 11px;">📏 ${el.size} (${el.area} m²)</span>
+                                <span style="color: var(--text-muted); font-size: 11px;">📏 ${el.size}</span>
                             </div>
                             <input type="checkbox" class="spatial-item-check" data-name="${el.name}" data-area="${el.area}" data-index="${index}" checked onchange="recalculateSpatialArea()">
                         </div>
@@ -1159,10 +1166,27 @@
                         <div class="progress-bar-bg">
                             <div class="progress-bar-fill" id="spatialProgress"></div>
                         </div>
-                        <div id="spatialStatusText" style="font-size: 11px; font-weight: bold; margin-top: 6px; color: var(--text-muted);">
+                        <div id="spatialStatusTextUz" style="font-size: 11px; font-weight: bold; margin-top: 6px; color: var(--text-muted);">
                             Xona o'lchamlarini kiriting (Masalan: 4.5 va 3.5).
                         </div>
+                        <div id="spatialStatusTextRu" style="font-size: 11px; font-weight: 500; margin-top: 2px; color: var(--text-muted);">
+                            Введите размеры комнаты (Например: 4.5 и 3.5).
+                        </div>
                     </div>
+                `;
+            }
+
+            let actionButtons = '';
+            if (catType === 'kitchen' || catType === 'hallway') {
+                actionButtons = `
+                    <button class="btn btn-custom" onclick="openOrderModal('zamer_order', '${item.name}')">📐 Zamerstik chaqirish / Вызвать замерщика</button>
+                    <button class="btn btn-secondary" onclick="renderHuvaydoCatalog()">❮ Orqaga / Назад</button>
+                `;
+            } else {
+                actionButtons = `
+                    <button class="btn" onclick="openOrderModal('detailed_order', '${item.name}', 'Komplekt buyurtmasi')">🛍 Buyurtma berish / Заказать комплект</button>
+                    <button class="btn btn-custom" onclick="openOrderModal('custom_order', '${item.name}')">📐 O'z o'lchamingizga buyurtma / Заказать под свой размер</button>
+                    <button class="btn btn-secondary" onclick="renderHuvaydoCatalog()">❮ Orqaga / Назад</button>
                 `;
             }
 
@@ -1187,14 +1211,12 @@
                     ${elementsHTML}
 
                     <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
-                        <button class="btn" onclick="openOrderModal('detailed_order', '${item.name}', 'Komplekt buyurtmasi')">🛍 Buyurtma berish / Заказать комплект</button>
-                        <button class="btn btn-custom" onclick="openOrderModal('custom_order', '${item.name}')">📐 O'z o'lchamingizga buyurtma / Заказать под свой размер</button>
-                        <button class="btn btn-secondary" onclick="renderHuvaydoCatalog()">❮ Orqaga / Назад</button>
+                        ${actionButtons}
                     </div>
                 </div>
             `;
 
-            listContainer.scrollTop = 0;
+            if (modalContent) modalContent.scrollTop = 0;
         }
 
         function recalculateSpatialArea() {
@@ -1205,12 +1227,17 @@
             const roomW = parseFloat(roomWInput);
 
             const progressFill = document.getElementById('spatialProgress');
-            const statusText = document.getElementById('spatialStatusText');
+            const statusUz = document.getElementById('spatialStatusTextUz');
+            const statusRu = document.getElementById('spatialStatusTextRu');
 
             if (!roomL || !roomW || roomL <= 0 || roomW <= 0) {
-                if (statusText) {
-                    statusText.style.color = 'var(--accent-gold)';
-                    statusText.innerHTML = '⚠️ Xonaning uzunligi va kengligini kiriting!';
+                if (statusUz) {
+                    statusUz.style.color = 'var(--accent-gold)';
+                    statusUz.innerHTML = '⚠️ Xonaning uzunligi va kengligini kiriting!';
+                }
+                if (statusRu) {
+                    statusRu.style.color = 'var(--accent-gold)';
+                    statusRu.innerHTML = '⚠️ Укажите длину и ширину комнаты!';
                 }
                 if (progressFill) progressFill.style.width = '0%';
                 return 0;
@@ -1228,21 +1255,30 @@
 
             const percent = roomArea > 0 ? (selectedFurnitureArea / roomArea) * 100 : 0;
 
-            if (progressFill && statusText) {
+            if (progressFill && statusUz && statusRu) {
                 progressFill.style.width = `${Math.min(percent, 100).toFixed(1)}%`;
 
                 if (percent < 50) {
                     progressFill.style.backgroundColor = 'var(--accent-green)';
-                    statusText.style.color = 'var(--accent-green)';
-                    statusText.innerHTML = `✅ Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} m² / ${roomArea.toFixed(1)} m²). Keng va erkin!`;
+                    statusUz.style.color = 'var(--accent-green)';
+                    statusRu.style.color = 'var(--accent-green)';
+
+                    statusUz.innerHTML = `✅ Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} m² / ${roomArea.toFixed(1)} m²). Keng va erkin!`;
+                    statusRu.innerHTML = `✅ Мебель займет ${percent.toFixed(1)}% комнаты (${selectedFurnitureArea.toFixed(2)} м² из ${roomArea.toFixed(1)} м²). Просторно и свободно!`;
                 } else if (percent <= 65) {
                     progressFill.style.backgroundColor = 'var(--accent-gold)';
-                    statusText.style.color = 'var(--accent-gold)';
-                    statusText.innerHTML = `🟡 Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} m² / ${roomArea.toFixed(1)} m²). Standart shinamlik.`;
+                    statusUz.style.color = 'var(--accent-gold)';
+                    statusRu.style.color = 'var(--accent-gold)';
+
+                    statusUz.innerHTML = `🟡 Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} m² / ${roomArea.toFixed(1)} m²). Standart shinamlik.`;
+                    statusRu.innerHTML = `🟡 Мебель займет ${percent.toFixed(1)}% комнаты (${selectedFurnitureArea.toFixed(2)} м² из ${roomArea.toFixed(1)} м²). Оптимальный утиль.`;
                 } else {
                     progressFill.style.backgroundColor = '#EF4444';
-                    statusText.style.color = '#EF4444';
-                    statusText.innerHTML = `🛑 Diqqat! Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} m² / ${roomArea.toFixed(1)} m²). Juda tor bo'lishi mumkin!`;
+                    statusUz.style.color = '#EF4444';
+                    statusRu.style.color = '#EF4444';
+
+                    statusUz.innerHTML = `🛑 Diqqat! Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} m² / ${roomArea.toFixed(1)} m²). Juda tor bo'lishi mumkin!`;
+                    statusRu.innerHTML = `🛑 Внимание! Мебель займет ${percent.toFixed(1)}% комнаты (${selectedFurnitureArea.toFixed(2)} м² из ${roomArea.toFixed(1)} м²). Может быть очень тесно!`;
                 }
             }
             return percent;
@@ -1259,9 +1295,8 @@
         }
 
 
-        /* ================= ЛОГИКА НОВОГО МОДАЛЬНОГО ОКНА ДЛЯ ВВОДА ДАННЫХ ================= */
+        /* ================= ЛОГИКА МОДАЛЬНОГО ОКНА ДЛЯ ВВОДА ДАННЫХ ================= */
         
-        // Маска для узбекского номера телефона
         document.getElementById('userPhoneInput').addEventListener('input', (e) => {
             let matrix = e.target.value.replace(/\D/g, '');
 
@@ -1293,22 +1328,66 @@
             const customBox = document.getElementById('customDimensionsBox');
             const nameGroup = document.getElementById('nameGroup');
             const modalTitle = document.getElementById('orderModalTitle');
+            const elementsCustomFields = document.getElementById('elementsCustomFields');
 
-            // Сброс значений
             document.getElementById('userNameInput').value = '';
             document.getElementById('userPhoneInput').value = '+998 ';
-            document.getElementById('custWidth').value = '';
-            document.getElementById('custHeight').value = '';
-            document.getElementById('custDepth').value = '';
             document.getElementById('custNote').value = '';
+            elementsCustomFields.innerHTML = '';
 
             if (type === 'custom_order') {
                 customBox.style.display = 'block';
                 nameGroup.style.display = 'block';
                 modalTitle.innerText = "📐 Individal buyurtma / Индивидуальный заказ";
+
+                if (activeItemData && activeItemData.elements && activeItemData.elements.length > 0) {
+                    activeItemData.elements.forEach((el, idx) => {
+                        if (el.isNightstand) {
+                            elementsCustomFields.innerHTML += `
+                                <div class="form-group" style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid var(--input-border);">
+                                    <label style="color: var(--accent-cyan); font-weight: bold;">${el.name}:</label>
+                                    <div class="grid-3">
+                                        <div><label>Ширина (см)</label><input type="number" class="cust-elem-w" data-name="${el.name}" placeholder="60"></div>
+                                        <div><label>Высота (см)</label><input type="number" class="cust-elem-h" data-name="${el.name}" placeholder="50"></div>
+                                        <div><label>Глубина (см)</label><input type="number" class="cust-elem-d" data-name="${el.name}" placeholder="45"></div>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            elementsCustomFields.innerHTML += `
+                                <div class="form-group" style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid var(--input-border);">
+                                    <label style="color: var(--accent-cyan); font-weight: bold;">${el.name}:</label>
+                                    <div>
+                                        <label>Kengligi (см) / Ширина вдоль стены (см)</label>
+                                        <input type="number" class="cust-elem-w" data-name="${el.name}" placeholder="200">
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
+                } else {
+                    elementsCustomFields.innerHTML = `
+                        <div class="form-group">
+                            <label>Kengligi (см) / Ширина (см):</label>
+                            <input type="number" id="custWidth" placeholder="200">
+                        </div>
+                        <div class="form-group">
+                            <label>Balandligi (см) / Высота (см):</label>
+                            <input type="number" id="custHeight" placeholder="220">
+                        </div>
+                        <div class="form-group">
+                            <label>Chuqurligi (см) / Глубина (см):</label>
+                            <input type="number" id="custDepth" placeholder="60">
+                        </div>
+                    `;
+                }
+            } else if (type === 'zamer_order') {
+                customBox.style.display = 'none';
+                nameGroup.style.display = 'block';
+                modalTitle.innerText = "📐 Zamerstik chaqirish / Вызвать замерщика";
             } else if (type === 'single_estimate') {
                 customBox.style.display = 'none';
-                nameGroup.style.display = 'none'; // Для одной комнаты имя не обязательно, только телефон
+                nameGroup.style.display = 'none';
                 modalTitle.innerText = "✈ Smeta yuborish / Отправка сметы";
             } else {
                 customBox.style.display = 'none';
@@ -1376,17 +1455,48 @@
                               `👤 *Mijoz:* ${name}\n` +
                               `📞 *Tel:* ${phone}`;
             } 
+            else if (type === 'zamer_order') {
+                if (!name) { alert("Ismingizni kiriting / Введите имя!"); return; }
+                const furnitureName = param1;
+
+                textMessage = `📐 *ZAMERSTIK CHAQIRISH (MYHOUSE PRO)*\n\n` +
+                              `📦 *Kategoriya/Mahsulot:* ${furnitureName}\n\n` +
+                              `👤 *Mijoz:* ${name}\n` +
+                              `📞 *Tel:* ${phone}`;
+            }
             else if (type === 'custom_order') {
                 if (!name) { alert("Ismingizni kiriting / Введите имя!"); return; }
                 const furnitureName = param1;
-                const width = document.getElementById('custWidth').value || "—";
-                const height = document.getElementById('custHeight').value || "—";
-                const depth = document.getElementById('custDepth').value || "—";
                 const note = document.getElementById('custNote').value || "Yo'q";
 
+                let customDimsText = "";
+                const elemWidthInputs = document.querySelectorAll('.cust-elem-w');
+                
+                if (elemWidthInputs.length > 0) {
+                    elemWidthInputs.forEach(inp => {
+                        const elName = inp.getAttribute('data-name');
+                        const wVal = inp.value || "—";
+                        
+                        const parentGroup = inp.closest('.form-group');
+                        const hVal = parentGroup?.querySelector('.cust-elem-h')?.value;
+                        const dVal = parentGroup?.querySelector('.cust-elem-d')?.value;
+
+                        if (hVal || dVal) {
+                            customDimsText += `\n• ${elName}: ${wVal}x${hVal || "—"}x${dVal || "—"} см`;
+                        } else {
+                            customDimsText += `\n• ${elName}: Kengligi ${wVal} см`;
+                        }
+                    });
+                } else {
+                    const width = document.getElementById('custWidth')?.value || "—";
+                    const height = document.getElementById('custHeight')?.value || "—";
+                    const depth = document.getElementById('custDepth')?.value || "—";
+                    customDimsText = `\n📐 *O'lchamlar (ШхВхГ):* ${width} x ${height} x ${depth} см`;
+                }
+
                 textMessage = `🚀 *INDIVIDUAL BUYURTMA (MYHOUSE PRO)*\n\n` +
-                              `📦 *Mahsulot:* ${furnitureName}\n` +
-                              `📐 *O'lchamlar (ШхВхГ):* ${width} x ${height} x ${depth} см\n` +
+                              `📦 *Mahsulot:* ${furnitureName}` +
+                              `${customDimsText}\n` +
                               `💬 *Izoh:* ${note}\n\n` +
                               `👤 *Mijoz:* ${name}\n` +
                               `📞 *Tel:* ${phone}`;
@@ -1402,7 +1512,7 @@
                 if (tgRes.ok) {
                     alert("Muvaffaqiyatli yuborildi! / Успешно отправлено!");
                     closeOrderModal();
-                    if (type === 'detailed_order' || type === 'custom_order') {
+                    if (type === 'detailed_order' || type === 'custom_order' || type === 'zamer_order') {
                         closeFurnitureModal();
                     }
                 } else {
