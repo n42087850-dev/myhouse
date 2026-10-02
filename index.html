@@ -143,7 +143,7 @@
             margin-bottom: 6px;
         }
 
-        input[type="text"], input[type="number"], select {
+        input[type="text"], input[type="number"], input[type="tel"], select {
             width: 100%;
             padding: 12px;
             background: var(--input-bg);
@@ -248,6 +248,17 @@
             color: var(--text-muted);
         }
 
+        /* Стиль для универсального модального окна контактов */
+        .order-modal-content {
+            max-width: 420px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
         .huvaydo-category-title {
             font-size: 15px;
             font-weight: bold;
@@ -257,7 +268,6 @@
             padding-bottom: 6px;
         }
 
-        /* КАРТОЧКИ МЕБЕЛИ: ИСПРАВЛЕННОЕ ПОЛНОЕ ОТОБРАЖЕНИЕ КАРТИНОК */
         .huvaydo-card {
             display: flex;
             flex-direction: column;
@@ -417,6 +427,50 @@
         </div>
     </div>
 
+    <!-- ================= УНИВЕРСАЛЬНОЕ МОДАЛЬНОЕ ОКНО ОФОРМЛЕНИЯ ================= -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content order-modal-content">
+            <span class="close-modal" onclick="closeOrderModal()">&times;</span>
+            <h3 id="orderModalTitle" style="color: var(--accent-cyan); margin-bottom: 15px; font-size: 16px;">
+                Ma'lumotlarni kiriting / Введите данные
+            </h3>
+            
+            <div id="customDimensionsBox" style="display: none;">
+                <div class="form-group">
+                    <label>Kengligi (см) / Ширина (см):</label>
+                    <input type="number" id="custWidth" placeholder="200">
+                </div>
+                <div class="form-group">
+                    <label>Balandligi (см) / Высота (см):</label>
+                    <input type="number" id="custHeight" placeholder="220">
+                </div>
+                <div class="form-group">
+                    <label>Chuqurligi (см) / Глубина (см):</label>
+                    <input type="number" id="custDepth" placeholder="60">
+                </div>
+                <div class="form-group">
+                    <label>Izoh / Комментарий:</label>
+                    <input type="text" id="custNote" placeholder="Aloxida istaklar / Особые пожелания">
+                </div>
+            </div>
+
+            <div class="form-group" id="nameGroup">
+                <label>Ismingiz / Ваше имя:</label>
+                <input type="text" id="userNameInput" placeholder="Иван">
+            </div>
+
+            <div class="form-group">
+                <label>Telefon raqamingiz / Номер телефона:</label>
+                <input type="tel" id="userPhoneInput" value="+998 " maxlength="19" placeholder="+998 90 123 45 67">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-calc" id="confirmOrderBtn" onclick="submitOrderModal()">Yuborish / Отправить</button>
+                <button class="btn btn-secondary" onclick="closeOrderModal()">Bekor qilish / Отмена</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- ================= JS ЛОГИКА ================= -->
     <script>
@@ -426,6 +480,7 @@
         let roomCounter = 0;
         let modalScrollTop = 0;
         let roomsData = [];
+        let currentOrderAction = null;
 
         const roomTypes = {
             bedroom: "Yotoqxona / Спальня",
@@ -950,7 +1005,7 @@
                         <div style="margin-bottom: 15px;">
                             ${itemsHTML}
                         </div>
-                        <button class="btn btn-secondary" style="font-size: 12px; padding: 10px 12px;" onclick="sendSingleEstimateToTG('${encodeURIComponent(singleRoomTG)}')">
+                        <button class="btn btn-secondary" style="font-size: 12px; padding: 10px 12px;" onclick="openOrderModal('single_estimate', '${encodeURIComponent(singleRoomTG)}')">
                             ✈ Smetani Telegramga yuborish
                         </button>
                     </div>
@@ -990,7 +1045,7 @@
                     <div style="margin-bottom: 20px;">
                         ${overallHTML}
                     </div>
-                    <button class="btn btn-custom" style="font-size: 15px; padding: 14px 16px;" onclick="sendAllEstimatesToTG('${encodeURIComponent(fullTelegramText)}')">
+                    <button class="btn btn-custom" style="font-size: 15px; padding: 14px 16px;" onclick="openOrderModal('all_estimates', '${encodeURIComponent(fullTelegramText)}')">
                         ✈ Yuborish (Butun uy smetasi) / Отправить общую смету в Telegram
                     </button>
                 </div>
@@ -998,56 +1053,6 @@
 
             resContainer.insertAdjacentHTML('afterbegin', totalSummaryCardHTML);
             resContainer.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        async function sendSingleEstimateToTG(encodedText) {
-            const text = decodeURIComponent(encodedText);
-            const phone = prompt("Telefon raqamingizni kiriting (+998...):");
-            if (!phone) return;
-
-            const fullMessage = `${text}\n📞 *Mijoz:* ${phone}`;
-
-            try {
-                const tgRes = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id: TG_CHAT_ID, text: fullMessage, parse_mode: "Markdown" })
-                });
-
-                if (tgRes.ok) {
-                    alert("Smeta Telegramga muvaffaqiyatli yuborildi!");
-                } else {
-                    alert("Xatolik yuz berdi");
-                }
-            } catch (e) {
-                alert("Internet ulanishini tekshiring");
-            }
-        }
-
-        async function sendAllEstimatesToTG(encodedText) {
-            const text = decodeURIComponent(encodedText);
-            const name = prompt("Ismingizni kiriting / Введите ваше имя:");
-            if (!name) return;
-            const phone = prompt("Telefon raqamingizni kiriting (+998...):");
-            if (!phone) return;
-
-            const fullMessage = `${text}\n👤 *Mijoz:* ${name}\n📞 *Tel:* ${phone}`;
-
-            try {
-                const tgRes = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id: TG_CHAT_ID, text: fullMessage, parse_mode: "Markdown" })
-                });
-
-                if (tgRes.ok) {
-                    alert("Butun uy bo'yicha umumiy smeta Telegramga muvaffaqiyatli yuborildi!");
-                } else {
-                    alert("Xatolik yuz berdi");
-                }
-            } catch (e) {
-                alert("Internet ulanishini tekshiring");
-            }
         }
 
 
@@ -1182,8 +1187,8 @@
                     ${elementsHTML}
 
                     <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
-                        <button class="btn" onclick="sendDetailedOrder('${item.name}', 'Komplekt buyurtmasi')">🛍 Buyurtma berish / Заказать комплект</button>
-                        <button class="btn btn-custom" onclick="sendCustomSizeOrder('${item.name}')">📐 O'z o'lchamingizga buyurtma / Заказать под свой размер</button>
+                        <button class="btn" onclick="openOrderModal('detailed_order', '${item.name}', 'Komplekt buyurtmasi')">🛍 Buyurtma berish / Заказать комплект</button>
+                        <button class="btn btn-custom" onclick="openOrderModal('custom_order', '${item.name}')">📐 O'z o'lchamingizga buyurtma / Заказать под свой размер</button>
                         <button class="btn btn-secondary" onclick="renderHuvaydoCatalog()">❮ Orqaga / Назад</button>
                     </div>
                 </div>
@@ -1253,74 +1258,139 @@
             document.getElementById('slideCounter').innerText = `${currentSlideIndex + 1} / ${currentItemImages.length}`;
         }
 
-        async function sendDetailedOrder(furnitureName, orderType) {
-            const name = prompt("Ismingizni kiriting / Введите ваше имя:");
-            if (!name) return;
-            const phone = prompt("Telefon raqamingizni kiriting (+998...):");
-            if (!phone) return;
 
-            const roomL = document.getElementById('modalRoomL')?.value || "Kiritilmagan";
-            const roomW = document.getElementById('modalRoomW')?.value || "Kiritilmagan";
-            const roomH = document.getElementById('modalRoomH')?.value || "Kiritilmagan";
+        /* ================= ЛОГИКА НОВОГО МОДАЛЬНОГО ОКНА ДЛЯ ВВОДА ДАННЫХ ================= */
+        
+        // Маска для узбекского номера телефона
+        document.getElementById('userPhoneInput').addEventListener('input', (e) => {
+            let matrix = e.target.value.replace(/\D/g, '');
 
-            let includedItemsStr = "";
-            const checkboxes = document.querySelectorAll('.spatial-item-check');
-            if (checkboxes.length > 0) {
-                checkboxes.forEach(cb => {
-                    const itemName = cb.getAttribute('data-name');
-                    const statusIcon = cb.checked ? "✅" : "❌ (O'chirilgan)";
-                    includedItemsStr += `\n• ${itemName}: ${statusIcon}`;
-                });
+            if (!matrix.startsWith('998')) {
+                matrix = '998' + matrix;
+            }
+
+            matrix = matrix.substring(0, 12);
+
+            let formatted = '+998';
+            if (matrix.length > 3) formatted += ' ' + matrix.substring(3, 5);
+            if (matrix.length > 5) formatted += ' ' + matrix.substring(5, 8);
+            if (matrix.length > 8) formatted += ' ' + matrix.substring(8, 10);
+            if (matrix.length > 10) formatted += ' ' + matrix.substring(10, 12);
+
+            e.target.value = formatted;
+        });
+
+        document.getElementById('userPhoneInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && e.target.value.length <= 5) {
+                e.preventDefault();
+            }
+        });
+
+        function openOrderModal(type, param1 = '', param2 = '') {
+            currentOrderAction = { type, param1, param2 };
+
+            const modal = document.getElementById('orderModal');
+            const customBox = document.getElementById('customDimensionsBox');
+            const nameGroup = document.getElementById('nameGroup');
+            const modalTitle = document.getElementById('orderModalTitle');
+
+            // Сброс значений
+            document.getElementById('userNameInput').value = '';
+            document.getElementById('userPhoneInput').value = '+998 ';
+            document.getElementById('custWidth').value = '';
+            document.getElementById('custHeight').value = '';
+            document.getElementById('custDepth').value = '';
+            document.getElementById('custNote').value = '';
+
+            if (type === 'custom_order') {
+                customBox.style.display = 'block';
+                nameGroup.style.display = 'block';
+                modalTitle.innerText = "📐 Individal buyurtma / Индивидуальный заказ";
+            } else if (type === 'single_estimate') {
+                customBox.style.display = 'none';
+                nameGroup.style.display = 'none'; // Для одной комнаты имя не обязательно, только телефон
+                modalTitle.innerText = "✈ Smeta yuborish / Отправка сметы";
             } else {
-                includedItemsStr = "\n• Standart to'plam";
+                customBox.style.display = 'none';
+                nameGroup.style.display = 'block';
+                modalTitle.innerText = "✈ Ma'lumotlarni kiriting / Введите данные";
             }
 
-            const textMessage = `🚀 *YANGI BUYURTMA (MYHOUSE PRO)*\n\n` +
-                                `📦 *Mahsulot:* ${furnitureName}\n` +
-                                `📌 *Turi:* ${orderType}\n\n` +
-                                `🏠 *Xona o'lchamlari:* L=${roomL}m, W=${roomW}m, H=${roomH}m\n` +
-                                `🧩 *Konstruktor elementlari:*` + `${includedItemsStr}\n\n` +
-                                `👤 *Mijoz:* ${name}\n` +
-                                `📞 *Tel:* ${phone}`;
-
-            try {
-                const tgRes = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id: TG_CHAT_ID, text: textMessage, parse_mode: "Markdown" })
-                });
-
-                if (tgRes.ok) {
-                    alert("Muvaffaqiyatli yuborildi! / Заказ успешно отправлен!");
-                    closeFurnitureModal();
-                } else {
-                    alert("Xatolik yuz berdi");
-                }
-            } catch (e) {
-                alert("Internet ulanishini tekshiring");
-            }
+            modal.style.display = 'flex';
         }
 
-        async function sendCustomSizeOrder(furnitureName) {
-            const width = prompt("Kengligi (см) / Ширина (см):");
-            if (!width) return;
-            const height = prompt("Balandligi (см) / Высота (см):");
-            if (!height) return;
-            const depth = prompt("Chuqurligi (см) / Глубина (см):");
-            if (!depth) return;
-            const note = prompt("Qo'shimcha istaklar (необязательно):") || "Yo'q";
+        function closeOrderModal() {
+            document.getElementById('orderModal').style.display = 'none';
+            currentOrderAction = null;
+        }
 
-            const name = prompt("Ismingizni kiriting / Введите ваше имя:");
-            if (!name) return;
-            const phone = prompt("Telefon raqamingizni kiriting (+998...):");
-            if (!phone) return;
+        async function submitOrderModal() {
+            if (!currentOrderAction) return;
 
-            const textMessage = `🚀 *INDIVIDUAL BUYURTMA (MYHOUSE PRO)*\n\n` +
-                                `📦 *Mahsulot:* ${furnitureName}\n` +
-                                `📐 *O'lchamlar (ШхВхГ):* ${width} x ${height} x ${depth} см\n` +
-                                `💬 *Izoh:* ${note}\n\n` +
-                                `👤 *Mijoz:* ${name}\n` +
-                                `📞 *Tel:* ${phone}`;
+            const phone = document.getElementById('userPhoneInput').value.trim();
+            const name = document.getElementById('userNameInput').value.trim();
+
+            if (phone.length < 19) {
+                alert("Iltimos, telefon raqamingizni to'liq kiriting!\nПожалуйста, введите полный номер телефона!");
+                return;
+            }
+
+            const { type, param1, param2 } = currentOrderAction;
+            let textMessage = "";
+
+            if (type === 'single_estimate') {
+                const decodedText = decodeURIComponent(param1);
+                textMessage = `${decodedText}\n📞 *Mijoz:* ${phone}`;
+            } 
+            else if (type === 'all_estimates') {
+                if (!name) { alert("Ismingizni kiriting / Введите имя!"); return; }
+                const decodedText = decodeURIComponent(param1);
+                textMessage = `${decodedText}\n👤 *Mijoz:* ${name}\n📞 *Tel:* ${phone}`;
+            } 
+            else if (type === 'detailed_order') {
+                if (!name) { alert("Ismingizni kiriting / Введите имя!"); return; }
+                const furnitureName = param1;
+                const orderType = param2;
+
+                const roomL = document.getElementById('modalRoomL')?.value || "Kiritilmagan";
+                const roomW = document.getElementById('modalRoomW')?.value || "Kiritilmagan";
+                const roomH = document.getElementById('modalRoomH')?.value || "Kiritilmagan";
+
+                let includedItemsStr = "";
+                const checkboxes = document.querySelectorAll('.spatial-item-check');
+                if (checkboxes.length > 0) {
+                    checkboxes.forEach(cb => {
+                        const itemName = cb.getAttribute('data-name');
+                        const statusIcon = cb.checked ? "✅" : "❌ (O'chirilgan)";
+                        includedItemsStr += `\n• ${itemName}: ${statusIcon}`;
+                    });
+                } else {
+                    includedItemsStr = "\n• Standart to'plam";
+                }
+
+                textMessage = `🚀 *YANGI BUYURTMA (MYHOUSE PRO)*\n\n` +
+                              `📦 *Mahsulot:* ${furnitureName}\n` +
+                              `📌 *Turi:* ${orderType}\n\n` +
+                              `🏠 *Xona o'lchamlari:* L=${roomL}m, W=${roomW}m, H=${roomH}m\n` +
+                              `🧩 *Konstruktor elementlari:*` + `${includedItemsStr}\n\n` +
+                              `👤 *Mijoz:* ${name}\n` +
+                              `📞 *Tel:* ${phone}`;
+            } 
+            else if (type === 'custom_order') {
+                if (!name) { alert("Ismingizni kiriting / Введите имя!"); return; }
+                const furnitureName = param1;
+                const width = document.getElementById('custWidth').value || "—";
+                const height = document.getElementById('custHeight').value || "—";
+                const depth = document.getElementById('custDepth').value || "—";
+                const note = document.getElementById('custNote').value || "Yo'q";
+
+                textMessage = `🚀 *INDIVIDUAL BUYURTMA (MYHOUSE PRO)*\n\n` +
+                              `📦 *Mahsulot:* ${furnitureName}\n` +
+                              `📐 *O'lchamlar (ШхВхГ):* ${width} x ${height} x ${depth} см\n` +
+                              `💬 *Izoh:* ${note}\n\n` +
+                              `👤 *Mijoz:* ${name}\n` +
+                              `📞 *Tel:* ${phone}`;
+            }
 
             try {
                 const tgRes = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
@@ -1330,8 +1400,11 @@
                 });
 
                 if (tgRes.ok) {
-                    alert("Hisob-kitob uchun so'rov yuborildi!");
-                    closeFurnitureModal();
+                    alert("Muvaffaqiyatli yuborildi! / Успешно отправлено!");
+                    closeOrderModal();
+                    if (type === 'detailed_order' || type === 'custom_order') {
+                        closeFurnitureModal();
+                    }
                 } else {
                     alert("Xatolik yuz berdi");
                 }
