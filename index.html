@@ -449,7 +449,7 @@
 
             <div class="form-group">
                 <label>Telefon raqamingiz / Номер телефона:</label>
-                <input type="tel" id="userPhoneInput" value="+998 " maxlength="19" placeholder="+998 90 123 45 67">
+                <input type="tel" id="userPhoneInput" value="+998 " maxlength="17" placeholder="+998 90 123 45 67">
             </div>
 
             <div class="modal-actions">
@@ -1410,7 +1410,7 @@
             const phone = document.getElementById('userPhoneInput').value.trim();
             const name = document.getElementById('userNameInput').value.trim();
 
-            if (phone.length < 19) {
+            if (phone.replace(/\D/g, '').length < 12) {
                 alert("Iltimos, telefon raqamingizni to'liq kiriting!\nПожалуйста, введите полный номер телефона!");
                 return;
             }
@@ -1530,3 +1530,4 @@
     </script>
 </body>
 </html>
+>
