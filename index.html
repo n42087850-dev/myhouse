@@ -636,14 +636,18 @@
                 { id: 'f-lam-oak', v: 'laminate', uz: "Laminat (och eman)", ru: "Ламинат светлый дуб", rooms: R3_DRY, file: 'tex-laminate-oak.jpg', kind: 'xy', f: 0.30, sz: 80 },
                 { id: 'f-marble-grid', v: 'tile', uz: "Marmar plitka", ru: "Мраморная плитка", rooms: R3_ALL, file: 'tex-marble-grid.jpg', kind: 'marble', sz: 120 },
                 { id: 'f-calacatta', v: 'tile', uz: "Calacatta marmar", ru: "Мрамор Calacatta", rooms: R3_ALL, file: 'tex-marble-calacatta.jpg', kind: 'marble', sz: 120 }
-            ],
+                { id: 'f-marble-grid', v: 'tile', uz: "Marmar plitka", ru: "Мраморная плитка", rooms: R3_ALL, file: 'tex-marble-grid.jpg', kind: 'marble', sz: 120 },
+                { id: 'f-calacatta', v: 'tile', uz: "Calacatta marmar", ru: "Мрамор Calacatta", rooms: R3_ALL, file: 'tex-marble-calacatta.jpg', kind: 'marble', sz: 120 },
+    ],
             wall: [
                 { id: 'w-tile', v: 'tile', uz: "Plitka (kafel)", ru: "Плитка (кафель)", rooms: R3_KBW, proc: r3Tiles(4, 'hsl(200,20%,94%)', 'hsl(0,0%,74%)'), sz: 150 },
                 { id: 'w-marble', v: 'keramogranit', uz: "Keramogranit (marmar rasmli)", ru: "Керамогранит под мрамор", rooms: R3_KBW, file: 'tex-porcelain-marble.jpg', kind: 'marble', sz: 120, sz2: 240 },
                 { id: 'w-floral', v: 'wallpaper', uz: "Oboy gulli", ru: "Обои с цветочным рисунком", rooms: R3_DRY, file: 'tex-wallpaper-floral.jpg', kind: 'xy', f: 0.45, sz: 130 },
                 { id: 'w-decor-sand', v: 'plaster', uz: "Dekorativ qum", ru: "Декоративный песок", rooms: R3_DRY, file: 'tex-wall-decor-sand.jpg', kind: 'xy', f: 0.3, sz: 150 },
                 { id: 'w-dark-flowers', v: 'wallpaper', uz: "To'q gulli oboy", ru: "Тёмные обои с цветами", rooms: R3_DRY, file: 'tex-wallpaper-dark-flowers.jpg', kind: 'xy', f: 0.45, sz: 130 }
-            ],
+                { id: 'w-decor-sand', v: 'plaster', uz: "Dekorativ qum", ru: "Декоративный песок", rooms: R3_DRY, file: 'tex-wall-decor-sand.jpg', kind: 'xy', f: 0.3, sz: 150 },
+                { id: 'w-dark-flowers', v: 'wallpaper', uz: "To'q gulli oboy", ru: "Тёмные обои с цветами", rooms: R3_DRY, file: 'tex-wallpaper-dark-flowers.jpg', kind: 'xy', f: 0.45, sz: 130 }, 
+    ],
             ceil: [
                 { id: 'c-slat', v: 'slat', uz: "Reykali shift", ru: "Реечный потолок", rooms: R3_KBW, proc: r3Slats, sz: 128 },
                 { id: 'c-emb', v: 'stretch', uz: "Tortma shift, mat (naqshli)", ru: "Натяжной матовый с тиснением", rooms: R3_ALL, file: 'tex-ceiling-emboss.jpg', kind: 'xy', f: 0.45, sz: 90 },
@@ -653,7 +657,10 @@
                 { id: 'c-slat-gray', v: 'slat', uz: "Reykali shift (kulrang)", ru: "Реечный серый с чёрным швом", rooms: R3_KBW, file: 'tex-ceiling-slat-gray.jpg', kind: 'y', f: 0.30, sz: 70 },
                 { id: 'c-oval', v: 'drywall', uz: "Oval shaklli shift", ru: "Овальный потолок с подсветкой", rooms: R3_DRY, file: 'tex-ceiling-oval.png', kind: 'xy', f: 0.3, sz: 150 },
                 { id: 'c-rect', v: 'drywall', uz: "To'rtburchak shift", ru: "Прямоугольный потолок", rooms: R3_DRY, file: 'tex-ceiling-rect.png', kind: 'xy', f: 0.3, sz: 150 }
-            ]
+                // В секцию ceil: [...] добавь:
+                { id: 'c-oval', v: 'drywall', uz: "Oval shaklli shift", ru: "Овальный потолок с подсветкой", rooms: R3_DRY, file: 'tex-ceiling-oval.png', kind: 'xy', f: 0.3, sz: 150 },
+                { id: 'c-rect', v: 'drywall', uz: "To'rtburchak shift", ru: "Прямоугольный потолок", rooms: R3_DRY, file: 'tex-ceiling-rect.png', kind: 'xy', f: 0.3, sz: 150 }, 
+    ]
         };
         const R3_DEFAULT = { floor: { dry: 'f-laminate', wet: 'f-tile' }, wall: { dry: 'w-floral', wet: 'w-tile' }, ceil: { dry: 'c-emb', wet: 'c-pvx-silver' } };
         const R3_SHADE = { back: 0.10, left: 0.30, right: 0.20, floor: 0.12, ceil: 0 };
