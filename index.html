@@ -569,7 +569,6 @@
     <script>
         const TG_BOT_TOKEN = "8940078076:AAEymug05M0Q0Hph6az-denQouUs66trvno";
         const TG_CHAT_ID = "-1003917851495";
-        // Заявки бригад можно отправлять в отдельный чат: вставьте его ID вместо TG_CHAT_ID
         const TG_CREW_CHAT_ID = TG_CHAT_ID;
  
  
@@ -619,15 +618,9 @@
             const u = S / n; g.fillStyle = grout; g.fillRect(0, 0, S, S);
             for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { g.fillStyle = bg; g.fillRect(i * u + 2, j * u + 2, u - 4, u - 4); g.fillStyle = `rgba(0,0,0,${(r() * 0.04).toFixed(3)})`; g.fillRect(i * u + 2, j * u + 2, u - 4, u - 4); }
         };
-        const r3Stripes = (a, b) => (g, r, S) => { for (let x = 0; x < S; x += 16) { g.fillStyle = (x / 16) % 2 ? a : b; g.fillRect(x, 0, 16, S); } r3Noise(g, r, 500, S, .05); };
-        const r3Plaster = (base) => (g, r, S) => {
-            g.fillStyle = base; g.fillRect(0, 0, S, S);
-            for (let i = 0; i < 140; i++) { g.fillStyle = `rgba(${r() > .5 ? '255,255,255' : '80,60,40'},${(r() * .07).toFixed(3)})`; g.beginPath(); g.arc(r() * S, r() * S, 6 + r() * 24, 0, 7); g.fill(); }
-        };
         const r3Carpet = (g, r, S) => { g.fillStyle = 'hsl(32,18%,66%)'; g.fillRect(0, 0, S, S); for (let i = 0; i < 5000; i++) { g.strokeStyle = `rgba(${r() > .5 ? '255,255,255' : '60,45,30'},${(r() * .18).toFixed(3)})`; const x = r() * S, y = r() * S; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (r() - .5) * 4, y + (r() - .5) * 4); g.stroke(); } };
         const r3Slats = (g, r, S) => { for (let y = 0; y < S; y += 16) { g.fillStyle = `hsl(30,45%,${46 + r() * 8}%)`; g.fillRect(0, y, S, 12); g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, y + 12, S, 4); } };
-        const r3Gloss = (g, r, S) => { const gr = g.createLinearGradient(0, 0, S, S); gr.addColorStop(0, '#FFFFFF'); gr.addColorStop(.5, '#E4E9EF'); gr.addColorStop(1, '#FFFFFF'); g.fillStyle = gr; g.fillRect(0, 0, S, S); };
- 
+
         // --- каталог вариантов. v: что считает смета; rooms: где вариант доступен; file: фото-текстура из папки images ---
         const R3_OPTS = {
             floor: [
@@ -640,32 +633,29 @@
                 { id: 'f-marble', v: 'tile', uz: "Keramogranit (marmar rasmli)", ru: "Керамогранит под мрамор", rooms: R3_ALL, file: 'tex-porcelain-marble.jpg', kind: 'marble', sz: 120, sz2: 240 },
                 { id: 'f-oak', v: 'parquet', uz: "Parket «yolka» (och eman)", ru: "Паркет «ёлочка» светлый дуб", rooms: R3_LB, file: 'tex-parquet-oak-chevron.jpg', kind: 'xy', f: 0.30, sz: 96 },
                 { id: 'f-walnut', v: 'parquet', uz: "Parket «yolka» (yong'oq)", ru: "Паркет «ёлочка» орех", rooms: R3_LB, file: 'tex-parquet-walnut-chevron.jpg', kind: 'xy', f: 0.30, sz: 96 },
-                { id: 'f-lam-oak', v: 'laminate', uz: "Laminat (och eman)", ru: "Ламинат светлый дуб", rooms: R3_DRY, file: 'tex-laminate-oak.jpg', kind: 'xy', f: 0.30, sz: 80 }
+                { id: 'f-lam-oak', v: 'laminate', uz: "Laminat (och eman)", ru: "Ламинат светлый дуб", rooms: R3_DRY, file: 'tex-laminate-oak.jpg', kind: 'xy', f: 0.30, sz: 80 },
+                { id: 'f-marble-grid', v: 'tile', uz: "Marmar plitka", ru: "Мраморная плитка", rooms: R3_ALL, file: 'tex-marble-grid.jpg', kind: 'marble', sz: 120 },
+                { id: 'f-calacatta', v: 'tile', uz: "Calacatta marmar", ru: "Мрамор Calacatta", rooms: R3_ALL, file: 'tex-marble-calacatta.jpg', kind: 'marble', sz: 120 }
             ],
             wall: [
-                { id: 'w-white', v: 'paint', uz: "Bo'yoq: oq", ru: "Краска: белая", rooms: R3_DRY, proc: r3Solid('hsl(40,25%,93%)'), sz: 150 },
-                { id: 'w-beige', v: 'paint', uz: "Bo'yoq: bej", ru: "Краска: бежевая", rooms: R3_DRY, proc: r3Solid('hsl(36,32%,78%)'), sz: 150 },
-                { id: 'w-gray', v: 'paint', uz: "Bo'yoq: kulrang", ru: "Краска: серая", rooms: R3_DRY, proc: r3Solid('hsl(215,10%,72%)'), sz: 150 },
-                { id: 'w-green', v: 'paint', uz: "Bo'yoq: yashil", ru: "Краска: шалфей", rooms: R3_DRY, proc: r3Solid('hsl(100,16%,66%)'), sz: 150 },
-                { id: 'w-stripe', v: 'wallpaper', uz: "Oboy (yo'l-yo'l)", ru: "Обои (полоса)", rooms: R3_DRY, proc: r3Stripes('hsl(40,35%,88%)', 'hsl(40,30%,80%)'), sz: 128 },
-                { id: 'w-plaster', v: 'plaster', uz: "Dekorativ shtukaturka", ru: "Декор. штукатурка", rooms: R3_DRY, proc: r3Plaster('hsl(34,22%,74%)'), sz: 150 },
                 { id: 'w-tile', v: 'tile', uz: "Plitka (kafel)", ru: "Плитка (кафель)", rooms: R3_KBW, proc: r3Tiles(4, 'hsl(200,20%,94%)', 'hsl(0,0%,74%)'), sz: 150 },
                 { id: 'w-marble', v: 'keramogranit', uz: "Keramogranit (marmar rasmli)", ru: "Керамогранит под мрамор", rooms: R3_KBW, file: 'tex-porcelain-marble.jpg', kind: 'marble', sz: 120, sz2: 240 },
-                { id: 'w-floral', v: 'wallpaper', uz: "Oboy gulli", ru: "Обои с цветочным рисунком", rooms: R3_DRY, file: 'tex-wallpaper-floral.jpg', kind: 'xy', f: 0.45, sz: 130 }
+                { id: 'w-floral', v: 'wallpaper', uz: "Oboy gulli", ru: "Обои с цветочным рисунком", rooms: R3_DRY, file: 'tex-wallpaper-floral.jpg', kind: 'xy', f: 0.45, sz: 130 },
+                { id: 'w-decor-sand', v: 'plaster', uz: "Dekorativ qum", ru: "Декоративный песок", rooms: R3_DRY, file: 'tex-wall-decor-sand.jpg', kind: 'xy', f: 0.3, sz: 150 },
+                { id: 'w-dark-flowers', v: 'wallpaper', uz: "To'q gulli oboy", ru: "Тёмные обои с цветами", rooms: R3_DRY, file: 'tex-wallpaper-dark-flowers.jpg', kind: 'xy', f: 0.45, sz: 130 }
             ],
             ceil: [
-                { id: 'c-paint', v: 'paint', uz: "Shpatlevka + bo'yoq", ru: "Шпатлёвка + покраска", rooms: R3_ALL, proc: r3Solid('hsl(40,20%,97%)', 400), sz: 150 },
-                { id: 'c-gloss', v: 'stretch', uz: "Tortma shift (yaltiroq)", ru: "Натяжной (глянец)", rooms: R3_ALL, proc: r3Gloss, sz: 300 },
-                { id: 'c-drywall', v: 'drywall', uz: "Gipsokarton shift", ru: "Гипсокартонный потолок", rooms: R3_DRY, proc: r3Solid('hsl(40,14%,94%)', 300), sz: 150 },
                 { id: 'c-slat', v: 'slat', uz: "Reykali shift", ru: "Реечный потолок", rooms: R3_KBW, proc: r3Slats, sz: 128 },
                 { id: 'c-emb', v: 'stretch', uz: "Tortma shift, mat (naqshli)", ru: "Натяжной матовый с тиснением", rooms: R3_ALL, file: 'tex-ceiling-emboss.jpg', kind: 'xy', f: 0.45, sz: 90 },
                 { id: 'c-fabric', v: 'stretch', uz: "Tortma shift (chiziqli mato)", ru: "Белый тканевый с полосками", rooms: R3_ALL, file: 'tex-ceiling-fabric-stripes.jpg', kind: 'y', f: 0.30, sz: 90 },
                 { id: 'c-pvx-silver', v: 'pvx', uz: "PVX panel, yaltiroq (kumush chiziqli)", ru: "ПВХ-панель глянцевая с серебристыми линиями", rooms: R3_KBW, file: 'tex-ceiling-pvx-silver.jpg', kind: 'y', f: 0.30, sz: 100 },
                 { id: 'c-pvx-wood', v: 'pvx', uz: "PVX panel, oq (yog'och teksturali)", ru: "ПВХ-панель белая под дерево", rooms: R3_KBW, file: 'tex-ceiling-pvx-wood.jpg', kind: 'y', f: 0.30, sz: 100 },
-                { id: 'c-slat-gray', v: 'slat', uz: "Reykali shift (kulrang)", ru: "Реечный серый с чёрным швом", rooms: R3_KBW, file: 'tex-ceiling-slat-gray.jpg', kind: 'y', f: 0.30, sz: 70 }
+                { id: 'c-slat-gray', v: 'slat', uz: "Reykali shift (kulrang)", ru: "Реечный серый с чёрным швом", rooms: R3_KBW, file: 'tex-ceiling-slat-gray.jpg', kind: 'y', f: 0.30, sz: 70 },
+                { id: 'c-oval', v: 'drywall', uz: "Oval shaklli shift", ru: "Овальный потолок с подсветкой", rooms: R3_DRY, file: 'tex-ceiling-oval.png', kind: 'xy', f: 0.3, sz: 150 },
+                { id: 'c-rect', v: 'drywall', uz: "To'rtburchak shift", ru: "Прямоугольный потолок", rooms: R3_DRY, file: 'tex-ceiling-rect.png', kind: 'xy', f: 0.3, sz: 150 }
             ]
         };
-        const R3_DEFAULT = { floor: { dry: 'f-laminate', wet: 'f-tile' }, wall: { dry: 'w-beige', wet: 'w-tile' }, ceil: { dry: 'c-gloss', wet: 'c-gloss' } };
+        const R3_DEFAULT = { floor: { dry: 'f-laminate', wet: 'f-tile' }, wall: { dry: 'w-floral', wet: 'w-tile' }, ceil: { dry: 'c-emb', wet: 'c-pvx-silver' } };
         const R3_SHADE = { back: 0.10, left: 0.30, right: 0.20, floor: 0.12, ceil: 0 };
         const R3_FACES = { floor: ['r3-floor'], wall: ['r3-back', 'r3-left', 'r3-right'], ceil: ['r3-ceil'] };
         const R3_TYPE_NAMES = null;
@@ -1063,7 +1053,6 @@
             });
         }
  
- 
         function goToPage(pageNumber) {
             if (pageNumber === 1 && typeof r3Layout === 'function') setTimeout(r3Layout, 0);
             if (pageNumber === 1) {
@@ -1195,9 +1184,7 @@
             ]
         };
  
-        // «Не знаю» берёт вариант с наибольшим расходом материалов, чтобы смета не получилась заниженной
         const WZ_DEFAULT = { floorState: 'raw', wallState: 'raw', ceilState: 'raw' };
- 
         const WZ = { steps: [], stepIndex: {}, idx: 0, history: [], answers: {}, unknowns: {}, copy: {}, sel: null, fromSummary: false };
  
         function wzProfile(type) {
@@ -1225,7 +1212,6 @@
             WZ.steps = []; WZ.stepIndex = {}; WZ.idx = 0; WZ.history = [];
             WZ.answers = {}; WZ.unknowns = {}; WZ.copy = {}; WZ.sel = null; WZ.fromSummary = false;
  
-            // скрытые поля с теми же id, которые читает расчёт сметы
             let hidden = '';
             roomsData.forEach(room => {
                 WZ.answers[room.id] = {};
@@ -1597,7 +1583,7 @@
                 let singleRoomTG = `🏠 *Smeta: ${room.typeName} (#${room.displayIndex})*\n`;
  
                 items.forEach(it => {
-                    const key = `${it.name}||${it.unit}`;
+                    const key = `${it.name}\vert{}\vert{}${it.unit}`;
                     if (!overallTotals[key]) {
                         overallTotals[key] = { name: it.name, qty: 0, unit: it.unit };
                     }
@@ -1606,10 +1592,10 @@
                     itemsHTML += `
                         <div class="estimate-item">
                             <span>• ${it.name}</span>
-                            <b style="color: var(--accent-cyan);">${it.qty} ${it.unit}</b>
+                            <b style="color: var(--accent-cyan);">${it.qty}${it.unit}</b>
                         </div>
                     `;
-                    singleRoomTG += `• ${it.name}: ${it.qty} ${it.unit}\n`;
+                    singleRoomTG += `• ${it.name}: ${it.qty}${it.unit}\n`;
                 });
  
                 const unkKeys = (WZ.unknowns && WZ.unknowns[room.id]) ? WZ.unknowns[room.id] : [];
@@ -1639,10 +1625,10 @@
                 let ansHTML = '';
                 if (ansRows.length) {
                     ansHTML = `<div class="wz-ans"><div class="wz-ans-title">📋 Mijoz javoblari / Ответы клиента</div>` +
-                        ansRows.map(r => `<div class="wz-ans-row"><b>${r.label.uz} / ${r.label.ru}</b><br><span>${r.sUz} / ${r.sRu}</span><br><span>→ ${r.fUz} / ${r.fRu}</span></div>`).join('') +
+                        ansRows.map(r => `<div class="wz-ans-row"><b>${r.label.uz} /${r.label.ru}</b><br><span>${r.sUz} /${r.sRu}</span><br><span>→ ${r.fUz} /${r.fRu}</span></div>`).join('') +
                         `<div class="wz-ans-note">${WZ_BASIS_UZ}<br>${WZ_BASIS_RU}</div></div>`;
                     singleRoomTG += `📋 Mijoz javoblari / Ответы клиента:\n` +
-                        ansRows.map(r => `• ${r.label.uz}: ${r.sUz} → ${r.fUz}`).join('\n') + `\n`;
+                        ansRows.map(r => `• ${r.label.uz}: ${r.sUz} →${r.fUz}`).join('\n') + `\n`;
                 }
  
                 fullTelegramText += `📍 *${room.typeName} (#${room.displayIndex})*\n` +
@@ -1656,8 +1642,7 @@
                         <div style="margin-bottom: 15px;">
                             ${itemsHTML}
                         </div>
-                        ${ansHTML}
-                        ${unkHTML}
+                        ${ansHTML}${unkHTML}
                         <button class="btn btn-secondary" style="font-size: 12px; padding: 10px 12px;" onclick="openOrderModal('single_estimate', '${encodeURIComponent(singleRoomTG).replace(/'/g, '%27')}')">
                             ✈ Smetani Telegramga yuborish
                         </button>
@@ -1679,10 +1664,10 @@
                 overallHTML += `
                     <div class="estimate-item">
                         <span style="font-weight: 600;">• ${item.name}</span>
-                        <b style="color: var(--accent-gold); font-size: 14px;">${displayQty} ${item.unit}</b>
+                        <b style="color: var(--accent-gold); font-size: 14px;">${displayQty}${item.unit}</b>
                     </div>
                 `;
-                summaryTG += `• ${item.name}: ${displayQty} ${item.unit}\n`;
+                summaryTG += `• ${item.name}: ${displayQty}${item.unit}\n`;
             }
  
             fullTelegramText = summaryTG + `\n------------------------\n\n` + fullTelegramText;
@@ -1693,7 +1678,7 @@
                         🏆 BUTUN KVARTIRA BO'YICHA UMUMIY HISOB-KITOB / ОБЩИЙ ИТОГОВЫЙ РАСЧЕТ ПО ВСЕЙ КВАРТИРЕ
                     </div>
                     <div style="font-size: 12px; color: var(--text-muted); text-align: center; margin-bottom: 15px;">
-                        🏠 Xonalar soni: <b>${roomsData.length}</b> | 📐 Umumiy pol maydoni: <b>${totalFloorAreaAll.toFixed(1)} m²</b> | 🧱 Devorlar: <b>${totalWallAreaAll.toFixed(1)} m²</b>
+                        🏠 Xonalar soni: <b>${roomsData.length}</b> | 📐 Umumiy pol maydoni: <b>${totalFloorAreaAll.toFixed(1)} m²</b> \vert{} 🧱 Devorlar: <b>${totalWallAreaAll.toFixed(1)} m²</b>
                     </div>
                     <div style="margin-bottom: 20px;">
                         ${overallHTML}
@@ -1707,7 +1692,6 @@
             resContainer.insertAdjacentHTML('afterbegin', totalSummaryCardHTML);
             resContainer.scrollIntoView({ behavior: 'smooth' });
         }
- 
  
         /* ================= МЕБЕЛЬНЫЙ МОДАЛ ================= */
         function openFurnitureModal() {
@@ -1862,8 +1846,7 @@
                     </div>
                     <div class="slider-counter" id="slideCounter">1 / ${currentItemImages.length}</div>
  
-                    <div style="font-size: 16px; font-weight: bold; color: var(--accent-cyan);">${item.name}</div>
-                    ${item.material ? `<div style="font-size: 11px; color: var(--accent-gold); margin-top: 2px;"><b>Material:</b> ${item.material}</div>` : ''}
+                    <div style="font-size: 16px; font-weight: bold; color: var(--accent-cyan);">${item.name}</div>${item.material ? `<div style="font-size: 11px; color: var(--accent-gold); margin-top: 2px;"><b>Material:</b> ${item.material}</div>` : ''}
                     
                     <div style="font-size: 12px; color: var(--text-muted); background: var(--input-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--input-border); margin-top: 10px;">
                         <b>Tavsif / Описание:</b><br>${item.desc}
@@ -1952,7 +1935,7 @@
  
             const imgEl = document.getElementById('gallerySliderImg');
             imgEl.src = currentItemImages[currentSlideIndex];
-            document.getElementById('slideCounter').innerText = `${currentSlideIndex + 1} / ${currentItemImages.length}`;
+            document.getElementById('slideCounter').innerText = `${currentSlideIndex + 1} /${currentItemImages.length}`;
         }
  
  
@@ -1996,7 +1979,6 @@
             document.getElementById('custNote').value = '';
             elementsCustomFields.innerHTML = '';
  
-            // значения по умолчанию (для заявки бригады они меняются ниже)
             document.getElementById('custNoteLabel').innerText = "Izoh / Комментарий:";
             document.getElementById('custNote').placeholder = "Aloxida istaklar / Особые пожелания";
             document.getElementById('crewNotice').style.display = 'none';
@@ -2047,7 +2029,7 @@
                 modalTitle.innerText = isPlumbing ? "🚰 Santexnika ishlari / Сантехнические работы" : "💡 Elektr ishlari / Электрические работы";
                 document.getElementById('custNoteLabel').innerText = "Qanday ish kerak? / Какая работа нужна?";
                 document.getElementById('custNote').placeholder = isPlumbing
-                    ? "Masalan: kran almashtirish / Например: заменить кран"
+                    ? "Masalan: kran almashtirish / Например: заделать кран"
                     : "Masalan: rozetka o'rnatish / Например: установить розетки";
                 document.getElementById('crewNotice').style.display = 'block';
                 document.getElementById('confirmOrderBtn').innerText = "📞 Brigadani chaqirish / Вызвать бригаду";
@@ -2067,9 +2049,7 @@
  
             modal.style.display = 'flex';
         }
- 
-        // Экранируем спецсимволы Markdown в тексте клиента, чтобы Telegram не отклонил сообщение
-        // Telegram принимает до 4096 символов в сообщении: длинную смету режем по строкам
+
         function tgSplit(text, max) {
             max = max || 3800;
             if (text.length <= max) return [text];
@@ -2245,4 +2225,3 @@
     </script>
 </body>
 </html>
- 
