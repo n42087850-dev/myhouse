@@ -782,17 +782,28 @@
             });
         }
         function r3Paint() {
-            if (R3.active === null) return;
-            ['floor', 'wall', 'ceil'].forEach(sf => {
-                const o = r3Chosen(R3.active, sf); if (!o || !o.img) return;
-                R3_FACES[sf].forEach(fid => {
-                    const el = document.getElementById(fid); if (!el) return;
-                    const sh = R3_SHADE[fid.replace('r3-', '')] || 0;
-                    el.style.backgroundImage = `linear-gradient(rgba(0,0,0,${sh}),rgba(0,0,0,${sh})),url(${o.img})`;
-                    el.style.backgroundSize = `auto,${o.sz}px ${o.sz2 || o.sz}px`;
-                });
-            });
-        }
+    if (R3.active === null) return;
+    ['floor', 'wall', 'ceil'].forEach(sf => {
+        const o = r3Chosen(R3.active, sf); if (!o || !o.img) return;
+        R3_FACES[sf].forEach(fid => {
+            const el = document.getElementById(fid); if (!el) return;
+            const sh = R3_SHADE[fid.replace('r3-', '')] || 0;
+            
+            el.style.backgroundImage = `linear-gradient(rgba(0,0,0,${sh}),rgba(0,0,0,${sh})),url(${o.img})`;
+            
+            // Если это один из наших двух проблемных потолков:
+            if (o.kind === 'cover') {
+                el.style.backgroundRepeat = 'no-repeat';
+                el.style.backgroundPosition = 'center';
+                el.style.backgroundSize = '100% 100%';
+            } else {
+                // Все остальные полы, стены и потолки работают КАК РАНЬШЕ (повторяются):
+                el.style.backgroundRepeat = 'repeat';
+                el.style.backgroundSize = `auto,${o.sz}px ${o.sz2 || o.sz}px`;
+            }
+        });
+    });
+}
  
         // --- сцена: размеры из карточки комнаты, масштаб от размера экрана ---
         const R3_PPM = 100; // пикселей на метр, масштаб текстур
