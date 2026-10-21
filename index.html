@@ -651,8 +651,8 @@
                 { id: 'c-pvx-silver', v: 'pvx', uz: "PVX panel, yaltiroq (kumush chiziqli)", ru: "ПВХ-панель глянцевая с серебристыми линиями", rooms: R3_KBW, file: 'tex-ceiling-pvx-silver.jpg', kind: 'y', f: 0.30, sz: 100 },
                 { id: 'c-pvx-wood', v: 'pvx', uz: "PVX panel, oq (yog'och teksturali)", ru: "ПВХ-панель белая под дерево", rooms: R3_KBW, file: 'tex-ceiling-pvx-wood.jpg', kind: 'y', f: 0.30, sz: 100 },
                 { id: 'c-slat-gray', v: 'slat', uz: "Reykali shift (kulrang)", ru: "Реечный серый с чёрным швом", rooms: R3_KBW, file: 'tex-ceiling-slat-gray.jpg', kind: 'y', f: 0.30, sz: 70 },
-                { id: 'c-oval', v: 'drywall', uz: "Oval shaklli shift", ru: "Овальный потолок с подсветкой", rooms: R3_DRY, file: 'tex-ceiling-oval.jpg', kind: 'xy', f: 0.3, sz: 150 },
-                { id: 'c-rect', v: 'drywall', uz: "To'rtburchak shift", ru: "Прямоугольный потолок", rooms: R3_DRY, file: 'tex-ceiling-rect.jpg', kind: 'xy', f: 0.3, sz: 150 }
+                { id: 'c-oval', v: 'drywall', uz: "Oval shaklli shift", ru: "Овальный потолок с подсветкой", rooms: R3_DRY, file: 'tex-ceiling-oval.jpg', kind: 'cover' },
+                { id: 'c-rect', v: 'drywall', uz: "To'rtburchak shift", ru: "Прямоугольный потолок", rooms: R3_DRY, file: 'tex-ceiling-rect.jpg', kind: 'cover' }
             ]
         };
         const R3_DEFAULT = { floor: { dry: 'f-laminate', wet: 'f-tile' }, wall: { dry: 'w-floral', wet: 'w-tile' }, ceil: { dry: 'c-emb', wet: 'c-pvx-silver' } };
@@ -667,6 +667,9 @@
         function r3PhotoTex(im, o) {
             const w = im.naturalWidth, h = im.naturalHeight;
             const mk = (cw, ch) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
+            if (o.kind === 'cover') {
+                return im.src;
+            }
             if (o.kind === 'marble') {
                 const tw = 256, th = 512, c = mk(tw * 2, th * 2), g = c.getContext('2d');
                 const hw = w / 2, hh = h / 2;
@@ -782,28 +785,26 @@
             });
         }
         function r3Paint() {
-    if (R3.active === null) return;
-    ['floor', 'wall', 'ceil'].forEach(sf => {
-        const o = r3Chosen(R3.active, sf); if (!o || !o.img) return;
-        R3_FACES[sf].forEach(fid => {
-            const el = document.getElementById(fid); if (!el) return;
-            const sh = R3_SHADE[fid.replace('r3-', '')] || 0;
-            
-            el.style.backgroundImage = `linear-gradient(rgba(0,0,0,${sh}),rgba(0,0,0,${sh})),url(${o.img})`;
-            
-            // Если это один из наших двух проблемных потолков:
-            if (o.kind === 'cover') {
-                el.style.backgroundRepeat = 'no-repeat';
-                el.style.backgroundPosition = 'center';
-                el.style.backgroundSize = '100% 100%';
-            } else {
-                // Все остальные полы, стены и потолки работают КАК РАНЬШЕ (повторяются):
-                el.style.backgroundRepeat = 'repeat';
-                el.style.backgroundSize = `auto,${o.sz}px ${o.sz2 || o.sz}px`;
-            }
-        });
-    });
-}
+            if (R3.active === null) return;
+            ['floor', 'wall', 'ceil'].forEach(sf => {
+                const o = r3Chosen(R3.active, sf); if (!o || !o.img) return;
+                R3_FACES[sf].forEach(fid => {
+                    const el = document.getElementById(fid); if (!el) return;
+                    const sh = R3_SHADE[fid.replace('r3-', '')] || 0;
+                    
+                    el.style.backgroundImage = `linear-gradient(rgba(0,0,0,${sh}),rgba(0,0,0,${sh})),url(${o.img})`;
+                    
+                    if (o.kind === 'cover') {
+                        el.style.backgroundRepeat = 'no-repeat';
+                        el.style.backgroundPosition = 'center';
+                        el.style.backgroundSize = '100% 100%';
+                    } else {
+                        el.style.backgroundRepeat = 'repeat';
+                        el.style.backgroundSize = `auto,${o.sz}px ${o.sz2 || o.sz}px`;
+                    }
+                });
+            });
+        }
  
         // --- сцена: размеры из карточки комнаты, масштаб от размера экрана ---
         const R3_PPM = 100; // пикселей на метр, масштаб текстур
@@ -1551,7 +1552,7 @@
                 } else if (wallState === 'plastered') {
                     items.push({ name: "Tekislash uchun finish shpatlevka / Финишная шпатлевка для выравнивания", qty: Math.ceil(room.wallArea / 15), unit: "qop / меш." });
                 }
- 
+
                 if (wallFinish === 'wallpaper') {
                     items.push({ name: "Oboy (rulon 1.06 m x 10 m) / Обои (рулон 1.06м x 10м)", qty: Math.ceil(room.wallArea / 10), unit: "rulon / рул." });
                     items.push({ name: "Oboy yelimi / Клей для обоев", qty: Math.ceil(room.wallArea / 45), unit: "pachka / пач." });
@@ -1562,15 +1563,15 @@
                     items.push({ name: "Dekorativ shtukaturka / panellar / Декоративная штукатурка / Панели", qty: parseFloat(room.wallArea.toFixed(1)), unit: "m²" });
                     items.push({ name: "Himoya laki / mum / Защитный лак / Воск", qty: parseFloat((room.wallArea * 0.1).toFixed(1)), unit: "l / л" });
                 } else if (wallFinish === 'tile' || wallFinish === 'keramogranit') {
-                    items.push({ name: `Devor plitkasi (${wallFinish === 'keramogranit' ? 'Keramogranit' : 'Kafel'}) + 10% / Плитка стен (${wallFinish === 'keramogranit' ? 'Керамогранит' : 'Кафель'}) + 10%`, qty: parseFloat((room.wallArea * 1.1).toFixed(1)), unit: "m²" });
+                    items.push({ name: `Devor plitkasi (${wallFinish === 'keramogranit' ? 'Keramogranit' : 'Kafel'}) + 10\% / Плитка стен (${wallFinish === 'keramogranit' ? 'Керамогранит' : 'Кафель'}) + 10%`, qty: parseFloat((room.wallArea * 1.1).toFixed(1)), unit: "m²" });
                     items.push({ name: "Plitka yelimi (25 kg) / Клей плиточный (25кг)", qty: Math.ceil(room.wallArea / 4), unit: "qop / меш." });
                     items.push({ name: "Choklar uchun zatirka / Затирка для швов", qty: Math.ceil(room.wallArea / 10), unit: "kg" });
                 }
- 
+
                 if (ceilingState === 'old') {
                     items.push({ name: "Shiftni tozalash / sirtni tayyorlash / Зачистка / Подготовка поверхности потолка", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
                 }
- 
+
                 if (ceilingFinish === 'stretch') {
                     items.push({ name: "Tortma shift (PVX / mato) / Натяжной потолок (ПВХ/Ткань)", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
                     items.push({ name: "Shift uchun profil va bagget / Профиль и багет для потолка", qty: parseFloat((2 * (room.length + room.width)).toFixed(1)), unit: "p.m. / п.м." });
@@ -1587,19 +1588,19 @@
                 } else if (ceilingFinish === 'slat') {
                     items.push({ name: "Reykali metall shift / Реечный металлический потолок", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
                 }
- 
+
                 items.push({ name: "Chuqur kirib boruvchi gruntovka / Грунтовка глубокого проникновения", qty: parseFloat(((room.wallArea + (room.floorArea * 2)) * 0.15).toFixed(1)), unit: "l / л" });
- 
+
                 let itemsHTML = '';
                 let singleRoomTG = `🏠 *Smeta: ${room.typeName} (#${room.displayIndex})*\n`;
- 
+
                 items.forEach(it => {
-                    const key = `${it.name}\vert{}\vert{}${it.unit}`;
+                    const key = `${it.name}\vert{}${it.unit}`;
                     if (!overallTotals[key]) {
                         overallTotals[key] = { name: it.name, qty: 0, unit: it.unit };
                     }
                     overallTotals[key].qty += it.qty;
- 
+
                     itemsHTML += `
                         <div class="estimate-item">
                             <span>• ${it.name}</span>
@@ -1608,7 +1609,7 @@
                     `;
                     singleRoomTG += `• ${it.name}: ${it.qty}${it.unit}\n`;
                 });
- 
+
                 const unkKeys = (WZ.unknowns && WZ.unknowns[room.id]) ? WZ.unknowns[room.id] : [];
                 let unkHTML = '';
                 if (unkKeys.length) {
@@ -1616,7 +1617,7 @@
                     unkHTML = `<div class="wz-warn">⚠️ «Bilmayman» / «Не знаю»: ${unkNames}.<br>Standart variant olindi, zamerchi aniqlaydi. / Взят стандартный вариант, уточнит замерщик.</div>`;
                     singleRoomTG += `⚠️ Bilmayman / Не знаю: ${unkNames}\n`;
                 }
- 
+
                 const ansObj = (WZ.answers && WZ.answers[room.id]) ? WZ.answers[room.id] : {};
                 const ansPair = (stateKey, finishKey, label) => {
                     const s = ansObj[stateKey], f = ansObj[finishKey];
@@ -1641,10 +1642,10 @@
                     singleRoomTG += `📋 Mijoz javoblari / Ответы клиента:\n` +
                         ansRows.map(r => `• ${r.label.uz}: ${r.sUz} →${r.fUz}`).join('\n') + `\n`;
                 }
- 
+
                 fullTelegramText += `📍 *${room.typeName} (#${room.displayIndex})*\n` +
                                    `📏 Maydoni: ${room.floorArea.toFixed(1)} m² | Devorlar: ${room.wallArea.toFixed(1)} m²\n${singleRoomTG.replace(/^🏠 .*\n/, '')}\n`;
- 
+
                 const roomEstimateHTML = `
                     <div class="room-card">
                         <div class="room-title" style="color: var(--accent-green); font-size: 16px;">
@@ -1661,13 +1662,13 @@
                 `;
                 resContainer.insertAdjacentHTML('beforeend', roomEstimateHTML);
             });
- 
+
             let overallHTML = '';
             let summaryTG = `📊 *UMUMIY MATERIAL SHAKLI (ИТОГОВЫЙ РАСЧЕТ НА ВЕСЬ ОБЪЕКТ):*\n`;
             summaryTG += `🏠 Xonalar soni: ${roomsData.length} ta\n`;
             summaryTG += `📐 Umumiy pol maydoni: ${totalFloorAreaAll.toFixed(1)} m²\n`;
             summaryTG += `🧱 Umumiy devor maydoni: ${totalWallAreaAll.toFixed(1)} m²\n\n`;
- 
+
             for (let k in overallTotals) {
                 const item = overallTotals[k];
                 const displayQty = (typeof item.qty === 'number' && !Number.isInteger(item.qty)) ? item.qty.toFixed(1) : item.qty;
@@ -1680,9 +1681,9 @@
                 `;
                 summaryTG += `• ${item.name}: ${displayQty}${item.unit}\n`;
             }
- 
+
             fullTelegramText = summaryTG + `\n------------------------\n\n` + fullTelegramText;
- 
+
             const totalSummaryCardHTML = `
                 <div class="room-card" style="border: 2px solid var(--accent-gold); background: #182243;">
                     <div class="room-title" style="color: var(--accent-gold); font-size: 18px; text-align: center; margin-bottom: 10px;">
@@ -1699,11 +1700,11 @@
                     </button>
                 </div>
             `;
- 
+
             resContainer.insertAdjacentHTML('afterbegin', totalSummaryCardHTML);
             resContainer.scrollIntoView({ behavior: 'smooth' });
         }
- 
+
         /* ================= МЕБЕЛЬНЫЙ МОДАЛ ================= */
         function openFurnitureModal() {
             const modalContent = document.querySelector('#furnitureModal .modal-content');
@@ -1711,18 +1712,18 @@
             document.getElementById('furnitureModal').style.display = 'flex';
             if (modalContent) modalContent.scrollTop = 0;
         }
- 
+
         function closeFurnitureModal() {
             document.getElementById('furnitureModal').style.display = 'none';
         }
- 
+
         function renderHuvaydoCatalog() {
             document.getElementById('modalCatalogTitle').innerText = "HUVAYDO MEBEL KATALOGI";
             const listContainer = document.getElementById('huvaydoCatalogList');
             if (!listContainer) return;
             
             listContainer.innerHTML = '';
- 
+
             huvaydoCatalog.forEach(cat => {
                 let categoryHTML = `<div class="huvaydo-category-title">${cat.category}</div><div>`;
                 cat.items.forEach(item => {
@@ -1740,7 +1741,7 @@
                 categoryHTML += `</div>`;
                 listContainer.innerHTML += categoryHTML;
             });
- 
+
             const modalContent = document.querySelector('#furnitureModal .modal-content');
             if (modalContent) {
                 setTimeout(() => {
@@ -1748,14 +1749,14 @@
                 }, 0);
             }
         }
- 
+
         function openItemDetail(itemId) {
             const listContainer = document.getElementById('huvaydoCatalogList');
             const modalContent = document.querySelector('#furnitureModal .modal-content');
             if (modalContent) {
                 catalogScrollPosition = modalContent.scrollTop;
             }
- 
+
             let item = null;
             let catType = "";
             huvaydoCatalog.forEach(cat => {
@@ -1767,13 +1768,13 @@
                 });
             });
             if(!item) return;
- 
+
             activeItemData = item;
             currentItemImages = item.images;
             currentSlideIndex = 0;
- 
+
             document.getElementById('modalCatalogTitle').innerText = item.name;
- 
+
             let elementsHTML = '';
             if (item.elements && item.elements.length > 0) {
                 elementsHTML += `
@@ -1792,13 +1793,13 @@
                         </div>
                     `;
                 });
- 
+
                 elementsHTML += `
                     <div class="spatial-box" id="spatialBox">
                         <div class="spatial-title">
                             📐 Xona o'lchamlari tahlili (Sig'adimi? / Влезет или нет)
                         </div>
- 
+
                         <div class="room-inputs-box">
                             <div style="font-size: 11px; font-weight: bold; color: var(--text-muted); margin-bottom: 6px;">
                                 🏠 Xonangiz o'lchamlari (m):
@@ -1818,7 +1819,7 @@
                                 </div>
                             </div>
                         </div>
- 
+
                         <div class="progress-bar-bg">
                             <div class="progress-bar-fill" id="spatialProgress"></div>
                         </div>
@@ -1831,7 +1832,7 @@
                     </div>
                 `;
             }
- 
+
             let actionButtons = '';
             if (catType === 'kitchen' || catType === 'hallway') {
                 actionButtons = `
@@ -1845,7 +1846,7 @@
                     <button class="btn btn-secondary" onclick="renderHuvaydoCatalog()">❮ Orqaga / Назад</button>
                 `;
             }
- 
+
             listContainer.innerHTML = `
                 <div>
                     <div class="slider-box">
@@ -1856,35 +1857,35 @@
                         ` : ''}
                     </div>
                     <div class="slider-counter" id="slideCounter">1 / ${currentItemImages.length}</div>
- 
+
                     <div style="font-size: 16px; font-weight: bold; color: var(--accent-cyan);">${item.name}</div>${item.material ? `<div style="font-size: 11px; color: var(--accent-gold); margin-top: 2px;"><b>Material:</b> ${item.material}</div>` : ''}
                     
                     <div style="font-size: 12px; color: var(--text-muted); background: var(--input-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--input-border); margin-top: 10px;">
                         <b>Tavsif / Описание:</b><br>${item.desc}
                     </div>
- 
+
                     ${elementsHTML}
- 
+
                     <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
                         ${actionButtons}
                     </div>
                 </div>
             `;
- 
+
             if (modalContent) modalContent.scrollTop = 0;
         }
- 
+
         function recalculateSpatialArea() {
             const roomLInput = document.getElementById('modalRoomL')?.value;
             const roomWInput = document.getElementById('modalRoomW')?.value;
             
             const roomL = parseFloat(roomLInput);
             const roomW = parseFloat(roomWInput);
- 
+
             const progressFill = document.getElementById('spatialProgress');
             const statusUz = document.getElementById('spatialStatusTextUz');
             const statusRu = document.getElementById('spatialStatusTextRu');
- 
+
             if (!roomL || !roomW || roomL <= 0 || roomW <= 0) {
                 if (statusUz) {
                     statusUz.style.color = 'var(--accent-gold)';
@@ -1897,109 +1898,109 @@
                 if (progressFill) progressFill.style.width = '0%';
                 return 0;
             }
- 
+
             const roomArea = roomL * roomW;
             const checkboxes = document.querySelectorAll('.spatial-item-check');
             let selectedFurnitureArea = 0;
- 
+
             checkboxes.forEach(cb => {
                 if (cb.checked) {
                     selectedFurnitureArea += parseFloat(cb.getAttribute('data-area')) || 0;
                 }
             });
- 
+
             const percent = roomArea > 0 ? (selectedFurnitureArea / roomArea) * 100 : 0;
- 
+
             if (progressFill && statusUz && statusRu) {
                 progressFill.style.width = `${Math.min(percent, 100).toFixed(1)}%`;
- 
+
                 if (percent < 50) {
                     progressFill.style.backgroundColor = 'var(--accent-green)';
                     statusUz.style.color = 'var(--accent-green)';
                     statusRu.style.color = 'var(--accent-green)';
- 
+
                     statusUz.innerHTML = `✅ Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} m² / ${roomArea.toFixed(1)} m²). Keng va erkin!`;
                     statusRu.innerHTML = `✅ Мебель займет ${percent.toFixed(1)}% комнаты (${selectedFurnitureArea.toFixed(2)} м² из ${roomArea.toFixed(1)} м²). Просторно и свободно!`;
                 } else if (percent <= 65) {
                     progressFill.style.backgroundColor = 'var(--accent-gold)';
                     statusUz.style.color = 'var(--accent-gold)';
                     statusRu.style.color = 'var(--accent-gold)';
- 
+
                     statusUz.innerHTML = `🟡 Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} m² / ${roomArea.toFixed(1)} m²). Standart shinamlik.`;
                     statusRu.innerHTML = `🟡 Мебель займет ${percent.toFixed(1)}% комнаты (${selectedFurnitureArea.toFixed(2)} м² из ${roomArea.toFixed(1)} м²). Оптимальный утиль.`;
                 } else {
                     progressFill.style.backgroundColor = '#EF4444';
                     statusUz.style.color = '#EF4444';
                     statusRu.style.color = '#EF4444';
- 
+
                     statusUz.innerHTML = `🛑 Diqqat! Mebel xonaning ${percent.toFixed(1)}% qismini egallaydi (${selectedFurnitureArea.toFixed(2)} m² / ${roomArea.toFixed(1)} m²). Juda tor bo'lishi mumkin!`;
                     statusRu.innerHTML = `🛑 Внимание! Мебель займет ${percent.toFixed(1)}% комнаты (${selectedFurnitureArea.toFixed(2)} м² из ${roomArea.toFixed(1)} м²). Может быть очень тесно!`;
                 }
             }
             return percent;
         }
- 
+
         function changeSlide(direction) {
             currentSlideIndex += direction;
             if (currentSlideIndex < 0) currentSlideIndex = currentItemImages.length - 1;
             if (currentSlideIndex >= currentItemImages.length) currentSlideIndex = 0;
- 
+
             const imgEl = document.getElementById('gallerySliderImg');
             imgEl.src = currentItemImages[currentSlideIndex];
             document.getElementById('slideCounter').innerText = `${currentSlideIndex + 1} /${currentItemImages.length}`;
         }
- 
- 
+
+
         /* ================= ЛОГИКА МОДАЛЬНОГО ОКНА ДЛЯ ВВОДА ДАННЫХ ================= */
         
         document.getElementById('userPhoneInput').addEventListener('input', (e) => {
             let matrix = e.target.value.replace(/\D/g, '');
- 
+
             if (!matrix.startsWith('998')) {
                 matrix = '998' + matrix;
             }
- 
+
             matrix = matrix.substring(0, 12);
- 
+
             let formatted = '+998';
             if (matrix.length > 3) formatted += ' ' + matrix.substring(3, 5);
             if (matrix.length > 5) formatted += ' ' + matrix.substring(5, 8);
             if (matrix.length > 8) formatted += ' ' + matrix.substring(8, 10);
             if (matrix.length > 10) formatted += ' ' + matrix.substring(10, 12);
- 
+
             e.target.value = formatted;
         });
- 
+
         document.getElementById('userPhoneInput').addEventListener('keydown', (e) => {
             if (e.key === 'Backspace' && e.target.value.length <= 5) {
                 e.preventDefault();
             }
         });
- 
+
         function openOrderModal(type, param1 = '', param2 = '') {
             currentOrderAction = { type, param1, param2 };
- 
+
             const modal = document.getElementById('orderModal');
             const customBox = document.getElementById('customDimensionsBox');
             const nameGroup = document.getElementById('nameGroup');
             const modalTitle = document.getElementById('orderModalTitle');
             const elementsCustomFields = document.getElementById('elementsCustomFields');
- 
+
             document.getElementById('userNameInput').value = '';
             document.getElementById('userPhoneInput').value = '+998 ';
             document.getElementById('custNote').value = '';
             elementsCustomFields.innerHTML = '';
- 
+
             document.getElementById('custNoteLabel').innerText = "Izoh / Комментарий:";
             document.getElementById('custNote').placeholder = "Aloxida istaklar / Особые пожелания";
             document.getElementById('crewNotice').style.display = 'none';
             document.getElementById('confirmOrderBtn').innerText = "Yuborish / Отправить";
- 
+
             if (type === 'custom_order') {
                 customBox.style.display = 'block';
                 nameGroup.style.display = 'block';
                 modalTitle.innerText = "📐 Individal buyurtma / Индивидуальный заказ";
- 
+
                 if (activeItemData && activeItemData.elements && activeItemData.elements.length > 0) {
                     activeItemData.elements.forEach((el, idx) => {
                         const phW = (el.ph && el.ph.w) ? el.ph.w : '';
@@ -2057,7 +2058,7 @@
                 nameGroup.style.display = 'block';
                 modalTitle.innerText = "✈ Ma'lumotlarni kiriting / Введите данные";
             }
- 
+
             modal.style.display = 'flex';
         }
 
@@ -2073,11 +2074,11 @@
             if (cur.trim()) out.push(cur);
             return out;
         }
- 
+
         function tgEsc(s) {
             return String(s).replace(/([_*`\[])/g, '\\$1');
         }
- 
+
         function crewBoxHTML() {
             return `
                 <div class="crew-box">
@@ -2089,26 +2090,26 @@
                     </div>
                 </div>`;
         }
- 
+
         function closeOrderModal() {
             document.getElementById('orderModal').style.display = 'none';
             currentOrderAction = null;
         }
- 
+
         async function submitOrderModal() {
             if (!currentOrderAction) return;
- 
+
             const phone = document.getElementById('userPhoneInput').value.trim();
             const name = document.getElementById('userNameInput').value.trim();
- 
+
             if (phone.replace(/\D/g, '').length < 12) {
                 alert("Iltimos, telefon raqamingizni to'liq kiriting!\nПожалуйста, введите полный номер телефона!");
                 return;
             }
- 
+
             const { type, param1, param2 } = currentOrderAction;
             let textMessage = "";
- 
+
             if (type === 'single_estimate') {
                 const decodedText = decodeURIComponent(param1);
                 textMessage = `${decodedText}\n📞 *Mijoz:* ${phone}`;
@@ -2122,11 +2123,11 @@
                 if (!name) { alert("Ismingizni kiriting / Введите имя!"); return; }
                 const furnitureName = param1;
                 const orderType = param2;
- 
+
                 const roomL = document.getElementById('modalRoomL')?.value || "Kiritilmagan";
                 const roomW = document.getElementById('modalRoomW')?.value || "Kiritilmagan";
                 const roomH = document.getElementById('modalRoomH')?.value || "Kiritilmagan";
- 
+
                 let includedItemsStr = "";
                 const checkboxes = document.querySelectorAll('.spatial-item-check');
                 if (checkboxes.length > 0) {
@@ -2138,7 +2139,7 @@
                 } else {
                     includedItemsStr = "\n• Standart to'plam";
                 }
- 
+
                 textMessage = `🚀 *YANGI BUYURTMA (MYHOUSE PRO)*\n\n` +
                               `📦 *Mahsulot:* ${furnitureName}\n` +
                               `📌 *Turi:* ${orderType}\n\n` +
@@ -2151,7 +2152,7 @@
                 if (!name) { alert("Ismingizni kiriting / Введите имя!"); return; }
                 const kind = (param1 === 'plumbing') ? "Santexnika / Сантехника" : "Elektr / Электрика";
                 const crewNote = tgEsc(document.getElementById('custNote').value.trim() || "—");
- 
+
                 textMessage = `🛠 *BRIGADA CHAQIRISH (MYHOUSE PRO)*\n\n` +
                               `🔧 *Ish turi:* ${kind}\n` +
                               `💬 *Izoh:* ${crewNote}\n\n` +
@@ -2161,7 +2162,7 @@
             else if (type === 'zamer_order') {
                 if (!name) { alert("Ismingizni kiriting / Введите имя!"); return; }
                 const furnitureName = param1;
- 
+
                 textMessage = `📐 *ZAMERGA ODAM CHAQIRISH (MYHOUSE PRO)*\n\n` +
                               `📦 *Kategoriya/Mahsulot:* ${furnitureName}\n\n` +
                               `👤 *Mijoz:* ${name}\n` +
@@ -2171,7 +2172,7 @@
                 if (!name) { alert("Ismingizni kiriting / Введите имя!"); return; }
                 const furnitureName = param1;
                 const note = document.getElementById('custNote').value || "Yo'q";
- 
+
                 let customDimsText = "";
                 const elemWidthInputs = document.querySelectorAll('.cust-elem-w');
                 
@@ -2180,10 +2181,10 @@
                     elemWidthInputs.forEach(inp => {
                         const elName = inp.getAttribute('data-name');
                         const wVal = inp.value || "—";
- 
+
                         const parentGroup = inp.closest('.form-group');
                         const hVal = parentGroup?.querySelector('.cust-elem-h')?.value || "—";
- 
+
                         customDimsText += `\n• ${elName}: ${wVal} × ${hVal} × standart / стандарт`;
                     });
                 } else {
@@ -2192,7 +2193,7 @@
                     const depth = document.getElementById('custDepth')?.value || "—";
                     customDimsText = `\n📐 *O'lchamlar (ШхВхГ):* ${width} x ${height} x ${depth} см`;
                 }
- 
+
                 textMessage = `🚀 *INDIVIDUAL BUYURTMA (MYHOUSE PRO)*\n\n` +
                               `📦 *Mahsulot:* ${furnitureName}` +
                               `${customDimsText}\n` +
@@ -2200,7 +2201,7 @@
                               `👤 *Mijoz:* ${name}\n` +
                               `📞 *Tel:* ${phone}`;
             }
- 
+
             try {
                 let allOk = true;
                 for (const chunk of tgSplit(textMessage)) {
@@ -2211,7 +2212,7 @@
                     });
                     if (!tgRes.ok) { allOk = false; break; }
                 }
- 
+
                 if (allOk) {
                     alert(type === 'crew'
                         ? "Ariza yuborildi, siz bilan bog'lanishadi! / Заявка отправлена, с вами свяжутся!"
@@ -2227,12 +2228,12 @@
                 alert("Internet ulanishini tekshiring / Проверьте интернет-соединение");
             }
         }
- 
+
         document.addEventListener("DOMContentLoaded", function() {
             r3Init();
             addRoom();
             document.getElementById('crew-slot-1').innerHTML = crewBoxHTML();
-     });
+        });
     </script>
 </body>
 </html>
