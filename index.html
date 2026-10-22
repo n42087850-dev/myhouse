@@ -404,15 +404,29 @@
         .wz-ans-row span { color: var(--text-muted); }
         .wz-ans-note { margin-top: 8px; font-size: 11.5px; color: var(--accent-gold); }
  
-        /* ===== 3D-КОМНАТА (THREE.JS) ===== */
+        /* ===== 3D-КОМНАТА ===== */
         .r3-wrap { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 14px; margin-bottom: 20px; }
         .r3-head { font-size: 15px; font-weight: 800; color: var(--accent-cyan); }
         .r3-sub { font-size: 12px; color: var(--text-muted); margin: 2px 0 10px; }
         .r3-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
         .r3-chip { border: 1.5px solid var(--card-border); background: var(--input-bg); color: var(--text-main); border-radius: 999px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
         .r3-chip[aria-pressed="true"] { border-color: var(--accent-gold); color: var(--accent-gold); font-weight: 700; }
-        .r3-stage { background: #070C1E; border-radius: 14px; overflow: hidden; position: relative; width: 100%; height: 400px; }
-        .r3-hint { position: absolute; left: 12px; bottom: 10px; font-size: 11px; color: var(--text-muted); pointer-events: none; z-index: 5; }
+        .r3-stage { background: #070C1E; border-radius: 14px; overflow: hidden; touch-action: none; position: relative; cursor: grab; }
+        .r3-scene { height: 400px; perspective: 620px; perspective-origin: 50% 50%; display: flex; align-items: center; justify-content: center; }
+        .r3-room { position: relative; width: 0; height: 0; transform-style: preserve-3d; }
+        .r3-face { position: absolute; left: 50%; top: 50%; background-repeat: repeat; backface-visibility: hidden; }
+        #r3-furniture {
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: bottom center;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .r3-fs { position: absolute; top: 10px; right: 10px; z-index: 5; border: 1.5px solid var(--card-border); background: var(--card-bg); color: var(--text-main); border-radius: 10px; padding: 8px 12px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .r3-stage.full { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1500; border-radius: 0; }
+        .r3-hint { position: absolute; left: 12px; bottom: 10px; font-size: 11px; color: var(--text-muted); pointer-events: none; }
+        .r3-zoom { margin: 10px 0 4px; font-size: 12px; color: var(--text-muted); }
+        .r3-zoom input { width: 100%; accent-color: var(--accent-cyan); margin-top: 4px; }
         .r3-tabs { display: flex; gap: 8px; margin: 12px 0 10px; }
         .r3-tab { flex: 1; border: 1.5px solid var(--card-border); background: var(--input-bg); color: var(--text-main); border-radius: 12px; padding: 10px 6px; font-size: 14px; font-weight: 700; cursor: pointer; line-height: 1.2; }
         .r3-tab small { display: block; font-weight: 400; color: var(--text-muted); font-size: 12px; }
@@ -453,15 +467,19 @@
                 <div class="r3-head">🏠 Pardozni sinab ko'ring / Примерьте отделку</div>
                 <div class="r3-sub" id="r3-sub"></div>
                 <div class="r3-chips" id="r3-chips"></div>
-                
                 <div class="r3-stage" id="r3-stage">
-                    <div id="threejs-container" style="width: 100%; height: 100%; position: relative;"></div>
-                    <div id="three-loading" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#fff; background:rgba(0,0,0,0.8); padding:10px 20px; border-radius:8px; font-size:13px; z-index:10;">
-                        3D-modellarni yuklash...
-                    </div>
+                    <div class="r3-scene" id="r3-scene"><div class="r3-room" id="r3-room">
+                        <div class="r3-face" id="r3-back"></div>
+                        <div class="r3-face" id="r3-left"></div>
+                        <div class="r3-face" id="r3-right"></div>
+                        <div class="r3-face" id="r3-floor"></div>
+                        <div class="r3-face" id="r3-ceil"></div>
+                        <div class="r3-face" id="r3-furniture" style="display: none;"></div>
+                    </div></div>
+                    <button class="r3-fs" id="r3-fs" type="button">⛶ Katta / Крупно</button>
                     <div class="r3-hint">Barmoq bilan aylantiring / Крутите пальцем</div>
                 </div>
-
+                <div class="r3-zoom"><label for="r3-z">Yaqinlashtirish / Приблизить</label><input id="r3-z" type="range" min="0.6" max="1.8" step="0.05" value="1"></div>
                 <div class="r3-tabs" id="r3-tabs">
                     <button class="r3-tab" type="button" data-s="floor" aria-selected="true">Pol<small>Пол</small></button>
                     <button class="r3-tab" type="button" data-s="wall" aria-selected="false">Devorlar<small>Стены</small></button>
@@ -551,11 +569,7 @@
         </div>
     </div>
  
-    <!-- ================= THREE.JS БИБЛИОТЕКИ ================= -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-
+ 
     <!-- ================= JS ЛОГИКА ================= -->
     <div class="wz-lb" id="wzLightbox" onclick="this.style.display='none'">
         <img id="wzLbImg" src="" alt="">
@@ -566,150 +580,160 @@
         const TG_CHAT_ID = "-1003917851495";
         const TG_CREW_CHAT_ID = TG_CHAT_ID;
  
-        /* ================= 3D-ДВИЖОК THREE.JS ================= */
-        let scene, camera, renderer, controls;
-        let floorMesh, wallMesh, currentFurnitureModel = null;
-        const textureLoader = new THREE.TextureLoader();
-        const gltfLoader = new THREE.GLTFLoader();
-
-        function initThreeJS() {
-            const container = document.getElementById('threejs-container');
-            if (!container || renderer) return;
-
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0B132B);
-
-            camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 1.8, 3.8);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            renderer.outputEncoding = THREE.sRGBEncoding;
-            container.appendChild(renderer.domElement);
-
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
-            scene.add(ambientLight);
-
-            const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
-            dirLight.position.set(3, 5, 3);
-            dirLight.castShadow = true;
-            scene.add(dirLight);
-
-            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
-            hemiLight.position.set(0, 20, 0);
-            scene.add(hemiLight);
-
-            // 3D Пол
-            const floorGeo = new THREE.PlaneGeometry(4, 4);
-            const floorMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.4 });
-            floorMesh = new THREE.Mesh(floorGeo, floorMat);
-            floorMesh.rotation.x = -Math.PI / 2;
-            floorMesh.receiveShadow = true;
-            scene.add(floorMesh);
-
-            // 3D Стена
-            const wallGeo = new THREE.PlaneGeometry(4, 2.8);
-            const wallMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.6 });
-            wallMesh = new THREE.Mesh(wallGeo, wallMat);
-            wallMesh.position.set(0, 1.4, -2);
-            wallMesh.receiveShadow = true;
-            scene.add(wallMesh);
-
-            function animate() {
-                requestAnimationFrame(animate);
-                controls.update();
-                renderer.render(scene, camera);
-            }
-            animate();
-
-            window.addEventListener('resize', () => {
-                if (!container) return;
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            });
-        }
-
-        function load3DFurniture(glbUrl) {
-            const loadingEl = document.getElementById('three-loading');
-            if (loadingEl) loadingEl.style.display = 'block';
-
-            if (currentFurnitureModel) scene.remove(currentFurnitureModel);
-
-            gltfLoader.load(glbUrl, (gltf) => {
-                if (loadingEl) loadingEl.style.display = 'none';
-                currentFurnitureModel = gltf.scene;
-
-                currentFurnitureModel.traverse((child) => {
-                    if (child.isMesh) {
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                    }
-                });
-
-                const box = new THREE.Box3().setFromObject(currentFurnitureModel);
-                const size = box.getSize(new THREE.Vector3());
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const scale = 1.8 / maxDim;
-                currentFurnitureModel.scale.set(scale, scale, scale);
-
-                const newBox = new THREE.Box3().setFromObject(currentFurnitureModel);
-                currentFurnitureModel.position.set(0, -newBox.min.y, -1.2);
-
-                scene.add(currentFurnitureModel);
-            });
-        }
-
+ 
         /* ================= 3D-КОМНАТА: выбор отделки пола, стен и потолка ================= */
         const R3_ALL = ['bedroom', 'living_room', 'kitchen', 'bathroom', 'toilet', 'child', 'hallway'];
         const R3_DRY = ['bedroom', 'living_room', 'kitchen', 'child', 'hallway'];
         const R3_LB = ['bedroom', 'living_room', 'child'];
         const R3_KBW = ['kitchen', 'bathroom', 'toilet', 'hallway'];
+ 
+        // --- текстуры, нарисованные кодом ---
+        function r3rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+        function r3tex(draw, seed, size) {
+            size = size || 256;
+            const c = document.createElement('canvas'); c.width = c.height = size;
+            draw(c.getContext('2d'), r3rng(seed || 1), size);
+            return c.toDataURL('image/jpeg', 0.88);
+        }
+        function r3Noise(g, r, n, size, a) {
+            for (let i = 0; i < n; i++) { g.fillStyle = `rgba(${r() > .5 ? '255,255,255' : '0,0,0'},${(r() * a).toFixed(3)})`; g.fillRect(r() * size, r() * size, 1 + r() * 2, 1 + r() * 2); }
+        }
+        const r3Wood = (h, s, l0, l1) => (g, r, S) => {
+            const rows = 8, hgt = S / rows;
+            for (let i = 0; i < rows; i++) {
+                let x = -r() * 150;
+                while (x < S) {
+                    const len = 130 + r() * 60, l = l0 + r() * (l1 - l0);
+                    g.fillStyle = `hsl(${h},${s}%,${l}%)`; g.fillRect(x, i * hgt, len, hgt);
+                    for (let k = 0; k < 7; k++) { g.strokeStyle = `rgba(60,35,15,${(0.05 + r() * 0.08).toFixed(3)})`; g.beginPath(); const y = i * hgt + 3 + r() * (hgt - 6); g.moveTo(x, y); g.lineTo(x + len, y + (r() - .5) * 3); g.stroke(); }
+                    g.strokeStyle = 'rgba(30,18,8,.45)'; g.lineWidth = 1; g.strokeRect(x + .5, i * hgt + .5, len, hgt);
+                    x += len;
+                }
+            }
+        };
+        const r3Basket = (h, s, l0, l1) => (g, r, S) => {
+            const u = 64;
+            for (let i = 0; i < S / u; i++) for (let j = 0; j < S / u; j++) {
+                const horiz = (i + j) % 2 === 0;
+                for (let k = 0; k < 4; k++) {
+                    g.fillStyle = `hsl(${h},${s}%,${l0 + r() * (l1 - l0)}%)`;
+                    const x = i * u + (horiz ? 0 : k * u / 4), y = j * u + (horiz ? k * u / 4 : 0), w = horiz ? u : u / 4, hh = horiz ? u / 4 : u;
+                    g.fillRect(x, y, w, hh); g.strokeStyle = 'rgba(30,18,8,.45)'; g.strokeRect(x + .5, y + .5, w - 1, hh - 1);
+                }
+            }
+        };
+        const r3Solid = (c, grain) => (g, r, S) => { g.fillStyle = c; g.fillRect(0, 0, S, S); r3Noise(g, r, grain || 900, S, .07); };
+        const r3Tiles = (n, bg, grout) => (g, r, S) => {
+            const u = S / n; g.fillStyle = grout; g.fillRect(0, 0, S, S);
+            for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { g.fillStyle = bg; g.fillRect(i * u + 2, j * u + 2, u - 4, u - 4); g.fillStyle = `rgba(0,0,0,${(r() * 0.04).toFixed(3)})`; g.fillRect(i * u + 2, j * u + 2, u - 4, u - 4); }
+        };
+        const r3Carpet = (g, r, S) => { g.fillStyle = 'hsl(32,18%,66%)'; g.fillRect(0, 0, S, S); for (let i = 0; i < 5000; i++) { g.strokeStyle = `rgba(${r() > .5 ? '255,255,255' : '60,45,30'},${(r() * .18).toFixed(3)})`; const x = r() * S, y = r() * S; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (r() - .5) * 4, y + (r() - .5) * 4); g.stroke(); } };
+        const r3Slats = (g, r, S) => { for (let y = 0; y < S; y += 16) { g.fillStyle = `hsl(30,45%,${46 + r() * 8}%)`; g.fillRect(0, y, S, 12); g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, y + 12, S, 4); } };
 
-        const R3_OPTS = {
+        // --- каталог вариантов ---
+       const R3_OPTS = {
             floor: [
-                { id: 'f-laminate', v: 'laminate', uz: "Laminat", ru: "Ламинат", rooms: R3_DRY, file: 'tex-laminate-oak.jpg' },
-                { id: 'f-spc', v: 'spc', uz: "Kvars-vinil (SPC)", ru: "Кварц-винил (SPC)", rooms: R3_DRY, file: 'tex-laminate-oak.jpg' },
-                { id: 'f-parquet', v: 'parquet', uz: "Parket taxtasi", ru: "Паркетная доска", rooms: R3_LB, file: 'tex-parquet-oak-chevron.jpg' },
-                { id: 'f-tile', v: 'tile', uz: "Plitka / keramogranit", ru: "Плитка / керамогранит", rooms: R3_ALL, file: 'tex-porcelain-marble.jpg' },
-                { id: 'f-calacatta', v: 'tile', uz: "Calacatta marmar", ru: "Мрамор Calacatta", rooms: R3_ALL, file: 'tex-marble-calacatta.jpg' }
+                { id: 'f-laminate', v: 'laminate', uz: "Laminat", ru: "Ламинат", rooms: R3_DRY, proc: r3Wood(28, 46, 46, 56), sz: 160 },
+                { id: 'f-spc', v: 'spc', uz: "Kvars-vinil (SPC)", ru: "Кварц-винил (SPC)", rooms: R3_DRY, proc: r3Wood(34, 22, 62, 72), sz: 160 },
+                { id: 'f-parquet', v: 'parquet', uz: "Parket taxtasi", ru: "Паркетная доска", rooms: R3_LB, proc: r3Basket(26, 52, 38, 50), sz: 160 },
+                { id: 'f-linoleum', v: 'linoleum', uz: "Linoleum", ru: "Линолеум", rooms: R3_DRY, proc: r3Solid('hsl(38,12%,70%)', 1400), sz: 120 },
+                { id: 'f-tile', v: 'tile', uz: "Plitka / keramogranit", ru: "Плитка / керамогранит", rooms: R3_ALL, proc: r3Tiles(2, 'hsl(210,8%,86%)', 'hsl(0,0%,62%)'), sz: 150 },
+                { id: 'f-carpet', v: 'carpet', uz: "Kovrolin", ru: "Ковролин", rooms: R3_LB, proc: r3Carpet, sz: 140 },
+                { id: 'f-marble', v: 'tile', uz: "Keramogranit (marmar rasmli)", ru: "Керамогранит под мрамор", rooms: R3_ALL, file: 'tex-porcelain-marble.jpg', kind: 'marble', sz: 120, sz2: 240 },
+                { id: 'f-oak', v: 'parquet', uz: "Parket «yolka» (och eman)", ru: "Паркет «ёлочка» светлый дуб", rooms: R3_LB, file: 'tex-parquet-oak-chevron.jpg', kind: 'xy', f: 0.30, sz: 96 },
+                { id: 'f-walnut', v: 'parquet', uz: "Parket «yolka» (yong'oq)", ru: "Паркет «ёлочка» орех", rooms: R3_LB, file: 'tex-parquet-walnut-chevron.jpg', kind: 'xy', f: 0.30, sz: 96 },
+                { id: 'f-lam-oak', v: 'laminate', uz: "Laminat (och eman)", ru: "Ламинат светлый дуб", rooms: R3_DRY, file: 'tex-laminate-oak.jpg', kind: 'xy', f: 0.30, sz: 80 },
+                { id: 'f-marble-grid', v: 'tile', uz: "Marmar plitka", ru: "Мраморная плитка", rooms: R3_ALL, file: 'tex-marble-grid.jpg', kind: 'marble', sz: 120 },
+                { id: 'f-calacatta', v: 'tile', uz: "Calacatta marmar", ru: "Мрамор Calacatta", rooms: R3_ALL, file: 'tex-marble-calacatta.jpg', kind: 'marble', sz: 120 }
             ],
             wall: [
-                { id: 'w-tile', v: 'tile', uz: "Plitka (kafel)", ru: "Плитка (кафель)", rooms: R3_ALL, file: 'tex-marble-grid.jpg' },
-                { id: 'w-marble', v: 'keramogranit', uz: "Keramogranit (marmar rasmli)", ru: "Керамогранит под мрамор", rooms: R3_ALL, file: 'tex-porcelain-marble.jpg' },
-                { id: 'w-calacatta', v: 'keramogranit', uz: "Calacatta marmar", ru: "Мрамор Calacatta", rooms: R3_ALL, file: 'tex-marble-calacatta.jpg' },
-                { id: 'w-floral', v: 'wallpaper', uz: "Oboy gulli", ru: "Обои с рисунком", rooms: R3_DRY, file: 'tex-wallpaper-floral.jpg' }
+                { id: 'w-tile', v: 'tile', uz: "Plitka (kafel)", ru: "Плитка (кафель)", rooms: R3_ALL, proc: r3Tiles(4, 'hsl(200,20%,94%)', 'hsl(0,0%,74%)'), sz: 150 },
+                { id: 'w-marble', v: 'keramogranit', uz: "Keramogranit (marmar rasmli)", ru: "Керамогранит под мрамор", rooms: R3_ALL, file: 'tex-porcelain-marble.jpg', kind: 'marble', sz: 120, sz2: 240 },
+                { id: 'w-calacatta', v: 'keramogranit', uz: "Calacatta marmar", ru: "Мрамор Calacatta", rooms: R3_ALL, file: 'tex-marble-calacatta.jpg', kind: 'marble', sz: 120 },
+                { id: 'w-marble-grid', v: 'tile', uz: "Mramor plitka", ru: "Мраморная плитка", rooms: R3_ALL, file: 'tex-marble-grid.jpg', kind: 'marble', sz: 120 },
+                { id: 'w-floral', v: 'wallpaper', uz: "Oboy gulli", ru: "Обои с цветочным рисунком", rooms: R3_DRY, file: 'tex-wallpaper-floral.jpg', kind: 'xy', f: 0.45, sz: 130 },
+                { id: 'w-decor-sand', v: 'plaster', uz: "Dekorativ qum", ru: "Декоративный песок", rooms: R3_DRY, file: 'tex-wall-decor-sand.jpg', kind: 'xy', f: 0.3, sz: 150 },
+                { id: 'w-dark-flowers', v: 'wallpaper', uz: "To'q gulli oboy", ru: "Тёмные обои с цветами", rooms: R3_DRY, file: 'tex-wallpaper-dark-flowers.jpg', kind: 'xy', f: 0.45, sz: 130 }
             ],
             ceil: [
-                { id: 'c-emb', v: 'stretch', uz: "Tortma shift", ru: "Натяжной матовый", rooms: R3_ALL, file: 'tex-ceiling-emboss.jpg' },
-                { id: 'c-pvx-silver', v: 'pvx', uz: "PVX panel", ru: "ПВХ-панель", rooms: R3_KBW, file: 'tex-ceiling-pvx-silver.jpg' }
+                { id: 'c-slat', v: 'slat', uz: "Reykali shift", ru: "Реечный потолок", rooms: R3_KBW, proc: r3Slats, sz: 128 },
+                { id: 'c-emb', v: 'stretch', uz: "Tortma shift, mat (naqshli)", ru: "Натяжной матовый с тиснением", rooms: R3_ALL, file: 'tex-ceiling-emboss.jpg', kind: 'xy', f: 0.45, sz: 90 },
+                { id: 'c-fabric', v: 'stretch', uz: "Tortma shift (chiziqli mato)", ru: "Белый тканевый с полосками", rooms: R3_ALL, file: 'tex-ceiling-fabric-stripes.jpg', kind: 'y', f: 0.30, sz: 90 },
+                { id: 'c-pvx-silver', v: 'pvx', uz: "PVX panel, yaltiroq (kumush chiziqli)", ru: "ПВХ-панель глянцевая с серебристыми линиями", rooms: R3_KBW, file: 'tex-ceiling-pvx-silver.jpg', kind: 'y', f: 0.30, sz: 100 },
+                { id: 'c-pvx-wood', v: 'pvx', uz: "PVX panel, oq (yog'och teksturali)", ru: "ПВХ-панель белая под дерево", rooms: R3_KBW, file: 'tex-ceiling-pvx-wood.jpg', kind: 'y', f: 0.30, sz: 100 },
+                { id: 'c-slat-gray', v: 'slat', uz: "Reykali shift (kulrang)", ru: "Реечный серый с чёрным швом", rooms: R3_KBW, file: 'tex-ceiling-slat-gray.jpg', kind: 'y', f: 0.30, sz: 70 },
+                { id: 'c-oval', v: 'drywall', uz: "Oval shaklli shift", ru: "Овальный потолок с подсветкой", rooms: R3_DRY, file: 'tex-ceiling-oval.jpg', kind: 'cover' },
+                { id: 'c-rect', v: 'drywall', uz: "To'rtburchak shift", ru: "Прямоугольный потолок", rooms: R3_DRY, file: 'tex-ceiling-rect.jpg', kind: 'cover' }
             ]
         };
-
         const R3_DEFAULT = { floor: { dry: 'f-laminate', wet: 'f-tile' }, wall: { dry: 'w-floral', wet: 'w-tile' }, ceil: { dry: 'c-emb', wet: 'c-pvx-silver' } };
-        const R3 = { active: null, mat: {}, furniture: {}, tab: 'floor' };
-
+        const R3_SHADE = { back: 0.10, left: 0.30, right: 0.20, floor: 0.12, ceil: 0 };
+        const R3_FACES = { floor: ['r3-floor'], wall: ['r3-back', 'r3-left', 'r3-right'], ceil: ['r3-ceil'] };
+ 
+        const R3 = { active: null, mat: {}, furniture: {}, tab: 'floor', yaw: -22, pitch: -2, zoom: 1, fit: 1, kk: 1, drag: null };
+        Object.keys(R3_OPTS).forEach(sf => R3_OPTS[sf].forEach((o, i) => { if (o.proc) o.img = r3tex(o.proc, 7 + i * 13); }));
+ 
+        function r3PhotoTex(im, o) {
+            const w = im.naturalWidth, h = im.naturalHeight;
+            const mk = (cw, ch) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
+            if (o.kind === 'cover') {
+                return im.src;
+            }
+            if (o.kind === 'marble') {
+                const tw = 256, th = 512, c = mk(tw * 2, th * 2), g = c.getContext('2d');
+                const hw = w / 2, hh = h / 2;
+                [[0, 0], [hw, 0], [0, hh], [hw, hh]].forEach((q, i) => g.drawImage(im, q[0], q[1], hw, hh, (i % 2) * tw, Math.floor(i / 2) * th, tw, th));
+                g.strokeStyle = 'rgba(120,120,120,0.95)'; g.lineWidth = 5; g.strokeRect(0, 0, c.width, c.height);
+                g.beginPath(); g.moveTo(tw, 0); g.lineTo(tw, c.height); g.moveTo(0, th); g.lineTo(c.width, th); g.stroke();
+                return c.toDataURL('image/jpeg', 0.9);
+            }
+            const A = mk(w, h), ga = A.getContext('2d'); ga.drawImage(im, 0, 0);
+            const B = mk(w, h), gb = B.getContext('2d');
+            if (o.kind === 'y') { gb.drawImage(A, 0, -h / 2); gb.drawImage(A, 0, h / 2); }
+            else { [[-w / 2, -h / 2], [w / 2, -h / 2], [-w / 2, h / 2], [w / 2, h / 2]].forEach(p => gb.drawImage(A, p[0], p[1])); }
+            const da = ga.getImageData(0, 0, w, h), db = gb.getImageData(0, 0, w, h);
+            const sm = t => { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); };
+            const f = o.f || 0.3, m1 = t => sm(t / f) * sm((1 - t) / f);
+            for (let y = 0; y < h; y++) {
+                const my = m1(y / (h - 1));
+                for (let x = 0; x < w; x++) {
+                    const m = (o.kind === 'y' ? 1 : m1(x / (w - 1))) * my, i = (y * w + x) * 4;
+                    for (let k = 0; k < 3; k++) da.data[i + k] = da.data[i + k] * m + db.data[i + k] * (1 - m);
+                }
+            }
+            ga.putImageData(da, 0, 0);
+            return A.toDataURL('image/jpeg', 0.9);
+        }
+        function r3LoadPhotos() {
+            Object.keys(R3_OPTS).forEach(sf => R3_OPTS[sf].filter(o => o.file).forEach(o => {
+                const im = new Image();
+                im.onload = () => {
+                    try {
+                        o.img = r3PhotoTex(im, o);
+                        if (o.kind === 'xy' || o.kind === 'y') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
+                        r3RenderOpts(); r3Paint();
+                    } catch (e) { }
+                };
+                im.src = './images/' + o.file;
+            }));
+        }
+ 
         function r3Group(type) { return (type === 'bathroom' || type === 'toilet') ? 'wet' : 'dry'; }
         function r3Type(id) { const s = document.getElementById(`type-${id}`); return s ? s.value : 'bedroom'; }
+        function r3OptionsFor(sf, type) { return R3_OPTS[sf].filter(o => o.rooms.includes(type) && o.img); }
+        function r3Find(sf, optId) { return R3_OPTS[sf].find(o => o.id === optId); }
         function r3Chosen(roomId, sf) {
             const type = r3Type(roomId);
             const m = R3.mat[roomId] || {};
-            let o = R3_OPTS[sf].find(x => x.id === m[sf]);
-            if (!o) o = R3_OPTS[sf].find(x => x.id === R3_DEFAULT[sf][r3Group(type)]);
+            let o = r3Find(sf, m[sf]);
+            if (!o || !o.rooms.includes(type)) o = r3Find(sf, R3_DEFAULT[sf][r3Group(type)]);
             return o;
         }
-
         function r3Register(id) {
             const g = r3Group(r3Type(id));
             R3.mat[id] = { floor: R3_DEFAULT.floor[g], wall: R3_DEFAULT.wall[g], ceil: R3_DEFAULT.ceil[g] };
             r3SetActive(id);
         }
-
         function r3Unregister(id) {
             delete R3.mat[id];
             delete R3.furniture[id];
@@ -720,20 +744,23 @@
             }
             r3RenderChips();
         }
-
         function r3OnTypeChange(id) {
+            const type = r3Type(id), g = r3Group(type), m = R3.mat[id] || (R3.mat[id] = {});
+            ['floor', 'wall', 'ceil'].forEach(sf => {
+                const o = r3Find(sf, m[sf]);
+                if (!o || !o.rooms.includes(type)) m[sf] = R3_DEFAULT[sf][g];
+            });
             r3RenderChips();
             if (String(R3.active) === String(id)) { r3Paint(); r3RenderOpts(); }
         }
-
+        function r3OnDimChange(id) { if (String(R3.active) === String(id)) r3Layout(); }
         function r3SetActive(id) {
             id = String(id);
             if (R3.active === id) return;
             R3.active = id;
             document.querySelectorAll('#rooms-container .room-card').forEach(c => c.classList.toggle('r3-active', c.id === 'room-' + id));
-            r3RenderChips(); r3Paint(); r3RenderOpts();
+            r3RenderChips(); r3Layout(); r3Paint(); r3RenderOpts();
         }
-
         function r3RenderChips() {
             const box = document.getElementById('r3-chips'); if (!box) return;
             const cards = document.querySelectorAll('#rooms-container .room-card');
@@ -743,11 +770,16 @@
                 const b = document.createElement('button');
                 b.type = 'button'; b.className = 'r3-chip';
                 b.setAttribute('aria-pressed', String(R3.active) === id);
-                b.textContent = `#${i + 1}${roomTypes[r3Type(id)]}`;
+                b.textContent = `#${i + 1} ${roomTypes[r3Type(id)]}`;
                 b.onclick = () => r3SetActive(id);
                 box.appendChild(b);
             });
             box.style.display = cards.length > 1 ? 'flex' : 'none';
+            const sub = document.getElementById('r3-sub');
+            if (sub) {
+                const idx = Array.prototype.findIndex.call(cards, c => c.id === 'room-' + R3.active);
+                sub.textContent = idx >= 0 ? `${roomTypes[r3Type(R3.active)]} (#${idx + 1}): pol, devor, shift va mebelni tanlang / выберите отделку и мебель` : '';
+            }
         }
 
         function r3RenderOpts() {
@@ -777,7 +809,7 @@
                     b.type = 'button'; b.className = 'r3-opt';
                     b.setAttribute('aria-pressed', curFurnId === item.id);
                     const thumb = item.coverImg || (item.images && item.images[0]) || '';
-                    b.innerHTML = `<div class="sw" style="background-image:url('${thumb}')"></div><b>${item.name}</b><span>3D Примерка</span>`;
+                    b.innerHTML = `<div class="sw" style="background-image:url('${thumb}')"></div><b>${item.name}</b><span>${item.material || 'Mebel'}</span>`;
                     b.onclick = () => { R3.furniture[R3.active] = item.id; r3Paint(); r3RenderOpts(); };
                     box.appendChild(b);
                 });
@@ -785,10 +817,10 @@
             }
 
             const cur = r3Chosen(R3.active, sf);
-            R3_OPTS[sf].forEach(o => {
+            r3OptionsFor(sf, type).forEach(o => {
                 const b = document.createElement('button');
                 b.type = 'button'; b.className = 'r3-opt'; b.setAttribute('aria-pressed', cur && cur.id === o.id);
-                b.innerHTML = `<div class="sw" style="background-image:url('./images/${o.file}')"></div><b>${o.uz}</b><span>${o.ru}</span>`;
+                b.innerHTML = `<div class="sw" style="background-image:url(${o.img})"></div><b>${o.uz}</b><span>${o.ru}</span>`;
                 b.onclick = () => { R3.mat[R3.active][sf] = o.id; r3Paint(); r3RenderOpts(); };
                 box.appendChild(b);
             });
@@ -796,49 +828,109 @@
 
         function r3Paint() {
             if (R3.active === null) return;
-            initThreeJS();
-
-            // 1. Текстура пола
-            const floorObj = r3Chosen(R3.active, 'floor');
-            if (floorObj && floorMesh) {
-                textureLoader.load('./images/' + floorObj.file, (texture) => {
-                    texture.wrapS = THREE.RepeatWrapping;
-                    texture.wrapT = THREE.RepeatWrapping;
-                    texture.repeat.set(3, 3);
-                    floorMesh.material.map = texture;
-                    floorMesh.material.needsUpdate = true;
+            ['floor', 'wall', 'ceil'].forEach(sf => {
+                const o = r3Chosen(R3.active, sf); if (!o || !o.img) return;
+                R3_FACES[sf].forEach(fid => {
+                    const el = document.getElementById(fid); if (!el) return;
+                    const sh = R3_SHADE[fid.replace('r3-', '')] || 0;
+                    
+                    el.style.backgroundImage = `linear-gradient(rgba(0,0,0,${sh}),rgba(0,0,0,${sh})),url(${o.img})`;
+                    
+                    if (o.kind === 'cover') {
+                        el.style.backgroundRepeat = 'no-repeat';
+                        el.style.backgroundPosition = 'center';
+                        el.style.backgroundSize = '100% 100%';
+                    } else {
+                        el.style.backgroundRepeat = 'repeat';
+                        el.style.backgroundSize = `auto,${o.sz}px ${o.sz2 || o.sz}px`;
+                    }
                 });
-            }
+            });
 
-            // 2. Текстура стен
-            const wallObj = r3Chosen(R3.active, 'wall');
-            if (wallObj && wallMesh) {
-                textureLoader.load('./images/' + wallObj.file, (texture) => {
-                    texture.wrapS = THREE.RepeatWrapping;
-                    texture.wrapT = THREE.RepeatWrapping;
-                    texture.repeat.set(2, 2);
-                    wallMesh.material.map = texture;
-                    wallMesh.material.needsUpdate = true;
-                });
-            }
-
-            // 3. 3D-мебель (.glb)
-            const furnId = R3.furniture[R3.active];
-            if (furnId) {
-                load3DFurniture('./sofa.glb');
-            } else if (currentFurnitureModel) {
-                scene.remove(currentFurnitureModel);
-                currentFurnitureModel = null;
+            const furnEl = document.getElementById('r3-furniture');
+            if (furnEl) {
+                const furnId = R3.furniture[R3.active];
+                let furnItem = null;
+                if (furnId) {
+                    huvaydoCatalog.forEach(cat => {
+                        cat.items.forEach(it => { if (it.id === furnId) furnItem = it; });
+                    });
+                }
+                if (furnItem) {
+                    const furnImg = furnItem.coverImg || (furnItem.images && furnItem.images[0]);
+                    furnEl.style.backgroundImage = `url('${furnImg}')`;
+                    furnEl.style.display = 'block';
+                } else {
+                    furnEl.style.backgroundImage = 'none';
+                    furnEl.style.display = 'none';
+                }
             }
         }
+ 
+        const R3_PPM = 100;
+        function r3Dims() {
+            const id = R3.active;
+            const num = (name, lo, hi, d) => { const e = document.getElementById(`${name}-${id}`); const v = e ? parseFloat(String(e.value).replace(',', '.')) : NaN; return isNaN(v) ? d : Math.max(lo, Math.min(hi, v)); };
+            return { l: num('length', 1.5, 12, 4), w: num('width', 1.5, 12, 3.5), h: num('height', 2, 5, 2.7) };
+        }
+        function r3Layout() {
+            const room = document.getElementById('r3-room'); if (!room || R3.active === null) return;
+            const d = r3Dims(), W = d.w * R3_PPM, D = d.l * R3_PPM, H = d.h * R3_PPM;
+            const set = (id, w, h, tf) => { const e = document.getElementById(id); if(!e) return; e.style.width = w + 'px'; e.style.height = h + 'px'; e.style.margin = `${-h / 2}px 0 0 ${-w / 2}px`; e.style.transform = tf; };
+            set('r3-back', W, H, `translateZ(${-D / 2}px)`);
+            set('r3-left', D, H, `translateX(${-W / 2}px) rotateY(90deg)`);
+            set('r3-right', D, H, `translateX(${W / 2}px) rotateY(-90deg)`);
+            set('r3-floor', W, D, `translateY(${H / 2}px) rotateX(90deg)`);
+            set('r3-ceil', W, D, `translateY(${-H / 2}px) rotateX(-90deg)`);
 
+            const furn = document.getElementById('r3-furniture');
+            if (furn) {
+                furn.style.width = W + 'px';
+                furn.style.height = H + 'px';
+                furn.style.margin = `${-H / 2}px 0 0 ${-W / 2}px`;
+                furn.style.transform = `translateZ(${-D / 2 + 2}px)`;
+            }
+
+            const st = document.getElementById('r3-stage'), full = st.classList.contains('full');
+            const S = full ? window.innerWidth : (st.clientWidth || 392);
+            const maxH = full ? window.innerHeight : Math.min(0.8 * window.innerHeight, 1000);
+            const k = S / 392, H0 = Math.max(300, Math.min(400 * k, maxH));
+            R3.kk = Math.min(k, H0 / 400);
+            const sc = document.getElementById('r3-scene'); sc.style.height = (full ? window.innerHeight : H0) + 'px'; sc.style.perspective = (620 * R3.kk) + 'px';
+            R3.fit = Math.max(0.4, Math.min(1.6, 360 / Math.max(W, D))) * R3.kk * (full ? 0.85 : 0.92);
+            r3Apply();
+        }
+        function r3Apply() {
+            const room = document.getElementById('r3-room'); if (!room) return;
+            const s2 = R3.fit * R3.zoom, D = r3Dims().l * R3_PPM;
+            room.style.transform = `translateZ(${245 * R3.kk - s2 * D / 2}px) scale(${s2}) rotateX(${R3.pitch}deg) rotateY(${R3.yaw}deg)`;
+        }
         function r3Init() {
+            const st = document.getElementById('r3-stage');
             document.getElementById('r3-tabs').addEventListener('click', e => {
                 const t = e.target.closest('.r3-tab'); if (!t) return;
                 R3.tab = t.dataset.s;
                 document.querySelectorAll('.r3-tab').forEach(x => x.setAttribute('aria-selected', x === t));
                 r3RenderOpts();
             });
+            document.getElementById('r3-z').addEventListener('input', e => { R3.zoom = parseFloat(e.target.value); r3Apply(); });
+            document.getElementById('r3-fs').addEventListener('click', e => {
+                e.stopPropagation();
+                const on = st.classList.toggle('full');
+                e.target.textContent = on ? '✕ Yopish / Закрыть' : '⛶ Katta / Крупно';
+                r3Layout();
+            });
+            st.addEventListener('pointerdown', e => { if (e.target.closest('#r3-fs')) return; R3.drag = { x: e.clientX, y: e.clientY, yaw: R3.yaw, pitch: R3.pitch }; st.setPointerCapture(e.pointerId); });
+            st.addEventListener('pointermove', e => {
+                if (!R3.drag) return;
+                R3.yaw = Math.max(-50, Math.min(50, R3.drag.yaw + (e.clientX - R3.drag.x) * 0.35));
+                R3.pitch = Math.max(-12, Math.min(14, R3.drag.pitch - (e.clientY - R3.drag.y) * 0.2));
+                r3Apply();
+            });
+            ['pointerup', 'pointercancel'].forEach(ev => st.addEventListener(ev, () => { R3.drag = null; }));
+            window.addEventListener('resize', r3Layout);
+            if (window.ResizeObserver) new ResizeObserver(() => r3Layout()).observe(st);
+            r3LoadPhotos();
         }
  
         let roomCounter = 0;
@@ -1002,9 +1094,9 @@
                         <div><label>Xona turi / Тип комнаты</label><select id="type-${currentId}" onchange="r3OnTypeChange(${currentId})">${typeOptions}</select></div>
                     </div>
                     <div class="grid-3 form-group">
-                        <div><label>Uzunligi (m) / Длина</label><input type="number" id="length-${currentId}" placeholder="4.5" step="0.1"></div>
-                        <div><label>Kengligi (m) / Ширина</label><input type="number" id="width-${currentId}" placeholder="3.5" step="0.1"></div>
-                        <div><label>Balandligi (m) / Высота</label><input type="number" id="height-${currentId}" placeholder="2.8" step="0.1"></div>
+                        <div><label>Uzunligi (m) / Длина</label><input type="number" id="length-${currentId}" oninput="r3OnDimChange(${currentId})" placeholder="4.5" step="0.1"></div>
+                        <div><label>Kengligi (m) / Ширина</label><input type="number" id="width-${currentId}" oninput="r3OnDimChange(${currentId})" placeholder="3.5" step="0.1"></div>
+                        <div><label>Balandligi (m) / Высота</label><input type="number" id="height-${currentId}" oninput="r3OnDimChange(${currentId})" placeholder="2.8" step="0.1"></div>
                     </div>
                     <div class="form-group">
                         <label>Oynalar va eshiklar (kv. m) / Окна и двери (кв. м)</label>
@@ -1037,6 +1129,7 @@
         }
  
         function goToPage(pageNumber) {
+            if (pageNumber === 1 && typeof r3Layout === 'function') setTimeout(r3Layout, 0);
             if (pageNumber === 1) {
                 document.getElementById('page-1').style.display = 'block';
                 document.getElementById('page-2').style.display = 'none';
@@ -1301,7 +1394,7 @@
             const pct = Math.round((WZ.idx / (WZ.steps.length + 1)) * 100);
             let top = `
                 <div class="wz-top">
-                    <div class="wz-room">📍 ${room.typeName} (#${room.displayIndex}) ·${room.floorArea.toFixed(1)} m²</div>
+                    <div class="wz-room">📍 ${room.typeName} (#${room.displayIndex}) · ${room.floorArea.toFixed(1)} m²</div>
                     <div class="wz-count">__COUNT__</div>
                     <div class="wz-bar"><div class="wz-bar-fill" style="width: ${pct}%;"></div></div>
                 </div>`;
@@ -1310,7 +1403,7 @@
             if (st.type === 'copy') {
                 const from = roomsData[st.from];
                 WZ.sel = WZ.copy[room.id] || null;
-                top = top.replace('__COUNT__', `Xona ${st.roomIdx + 1} /${roomsData.length} · Комната ${st.roomIdx + 1} из ${roomsData.length}`);
+                top = top.replace('__COUNT__', `Xona ${st.roomIdx + 1} / ${roomsData.length} · Комната ${st.roomIdx + 1} из ${roomsData.length}`);
                 body = `
                     <div class="wz-q-uz">Oldingi xonadagidek qilamizmi?</div>
                     <div class="wz-q-ru">Сделать так же, как в комнате «${from.typeName} (#${from.displayIndex})»?</div>
@@ -1322,7 +1415,7 @@
                 const q = WZ_Q[st.key];
                 const saved = WZ.answers[room.id][st.key];
                 WZ.sel = saved && !saved.auto ? (saved.unknown ? 'unknown' : saved.id) : null;
-                top = top.replace('__COUNT__', `Savol ${st.qNum} /${st.qTotal} · Вопрос ${st.qNum} из ${st.qTotal}`);
+                top = top.replace('__COUNT__', `Savol ${st.qNum} / ${st.qTotal} · Вопрос ${st.qNum} из ${st.qTotal}`);
                 const opts = wzOptionsFor(st.key, room.type);
                 const unknownCard = q.unknown
                     ? wzSimpleCardHTML('unknown', '❓', "Bilmayman", "Не знаю (возьмём стандартный вариант, уточнит замерщик)", WZ.sel === 'unknown', true)
@@ -1331,7 +1424,8 @@
                     <div class="wz-q-uz">${q.uz}</div>
                     <div class="wz-q-ru">${q.ru}</div>
                     <div class="wz-grid">
-                        ${opts.map(o => wzCardHTML(o, WZ.sel === o.id)).join('')}${unknownCard}
+                        ${opts.map(o => wzCardHTML(o, WZ.sel === o.id)).join('')}
+                        ${unknownCard}
                     </div>`;
             }
  
@@ -1418,7 +1512,7 @@
                     html += `
                         <div class="wz-sum-row">
                             <div>
-                                <div class="wz-sum-label">${label.uz} /${label.ru}</div>
+                                <div class="wz-sum-label">${label.uz} / ${label.ru}</div>
                                 <div><b>${a.unknown ? "Bilmayman / Не знаю" : a.uz}</b></div>
                                 <div class="wz-sum-label">${a.unknown ? 'Standart: ' + a.uz + ' / ' + a.ru : a.ru}</div>
                             </div>
@@ -1464,7 +1558,7 @@
             let overallTotals = {};
             let totalFloorAreaAll = 0;
             let totalWallAreaAll = 0;
-            let fullTelegramText = `🏠 *BUTUN UY BO'YICHA UMUMIY SMETA (MYHOUSE PRO)*\n⚠️ ${WZ_NOTE_UZ} /${WZ_NOTE_RU}\n📋 ${WZ_BASIS_UZ} /${WZ_BASIS_RU}\n\n`;
+            let fullTelegramText = `🏠 *BUTUN UY BO'YICHA UMUMIY SMETA (MYHOUSE PRO)*\n⚠️ ${WZ_NOTE_UZ} / ${WZ_NOTE_RU}\n📋 ${WZ_BASIS_UZ} / ${WZ_BASIS_RU}\n\n`;
  
             roomsData.forEach(room => {
                 totalFloorAreaAll += room.floorArea;
@@ -1530,7 +1624,7 @@
                     items.push({ name: "Dekorativ shtukaturka / panellar / Декоративная штукатурка / Панели", qty: parseFloat(room.wallArea.toFixed(1)), unit: "m²" });
                     items.push({ name: "Himoya laki / mum / Защитный лак / Воск", qty: parseFloat((room.wallArea * 0.1).toFixed(1)), unit: "l / л" });
                 } else if (wallFinish === 'tile' || wallFinish === 'keramogranit') {
-                    items.push({ name: `Devor plitkasi (${wallFinish === 'keramogranit' ? 'Keramogranit' : 'Kafel'}) + 10\% / Плитка стен (${wallFinish === 'keramogranit' ? 'Керамогранит' : 'Кафель'}) + 10%`, qty: parseFloat((room.wallArea * 1.1).toFixed(1)), unit: "m²" });
+                    items.push({ name: `Devor plitkasi (${wallFinish === 'keramogranit' ? 'Keramogranit' : 'Kafel'}) + 10% / Плитка стен (${wallFinish === 'keramogranit' ? 'Керамогранит' : 'Кафель'}) + 10%`, qty: parseFloat((room.wallArea * 1.1).toFixed(1)), unit: "m²" });
                     items.push({ name: "Plitka yelimi (25 kg) / Клей плиточный (25кг)", qty: Math.ceil(room.wallArea / 4), unit: "qop / меш." });
                     items.push({ name: "Choklar uchun zatirka / Затирка для швов", qty: Math.ceil(room.wallArea / 10), unit: "kg" });
                 }
@@ -1558,7 +1652,7 @@
                 let singleRoomTG = `🏠 *Smeta: ${room.typeName} (#${room.displayIndex})*\n`;
 
                 items.forEach(it => {
-                    const key = `${it.name}\vert{}${it.unit}`;
+                    const key = `${it.name}|${it.unit}`;
                     if (!overallTotals[key]) {
                         overallTotals[key] = { name: it.name, qty: 0, unit: it.unit };
                     }
@@ -1913,7 +2007,9 @@
             document.getElementById('slideCounter').innerText = `${currentSlideIndex + 1} /${currentItemImages.length}`;
         }
 
+
         /* ================= ЛОГИКА МОДАЛЬНОГО ОКНА ДЛЯ ВВОДА ДАННЫХ ================= */
+        
         document.getElementById('userPhoneInput').addEventListener('input', (e) => {
             let matrix = e.target.value.replace(/\D/g, '');
 
@@ -2193,9 +2289,11 @@
         document.addEventListener("DOMContentLoaded", function() {
             r3Init();
             addRoom();
-            initThreeJS();
             document.getElementById('crew-slot-1').innerHTML = crewBoxHTML();
         });
     </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 </body>
 </html>
