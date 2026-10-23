@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MYHOUSE PRO — Ta'mirlash va mebel kalkulyatori / Калькулятор ремонта и мебели</title>
@@ -414,22 +414,10 @@
         .r3-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
         .r3-chip { border: 1.5px solid var(--card-border); background: var(--input-bg); color: var(--text-main); border-radius: 999px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
         .r3-chip[aria-pressed="true"] { border-color: var(--accent-gold); color: var(--accent-gold); font-weight: 700; }
-        .r3-stage { background: #070C1E; border-radius: 14px; overflow: hidden; touch-action: none; position: relative; cursor: grab; }
-        .r3-scene { height: 400px; perspective: 620px; perspective-origin: 50% 50%; display: flex; align-items: center; justify-content: center; }
-        .r3-room { position: relative; width: 0; height: 0; transform-style: preserve-3d; }
-        .r3-face { position: absolute; left: 50%; top: 50%; background-repeat: repeat; backface-visibility: hidden; }
-        #r3-furniture {
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: bottom center;
-            pointer-events: none;
-            z-index: 2;
-        }
+        .r3-stage { background: #070C1E; border-radius: 14px; overflow: hidden; touch-action: none; position: relative; }
         .r3-fs { position: absolute; top: 10px; right: 10px; z-index: 5; border: 1.5px solid var(--card-border); background: var(--card-bg); color: var(--text-main); border-radius: 10px; padding: 8px 12px; font-size: 12px; font-weight: 700; cursor: pointer; }
         .r3-stage.full { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1500; border-radius: 0; }
         .r3-hint { position: absolute; left: 12px; bottom: 10px; font-size: 11px; color: var(--text-muted); pointer-events: none; }
-        .r3-zoom { margin: 10px 0 4px; font-size: 12px; color: var(--text-muted); }
-        .r3-zoom input { width: 100%; accent-color: var(--accent-cyan); margin-top: 4px; }
         .r3-tabs { display: flex; gap: 8px; margin: 12px 0 10px; }
         .r3-tab { flex: 1; border: 1.5px solid var(--card-border); background: var(--input-bg); color: var(--text-main); border-radius: 12px; padding: 10px 6px; font-size: 14px; font-weight: 700; cursor: pointer; line-height: 1.2; }
         .r3-tab small { display: block; font-weight: 400; color: var(--text-muted); font-size: 12px; }
@@ -471,11 +459,10 @@
                 <div class="r3-sub" id="r3-sub"></div>
                 <div class="r3-chips" id="r3-chips"></div>
                 <div class="r3-stage" id="r3-stage" style="position: relative; width: 100%; height: 400px;">
-    <canvas id="three-canvas" style="width: 100%; height: 100%; display: block; border-radius: 14px;"></canvas>
-    <button class="r3-fs" id="r3-fs" type="button">⛶ Katta / Крупно</button>
-    <div class="r3-hint">Мышь/Палец: вращение и зум (OrbitControls)</div>
-</div>
-                <div class="r3-zoom"><label for="r3-z">Yaqinlashtirish / Приблизить</label><input id="r3-z" type="range" min="0.6" max="1.8" step="0.05" value="1"></div>
+                    <canvas id="three-canvas" style="width: 100%; height: 100%; display: block; border-radius: 14px;"></canvas>
+                    <button class="r3-fs" id="r3-fs" type="button">⛶ Katta / Крупно</button>
+                    <div class="r3-hint">Мышь/Палец: вращение и зум (OrbitControls)</div>
+                </div>
                 <div class="r3-tabs" id="r3-tabs">
                     <button class="r3-tab" type="button" data-s="floor" aria-selected="true">Pol<small>Пол</small></button>
                     <button class="r3-tab" type="button" data-s="wall" aria-selected="false">Devorlar<small>Стены</small></button>
@@ -575,163 +562,278 @@
         const TG_BOT_TOKEN = "8940078076:AAEymug05M0Q0Hph6az-denQouUs66trvno";
         const TG_CHAT_ID = "-1003917851495";
         const TG_CREW_CHAT_ID = TG_CHAT_ID;
- 
- 
-      /* ================= THREE.JS 3D-ENGINE ================= */
-let scene3D, camera3D, renderer3D, controls3D;
-let roomMeshes = { floor: null, ceil: null, back: null, left: null, right: null };
-let loadedFurnitureMesh = null;
-const gltfLoader = new THREE.GLTFLoader();
-const textureLoader = new THREE.TextureLoader();
 
-function r3Init() {
-    const canvas = document.getElementById('three-canvas');
-    const container = document.getElementById('r3-stage');
+        /* ================= R3 STATE & MATERIALS ================= */
+        const R3_DEFAULT = { floor: 'f-laminate', wall: 'w-floral', ceil: 'c-emb' };
+        const R3 = { active: null, mat: {}, furniture: {}, tab: 'floor' };
 
-    scene3D = new THREE.Scene();
-    scene3D.background = new THREE.Color(0x070c1e);
+        const R3_OPTS = {
+            floor: [
+                { id: 'f-laminate', uz: "Laminat", ru: "Ламинат", img: "./images/tex-laminate-oak.jpg" },
+                { id: 'f-spc', uz: "Kvars-vinil (SPC)", ru: "Кварц-винил (SPC)", img: "./images/tex-parquet-oak-chevron.jpg" },
+                { id: 'f-tile', uz: "Plitka / keramogranit", ru: "Плитка / керамогранит", img: "./images/tex-porcelain-marble.jpg" }
+            ],
+            wall: [
+                { id: 'w-floral', uz: "Oboy gulli", ru: "Обои с рисунком", img: "./images/tex-wallpaper-floral.jpg" },
+                { id: 'w-plaster', uz: "Dekorativ shtukaturka", ru: "Декоративная штукатурка", img: "./images/tex-wall-decor-sand.jpg" },
+                { id: 'w-tile', uz: "Plitka (kafel)", ru: "Плитка (кафель)", img: "./images/tex-marble-calacatta.jpg" }
+            ],
+            ceil: [
+                { id: 'c-emb', uz: "Tortma shift", ru: "Натяжной потолок", img: "./images/tex-ceiling-emboss.jpg" },
+                { id: 'c-slat', uz: "Reykali shift", ru: "Реечный потолок", img: "./images/tex-ceiling-slat-gray.jpg" }
+            ]
+        };
 
-    camera3D = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-    camera3D.position.set(0, 1.5, 5);
+        function r3Group(type) { return (type === 'bathroom' || type === 'toilet') ? 'wet' : 'dry'; }
+        function r3Type(id) { const s = document.getElementById(`type-${id}`); return s ? s.value : 'bedroom'; }
 
-    renderer3D = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
-    renderer3D.setSize(container.clientWidth, container.clientHeight);
-    renderer3D.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        function r3Chosen(roomId, sf) {
+            if (!roomId) return null;
+            const m = R3.mat[roomId] || {};
+            const optId = m[sf] || R3_DEFAULT[sf];
+            return R3_OPTS[sf].find(o => o.id === optId) || R3_OPTS[sf][0];
+        }
 
-    // Освещение
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene3D.add(ambientLight);
+        function r3Register(id) {
+            R3.mat[id] = { floor: R3_DEFAULT.floor, wall: R3_DEFAULT.wall, ceil: R3_DEFAULT.ceil };
+            r3SetActive(id);
+        }
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    dirLight.position.set(2, 4, 3);
-    scene3D.add(dirLight);
+        function r3Unregister(id) {
+            delete R3.mat[id];
+            delete R3.furniture[id];
+            if (String(R3.active) === String(id)) {
+                const first = document.querySelector('#rooms-container .room-card');
+                R3.active = first ? first.id.replace('room-', '') : null;
+            }
+            r3RenderChips();
+        }
 
-    // Управление OrbitControls
-    controls3D = new THREE.OrbitControls(camera3D, renderer3D.domElement);
-    controls3D.enableDamping = true;
-    controls3D.dampingFactor = 0.05;
-    controls3D.maxPolarAngle = Math.PI / 2 - 0.01; // Не уходить под пол
+        function r3OnTypeChange(id) { if (String(R3.active) === String(id)) { r3Paint(); r3RenderOpts(); } }
+        function r3OnDimChange(id) { if (String(R3.active) === String(id)) r3Layout(); }
 
-    // Вкладки
-    document.getElementById('r3-tabs').addEventListener('click', e => {
-        const t = e.target.closest('.r3-tab'); if (!t) return;
-        R3.tab = t.dataset.s;
-        document.querySelectorAll('.r3-tab').forEach(x => x.setAttribute('aria-selected', x === t));
-        r3RenderOpts();
-    });
+        function r3SetActive(id) {
+            id = String(id);
+            R3.active = id;
+            document.querySelectorAll('#rooms-container .room-card').forEach(c => c.classList.toggle('r3-active', c.id === 'room-' + id));
+            r3RenderChips(); r3Layout(); r3Paint(); r3RenderOpts();
+        }
 
-    // Полноэкранный режим
-    document.getElementById('r3-fs').addEventListener('click', e => {
-        e.stopPropagation();
-        const on = container.classList.toggle('full');
-        e.target.textContent = on ? '✕ Yopish / Закрыть' : '⛶ Katta / Крупно';
-        r3Layout();
-    });
+        function r3RenderChips() {
+            const box = document.getElementById('r3-chips'); if (!box) return;
+            const cards = document.querySelectorAll('#rooms-container .room-card');
+            box.innerHTML = '';
+            cards.forEach((c, i) => {
+                const id = c.id.replace('room-', '');
+                const b = document.createElement('button');
+                b.type = 'button'; b.className = 'r3-chip';
+                b.setAttribute('aria-pressed', String(R3.active) === id);
+                b.textContent = `#${i + 1} ${roomTypes[r3Type(id)] || 'Xona'}`;
+                b.onclick = (e) => { e.stopPropagation(); r3SetActive(id); };
+                box.appendChild(b);
+            });
+            box.style.display = cards.length > 1 ? 'flex' : 'none';
+        }
 
-    window.addEventListener('resize', r3Layout);
-    r3Layout();
-    r3LoadPhotos();
+        function r3RenderOpts() {
+            const box = document.getElementById('r3-opts'); if (!box || R3.active === null) return;
+            const sf = R3.tab;
+            box.innerHTML = '';
 
-    function animate() {
-        requestAnimationFrame(animate);
-        controls3D.update();
-        renderer3D.render(scene3D, camera3D);
-    }
-    animate();
-}
+            if (sf === 'furniture') {
+                const curFurnId = R3.furniture[R3.active] || null;
+                const noneBtn = document.createElement('button');
+                noneBtn.type = 'button'; noneBtn.className = 'r3-opt';
+                noneBtn.setAttribute('aria-pressed', !curFurnId);
+                noneBtn.innerHTML = `<div class="sw" style="background:#1E293B; display:flex; align-items:center; justify-content:center; font-size:24px;">🚫</div><b>Bosh (mebelsiz)</b><span>Без мебели</span>`;
+                noneBtn.onclick = () => { R3.furniture[R3.active] = null; r3Paint(); r3RenderOpts(); };
+                box.appendChild(noneBtn);
 
-function r3Layout() {
-    if (!renderer3D) return;
-    const container = document.getElementById('r3-stage');
-    const w = container.clientWidth;
-    const h = container.clientHeight || 400;
+                let available = [];
+                huvaydoCatalog.forEach(cat => { available = available.concat(cat.items); });
+                available.forEach(item => {
+                    const b = document.createElement('button');
+                    b.type = 'button'; b.className = 'r3-opt';
+                    b.setAttribute('aria-pressed', curFurnId === item.id);
+                    const thumb = item.coverImg || (item.images && item.images[0]) || '';
+                    b.innerHTML = `<div class="sw" style="background-image:url('${thumb}')"></div><b>${item.name}</b><span>${item.material || 'Mebel'}</span>`;
+                    b.onclick = () => { R3.furniture[R3.active] = item.id; r3Paint(); r3RenderOpts(); };
+                    box.appendChild(b);
+                });
+                return;
+            }
 
-    camera3D.aspect = w / h;
-    camera3D.updateProjectionMatrix();
-    renderer3D.setSize(w, h);
-
-    // Построение геометрии стен по размерам
-    const d = r3Dims(); // {l, w, h}
-    rebuildRoomBox(d.w, d.h, d.l);
-}
-
-function rebuildRoomBox(width, height, length) {
-    Object.values(roomMeshes).forEach(m => { if(m) scene3D.remove(m); });
-
-    const wallMat = () => new THREE.MeshStandardMaterial({ color: 0xcccccc, side: THREE.DoubleSide });
-
-    // Пол
-    const floorGeo = new THREE.PlaneGeometry(width, length);
-    roomMeshes.floor = new THREE.Mesh(floorGeo, wallMat());
-    roomMeshes.floor.rotation.x = -Math.PI / 2;
-    scene3D.add(roomMeshes.floor);
-
-    // Потолок
-    const ceilGeo = new THREE.PlaneGeometry(width, length);
-    roomMeshes.ceil = new THREE.Mesh(ceilGeo, wallMat());
-    roomMeshes.ceil.position.y = height;
-    roomMeshes.ceil.rotation.x = Math.PI / 2;
-    scene3D.add(roomMeshes.ceil);
-
-    // Задняя стена
-    const backGeo = new THREE.PlaneGeometry(width, height);
-    roomMeshes.back = new THREE.Mesh(backGeo, wallMat());
-    roomMeshes.back.position.set(0, height / 2, -length / 2);
-    scene3D.add(roomMeshes.back);
-
-    // Левая стена
-    const leftGeo = new THREE.PlaneGeometry(length, height);
-    roomMeshes.left = new THREE.Mesh(leftGeo, wallMat());
-    roomMeshes.left.position.set(-width / 2, height / 2, 0);
-    roomMeshes.left.rotation.y = Math.PI / 2;
-    scene3D.add(roomMeshes.left);
-
-    // Правая стена
-    const rightGeo = new THREE.PlaneGeometry(length, height);
-    roomMeshes.right = new THREE.Mesh(rightGeo, wallMat());
-    roomMeshes.right.position.set(width / 2, height / 2, 0);
-    roomMeshes.right.rotation.y = -Math.PI / 2;
-    scene3D.add(roomMeshes.right);
-
-    r3Paint();
-}
-
-function r3Paint() {
-    if (R3.active === null || !roomMeshes.floor) return;
-
-    const applyTex = (meshGroup, opt) => {
-        if (!opt || !opt.img) return;
-        const tex = textureLoader.load(opt.img, () => {
-            tex.wrapS = THREE.RepeatWrapping;
-            tex.wrapT = THREE.RepeatWrapping;
-            tex.repeat.set(2, 2);
-            meshGroup.material.map = tex;
-            meshGroup.material.needsUpdate = true;
-        });
-    };
-
-    applyTex(roomMeshes.floor, r3Chosen(R3.active, 'floor'));
-    applyTex(roomMeshes.ceil, r3Chosen(R3.active, 'ceil'));
-    applyTex(roomMeshes.back, r3Chosen(R3.active, 'wall'));
-    applyTex(roomMeshes.left, r3Chosen(R3.active, 'wall'));
-    applyTex(roomMeshes.right, r3Chosen(R3.active, 'wall'));
-
-    // Загрузка 3D мебели (.glb) если указан файл
-    const furnId = R3.furniture[R3.active];
-    if (loadedFurnitureMesh) { scene3D.remove(loadedFurnitureMesh); loadedFurnitureMesh = null; }
-
-    if (furnId) {
-        let item = null;
-        huvaydoCatalog.forEach(c => c.items.forEach(i => { if (i.id === furnId) item = i; }));
-        if (item && item.glbModel) {
-            gltfLoader.load(item.glbModel, (gltf) => {
-                loadedFurnitureMesh = gltf.scene;
-                loadedFurnitureMesh.position.set(0, 0, 0);
-                scene3D.add(loadedFurnitureMesh);
+            const cur = r3Chosen(R3.active, sf);
+            (R3_OPTS[sf] || []).forEach(o => {
+                const b = document.createElement('button');
+                b.type = 'button'; b.className = 'r3-opt'; b.setAttribute('aria-pressed', cur && cur.id === o.id);
+                b.innerHTML = `<div class="sw" style="background-image:url('${o.img}')"></div><b>${o.uz}</b><span>${o.ru}</span>`;
+                b.onclick = () => { R3.mat[R3.active][sf] = o.id; r3Paint(); r3RenderOpts(); };
+                box.appendChild(b);
             });
         }
-    }
-}
+
+        function r3Dims() {
+            const id = R3.active;
+            const num = (name, lo, hi, d) => { const e = document.getElementById(`${name}-${id}`); const v = e ? parseFloat(String(e.value).replace(',', '.')) : NaN; return isNaN(v) ? d : Math.max(lo, Math.min(hi, v)); };
+            return { l: num('length', 1.5, 12, 4), w: num('width', 1.5, 12, 3.5), h: num('height', 2, 5, 2.7) };
+        }
+
+        function r3LoadPhotos() {}
+ 
+        /* ================= THREE.JS 3D-ENGINE ================= */
+        let scene3D, camera3D, renderer3D, controls3D;
+        let roomMeshes = { floor: null, ceil: null, back: null, left: null, right: null };
+        let loadedFurnitureMesh = null;
+        const gltfLoader = new THREE.GLTFLoader();
+        const textureLoader = new THREE.TextureLoader();
+
+        function r3Init() {
+            const canvas = document.getElementById('three-canvas');
+            const container = document.getElementById('r3-stage');
+
+            scene3D = new THREE.Scene();
+            scene3D.background = new THREE.Color(0x070c1e);
+
+            camera3D = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+            camera3D.position.set(0, 1.5, 5);
+
+            renderer3D = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer3D.setSize(container.clientWidth, container.clientHeight);
+            renderer3D.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Освещение
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            scene3D.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            dirLight.position.set(2, 4, 3);
+            scene3D.add(dirLight);
+
+            // Управление OrbitControls
+            controls3D = new THREE.OrbitControls(camera3D, renderer3D.domElement);
+            controls3D.enableDamping = true;
+            controls3D.dampingFactor = 0.05;
+            controls3D.maxPolarAngle = Math.PI / 2 - 0.01;
+
+            // Вкладки
+            document.getElementById('r3-tabs').addEventListener('click', e => {
+                const t = e.target.closest('.r3-tab'); if (!t) return;
+                R3.tab = t.dataset.s;
+                document.querySelectorAll('.r3-tab').forEach(x => x.setAttribute('aria-selected', x === t));
+                r3RenderOpts();
+            });
+
+            // Полноэкранный режим
+            document.getElementById('r3-fs').addEventListener('click', e => {
+                e.stopPropagation();
+                const on = container.classList.toggle('full');
+                e.target.textContent = on ? '✕ Yopish / Закрыть' : '⛶ Katta / Крупно';
+                r3Layout();
+            });
+
+            window.addEventListener('resize', r3Layout);
+            r3Layout();
+            r3LoadPhotos();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                controls3D.update();
+                renderer3D.render(scene3D, camera3D);
+            }
+            animate();
+        }
+
+        function r3Layout() {
+            if (!renderer3D) return;
+            const container = document.getElementById('r3-stage');
+            const w = container.clientWidth;
+            const h = container.clientHeight || 400;
+
+            camera3D.aspect = w / h;
+            camera3D.updateProjectionMatrix();
+            renderer3D.setSize(w, h);
+
+            const d = r3Dims();
+            rebuildRoomBox(d.w, d.h, d.l);
+        }
+
+        function rebuildRoomBox(width, height, length) {
+            Object.values(roomMeshes).forEach(m => { if(m) scene3D.remove(m); });
+
+            const wallMat = () => new THREE.MeshStandardMaterial({ color: 0xcccccc, side: THREE.DoubleSide });
+
+            // Пол
+            const floorGeo = new THREE.PlaneGeometry(width, length);
+            roomMeshes.floor = new THREE.Mesh(floorGeo, wallMat());
+            roomMeshes.floor.rotation.x = -Math.PI / 2;
+            scene3D.add(roomMeshes.floor);
+
+            // Потолок
+            const ceilGeo = new THREE.PlaneGeometry(width, length);
+            roomMeshes.ceil = new THREE.Mesh(ceilGeo, wallMat());
+            roomMeshes.ceil.position.y = height;
+            roomMeshes.ceil.rotation.x = Math.PI / 2;
+            scene3D.add(roomMeshes.ceil);
+
+            // Задняя стена
+            const backGeo = new THREE.PlaneGeometry(width, height);
+            roomMeshes.back = new THREE.Mesh(backGeo, wallMat());
+            roomMeshes.back.position.set(0, height / 2, -length / 2);
+            scene3D.add(roomMeshes.back);
+
+            // Левая стена
+            const leftGeo = new THREE.PlaneGeometry(length, height);
+            roomMeshes.left = new THREE.Mesh(leftGeo, wallMat());
+            roomMeshes.left.position.set(-width / 2, height / 2, 0);
+            roomMeshes.left.rotation.y = Math.PI / 2;
+            scene3D.add(roomMeshes.left);
+
+            // Правая стена
+            const rightGeo = new THREE.PlaneGeometry(length, height);
+            roomMeshes.right = new THREE.Mesh(rightGeo, wallMat());
+            roomMeshes.right.position.set(width / 2, height / 2, 0);
+            roomMeshes.right.rotation.y = -Math.PI / 2;
+            scene3D.add(roomMeshes.right);
+
+            r3Paint();
+        }
+
+        function r3Paint() {
+            if (R3.active === null || !roomMeshes.floor) return;
+
+            const applyTex = (meshGroup, opt) => {
+                if (!opt || !opt.img) return;
+                textureLoader.load(opt.img, (tex) => {
+                    tex.wrapS = THREE.RepeatWrapping;
+                    tex.wrapT = THREE.RepeatWrapping;
+                    tex.repeat.set(2, 2);
+                    meshGroup.material.map = tex;
+                    meshGroup.material.needsUpdate = true;
+                });
+            };
+
+            applyTex(roomMeshes.floor, r3Chosen(R3.active, 'floor'));
+            applyTex(roomMeshes.ceil, r3Chosen(R3.active, 'ceil'));
+            applyTex(roomMeshes.back, r3Chosen(R3.active, 'wall'));
+            applyTex(roomMeshes.left, r3Chosen(R3.active, 'wall'));
+            applyTex(roomMeshes.right, r3Chosen(R3.active, 'wall'));
+
+            const furnId = R3.furniture[R3.active];
+            if (loadedFurnitureMesh) { scene3D.remove(loadedFurnitureMesh); loadedFurnitureMesh = null; }
+
+            if (furnId) {
+                let item = null;
+                huvaydoCatalog.forEach(c => c.items.forEach(i => { if (i.id === furnId) item = i; }));
+                if (item && item.glbModel) {
+                    gltfLoader.load(item.glbModel, (gltf) => {
+                        loadedFurnitureMesh = gltf.scene;
+                        loadedFurnitureMesh.position.set(0, 0, 0);
+                        scene3D.add(loadedFurnitureMesh);
+                    });
+                }
+            }
+        }
  
         let roomCounter = 0;
         let catalogScrollPosition = 0;
@@ -852,27 +954,27 @@ function r3Paint() {
                     }
                 ]
             },
-           {
-    category: "🛋 Yumshoq mebellar / Мягкая мебель",
-    type: "sofa",
-    items: [
-        { 
-            id: "test_sofa_3d", 
-            name: "3D Sofa (Test Model)", 
-            glbModel: "./images/sofa.glb", // твой файл sofa.glb из папки images
-            coverImg: "./images/sofa-with-table-full-set-khuvaydo-6.jpg", 
-            images: ["./images/sofa-with-table-full-set-khuvaydo-6.jpg"], 
-            desc: "3D-модель дивана для примерки в интерактивной комнате." 
-        },
-        { 
-            id: "set_6", 
-            name: "Khuvaydo Sofa Set #6", 
-            coverImg: "./images/sofa-with-table-full-set-khuvaydo-6.jpg", 
-            images: ["./images/sofa-with-table-full-set-khuvaydo-6.jpg"], 
-            desc: "Mehmonxona uchun yumshoq mebel to'plami #6." 
-        }
-    ]
-}
+            {
+                category: "🛋 Yumshoq mebellar / Мягкая мебель",
+                type: "sofa",
+                items: [
+                    { 
+                        id: "test_sofa_3d", 
+                        name: "3D Sofa (Test Model)", 
+                        glbModel: "./images/sofa.glb", 
+                        coverImg: "./images/sofa-with-table-full-set-khuvaydo-6.jpg", 
+                        images: ["./images/sofa-with-table-full-set-khuvaydo-6.jpg"], 
+                        desc: "3D-модель дивана для примерки в интерактивной комнате." 
+                    },
+                    { 
+                        id: "set_6", 
+                        name: "Khuvaydo Sofa Set #6", 
+                        coverImg: "./images/sofa-with-table-full-set-khuvaydo-6.jpg", 
+                        images: ["./images/sofa-with-table-full-set-khuvaydo-6.jpg"], 
+                        desc: "Mehmonxona uchun yumshoq mebel to'plami #6." 
+                    }
+                ]
+            },
             {
                 category: "🍳 Oshxona mebellari / Кухонные гарнитуры",
                 type: "kitchen",
@@ -1561,7 +1663,7 @@ function r3Paint() {
                         🏆 BUTUN KVARTIRA BO'YICHA UMUMIY HISOB-KITOB / ОБЩИЙ ИТОГОВЫЙ РАСЧЕТ ПО ВСЕЙ КВАРТИРЕ
                     </div>
                     <div style="font-size: 12px; color: var(--text-muted); text-align: center; margin-bottom: 15px;">
-                        🏠 Xonalar soni: <b>${roomsData.length}</b> | 📐 Umumiy pol maydoni: <b>${totalFloorAreaAll.toFixed(1)} m²</b> \vert{} 🧱 Devorlar: <b>${totalWallAreaAll.toFixed(1)} m²</b>
+                        🏠 Xonalar soni: <b>${roomsData.length}</b> | 📐 Umumiy pol maydoni: <b>${totalFloorAreaAll.toFixed(1)} m²</b> | 🧱 Devorlar: <b>${totalWallAreaAll.toFixed(1)} m²</b>
                     </div>
                     <div style="margin-bottom: 20px;">
                         ${overallHTML}
@@ -1818,7 +1920,7 @@ function r3Paint() {
 
             const imgEl = document.getElementById('gallerySliderImg');
             imgEl.src = currentItemImages[currentSlideIndex];
-            document.getElementById('slideCounter').innerText = `${currentSlideIndex + 1} /${currentItemImages.length}`;
+            document.getElementById('slideCounter').innerText = `${currentSlideIndex + 1} / ${currentItemImages.length}`;
         }
 
 
