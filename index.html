@@ -2341,19 +2341,19 @@ function startDroneTour() {
     }
 
     tl
-    // 1. Приближаемся ВПЛОТНУЮ к стене (zoom: 5.2 — эффект крупного плана ~30 см)
-    .to(tourObj, { yaw: 0, pitch: 0, zoom: 5.2, duration: 4, ease: "power2.inOut", onUpdate: applyFrame })
+    // 1. Приближаемся ВПЛОТНУЮ к центральной стене (~30 см)
+    .to(tourObj, { yaw: 0, pitch: 0, zoom: 5.2, duration: 3.5, ease: "power2.inOut", onUpdate: applyFrame })
     
-    // 2. Панорамируем по отделке стены вблизи
-    .to(tourObj, { yaw: 20, pitch: 2, zoom: 4.8, duration: 3.5, ease: "power1.inOut", onUpdate: applyFrame })
+    // 2. РАЗВОРАЧИВАЕМ ОБЪЕКТИВ ВВЕРХ К ПОТОЛКУ (крупный план)
+    .to(tourObj, { yaw: 0, pitch: 80, zoom: 3.2, duration: 3.5, ease: "power2.inOut", onUpdate: applyFrame })
     
-    // 3. РАЗВОРАЧИВАЕМ ОБЪЕКТИВ ВВЕРХ К ПОТОЛКУ (pitch: 80, zoom: 3.2)
-    .to(tourObj, { yaw: 0, pitch: 80, zoom: 3.2, duration: 4, ease: "power2.inOut", onUpdate: applyFrame })
+    // 3. ОПУСКАЕМ ОБЪЕКТИВ ВНИЗ К ПОЛУ ВПЛОТНУЮ (pitch: -75, zoom: 4.5)
+    .to(tourObj, { yaw: -15, pitch: -75, zoom: 4.5, duration: 4, ease: "power2.inOut", onUpdate: applyFrame })
     
-    // 4. Осматриваем потолок под углом вблизи
-    .to(tourObj, { yaw: -25, pitch: 68, zoom: 3.0, duration: 3.5, ease: "power1.inOut", onUpdate: applyFrame })
+    // 4. Панорама пола под другим углом вблизи
+    .to(tourObj, { yaw: 20, pitch: -65, zoom: 4.0, duration: 3.5, ease: "power1.inOut", onUpdate: applyFrame })
     
-    // 5. Плавный отлёт назад к общему виду комнаты
+    // 5. Плавный отлёт назад к общему виду всей комнаты
     .to(tourObj, { yaw: -22, pitch: -2, zoom: 1.0, duration: 4, ease: "power3.out", onUpdate: applyFrame });
 }
 
