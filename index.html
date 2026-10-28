@@ -2306,123 +2306,87 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
-<!-- ==================== THREE.JS + GSAP CINEMATIC TOUR (20 СЕКУНД) ==================== -->
+<!-- ==================== CSS 3D CINEMATIC TOUR (20 СЕКУНД) ==================== -->
 <script>
-let tScene, tCamera, tRenderer, tControls;
 let isTourActive = false;
 
-function initThreeEngine() {
-    const stage = document.getElementById('r3-stage');
-    if (!stage) return;
-
-    // 1. Создаем сцену и камеру
-    tScene = new THREE.Scene();
-    tScene.background = new THREE.Color(0x070C1E);
-
-    tCamera = new THREE.PerspectiveCamera(60, stage.clientWidth / 400, 0.1, 1000);
-    tCamera.position.set(0, 1.8, 3.5);
-
-    // 2. Рендерер
-    tRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    tRenderer.setSize(stage.clientWidth, 400);
-    tRenderer.shadowMap.enabled = true;
-    
-    const container = document.getElementById('r3-scene');
-    if (container) {
-        container.appendChild(tRenderer.domElement);
-    }
-
-    // 3. Управление мышкой
-    tControls = new THREE.OrbitControls(tCamera, tRenderer.domElement);
-    tControls.enableDamping = true;
-    tControls.dampingFactor = 0.05;
-    tControls.target.set(0, 0.8, 0);
-
-    // 4. Освещение
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-    tScene.add(ambientLight);
-
-    const dirLight = new THREE.DirectionalLight(0xfff5ea, 0.8);
-    dirLight.position.set(3, 5, 2);
-    tScene.add(dirLight);
-
-    // 5. Анимационный цикл
-    function animate() {
-        requestAnimationFrame(animate);
-        if (!isTourActive && tControls) {
-            tControls.update();
-        }
-        tRenderer.render(tScene, tCamera);
-    }
-    animate();
-}
-
-// ДРОН-ТУР НА 20 СЕКУНД (ПОЛ ➔ СТЕНА ➔ ПОТОЛОК ➔ ОБЩИЙ ПЛАН)
 function startDroneTour() {
-    if (isTourActive || !tCamera || !tControls) return;
+    if (isTourActive || typeof R3 === 'undefined') return;
 
     isTourActive = true;
-    tControls.enabled = false;
-
     const btn = document.getElementById('btn-drone-tour');
     if (btn) btn.innerText = "🚁 Полет...";
+
+    // Создаем временный объект для анимации параметров CSS 3D комнаты
+    const tourObj = {
+        yaw: R3.yaw,
+        pitch: R3.pitch,
+        zoom: R3.zoom
+    };
 
     const tl = gsap.timeline({
         onComplete: () => {
             isTourActive = false;
-            tControls.enabled = true;
             if (btn) btn.innerText = "🛸 Путешествие / Sayohat";
         }
     });
 
-    const targetObj = { x: tControls.target.x, y: tControls.target.y, z: tControls.target.z };
+    function applyFrame() {
+        R3.yaw = tourObj.yaw;
+        R3.pitch = tourObj.pitch;
+        R3.zoom = tourObj.zoom;
+        
+        // Синхронизируем ползунок зума, если он есть
+        const zInput = document.getElementById('r3-z');
+        if (zInput) zInput.value = tourObj.zoom;
 
-    function updateCameraLookAt() {
-        tCamera.lookAt(targetObj.x, targetObj.y, targetObj.z);
-        tControls.target.set(targetObj.x, targetObj.y, targetObj.z);
+        // Вызываем штатную функцию перерисовки 3D комнаты
+        if (typeof r3Apply === 'function') {
+            r3Apply();
+        }
     }
 
     tl
-    // 1. ТОЛЬКО ПОЛ (5 сек) — объектив направлен строго вниз в покрытие
-    .to(tCamera.position, {
-        x: 0, y: 0.7, z: 0.1,
+    // 1. ВЗГЛЯД НА ПОЛ (5 сек) — наклон вниз, приближение к полу
+    .to(tourObj, {
+        yaw: -15,
+        pitch: 12,
+        zoom: 1.4,
         duration: 5,
         ease: "power2.inOut",
-        onUpdate: updateCameraLookAt
+        onUpdate: applyFrame
     })
-    .to(targetObj, { x: 0, y: 0.0, z: -0.6, duration: 5, ease: "power2.inOut" }, 0)
 
-    // 2. ТОЛЬКО СТЕНА (5 сек) — подъем и фокус на отделке стены
-    .to(tCamera.position, {
-        x: -1.4, y: 1.4, z: 0.0,
+    // 2. ВЗГЛЯД НА СТЕНУ (5 сек) — поворот к левой/задней стене
+    .to(tourObj, {
+        yaw: 35,
+        pitch: 0,
+        zoom: 1.3,
         duration: 5,
         ease: "power2.inOut",
-        onUpdate: updateCameraLookAt
+        onUpdate: applyFrame
     })
-    .to(targetObj, { x: -2.0, y: 1.4, z: -0.8, duration: 5, ease: "power2.inOut" }, "<")
 
-    // 3. ТОЛЬКО ПОТОЛОК (5 сек) — камера смотрит вверх
-    .to(tCamera.position, {
-        x: 0, y: 2.2, z: -0.5,
+    // 3. ВЗГЛЯД НА ПОТОЛОК (5 сек) — наклон вверх
+    .to(tourObj, {
+        yaw: 10,
+        pitch: -12,
+        zoom: 1.2,
         duration: 5,
         ease: "power2.inOut",
-        onUpdate: updateCameraLookAt
+        onUpdate: applyFrame
     })
-    .to(targetObj, { x: 0, y: 2.7, z: -1.5, duration: 5, ease: "power2.inOut" }, "<")
 
-    // 4. ОБЩИЙ ПЛАН (5 сек) — отлет назад
-    .to(tCamera.position, {
-        x: 0, y: 1.8, z: 3.5,
+    // 4. ОБЩИЙ ПЛАН (5 сек) — отлёт назад в исходную позицию
+    .to(tourObj, {
+        yaw: -22,
+        pitch: -2,
+        zoom: 1.0,
         duration: 5,
         ease: "power3.out",
-        onUpdate: updateCameraLookAt
-    })
-    .to(targetObj, { x: 0, y: 0.8, z: 0, duration: 5, ease: "power3.out" }, "<");
+        onUpdate: applyFrame
+    });
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-    setTimeout(initThreeEngine, 300);
-});
 </script>
 </body>
 </html>
