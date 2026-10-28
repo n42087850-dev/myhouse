@@ -2304,21 +2304,22 @@
     </script>
 
 
-<!-- ==================== CSS 3D CINEMATIC TOUR (20 СЕКУНД) ==================== -->
+<!-- ==================== CSS 3D CINEMATIC TOUR ==================== -->
 <script>
 let isTourActive = false;
 
 function startDroneTour() {
-    if (isTourActive || typeof R3 === 'undefined') return;
+    if (typeof gsap === 'undefined' || typeof R3 === 'undefined') return;
+    if (isTourActive) return;
 
     isTourActive = true;
     const btn = document.getElementById('btn-drone-tour');
     if (btn) btn.innerText = "🚁 Полет...";
 
     const tourObj = {
-        yaw: R3.yaw,
-        pitch: R3.pitch,
-        zoom: R3.zoom
+        yaw: Number(R3.yaw) || -22,
+        pitch: Number(R3.pitch) || -2,
+        zoom: Number(R3.zoom) || 1
     };
 
     const tl = gsap.timeline({
@@ -2342,46 +2343,24 @@ function startDroneTour() {
     }
 
     tl
-    // 1. ТОЛЬКО ПОЛ (5 сек) — крутой наклон вниз и макро-приближение к покрытию
-    .to(tourObj, {
-        yaw: 0,
-        pitch: 48,
-        zoom: 2.8,
-        duration: 5,
-        ease: "power2.inOut",
-        onUpdate: applyFrame
-    })
-
-    // 2. ТОЛЬКО СТЕНА (5 сек) — поворот на боковую стену, крупный план отделки
-    .to(tourObj, {
-        yaw: 42,
-        pitch: 0,
-        zoom: 2.5,
-        duration: 5,
-        ease: "power2.inOut",
-        onUpdate: applyFrame
-    })
-
-    // 3. ТОЛЬКО ПОТОЛОК (5 сек) — наклон вверх к потолочному покрытию
-    .to(tourObj, {
-        yaw: 0,
-        pitch: -45,
-        zoom: 2.8,
-        duration: 5,
-        ease: "power2.inOut",
-        onUpdate: applyFrame
-    })
-
-    // 4. ОБЩИЙ ПЛАН КОМНАТЫ (5 сек) — плавный отлёт в исходную позицию
-    .to(tourObj, {
-        yaw: -22,
-        pitch: -2,
-        zoom: 1.0,
-        duration: 5,
-        ease: "power3.out",
-        onUpdate: applyFrame
-    });
+    .to(tourObj, { yaw: 0, pitch: 48, zoom: 2.8, duration: 5, ease: "power2.inOut", onUpdate: applyFrame })
+    .to(tourObj, { yaw: 42, pitch: 0, zoom: 2.5, duration: 5, ease: "power2.inOut", onUpdate: applyFrame })
+    .to(tourObj, { yaw: 0, pitch: -45, zoom: 2.8, duration: 5, ease: "power2.inOut", onUpdate: applyFrame })
+    .to(tourObj, { yaw: -22, pitch: -2, zoom: 1.0, duration: 5, ease: "power3.out", onUpdate: applyFrame });
 }
+
+// Принудительно привязываем клик мыши на ПК
+document.addEventListener("DOMContentLoaded", function() {
+    const btn = document.getElementById('btn-drone-tour');
+    if (btn) {
+        ['click', 'pointerdown'].forEach(evt => {
+            btn.addEventListener(evt, function(e) {
+                e.stopPropagation(); // Не даем 3D-сцене перехватить клик
+                startDroneTour();
+            }, { passive: true });
+        });
+    }
+});
 </script>
 </body>
 </html>
