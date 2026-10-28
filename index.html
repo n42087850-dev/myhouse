@@ -2302,8 +2302,7 @@
         });
     </script>
 
-
-<!-- ==================== CSS 3D CINEMATIC TOUR ==================== -->
+<!-- ==================== CSS 3D CINEMATIC TOUR ==================== -->
 <script>
 let isTourActive = false;
 
@@ -2342,10 +2341,20 @@ function startDroneTour() {
     }
 
     tl
-    .to(tourObj, { yaw: 0, pitch: 48, zoom: 2.8, duration: 5, ease: "power2.inOut", onUpdate: applyFrame })
-    .to(tourObj, { yaw: 42, pitch: 0, zoom: 2.5, duration: 5, ease: "power2.inOut", onUpdate: applyFrame })
-    .to(tourObj, { yaw: 0, pitch: -45, zoom: 2.8, duration: 5, ease: "power2.inOut", onUpdate: applyFrame })
-    .to(tourObj, { yaw: -22, pitch: -2, zoom: 1.0, duration: 5, ease: "power3.out", onUpdate: applyFrame });
+    // 1. Приближаемся ВПЛОТНУЮ к стене (zoom: 5.2 — эффект крупного плана ~30 см)
+    .to(tourObj, { yaw: 0, pitch: 0, zoom: 5.2, duration: 4, ease: "power2.inOut", onUpdate: applyFrame })
+    
+    // 2. Панорамируем по отделке стены вблизи
+    .to(tourObj, { yaw: 20, pitch: 2, zoom: 4.8, duration: 3.5, ease: "power1.inOut", onUpdate: applyFrame })
+    
+    // 3. РАЗВОРАЧИВАЕМ ОБЪЕКТИВ ВВЕРХ К ПОТОЛКУ (pitch: 80, zoom: 3.2)
+    .to(tourObj, { yaw: 0, pitch: 80, zoom: 3.2, duration: 4, ease: "power2.inOut", onUpdate: applyFrame })
+    
+    // 4. Осматриваем потолок под углом вблизи
+    .to(tourObj, { yaw: -25, pitch: 68, zoom: 3.0, duration: 3.5, ease: "power1.inOut", onUpdate: applyFrame })
+    
+    // 5. Плавный отлёт назад к общему виду комнаты
+    .to(tourObj, { yaw: -22, pitch: -2, zoom: 1.0, duration: 4, ease: "power3.out", onUpdate: applyFrame });
 }
 
 // Принудительно привязываем клик мыши на ПК
@@ -2354,7 +2363,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (btn) {
         ['click', 'pointerdown'].forEach(evt => {
             btn.addEventListener(evt, function(e) {
-                e.stopPropagation(); // Не даем 3D-сцене перехватить клик
+                e.stopPropagation();
                 startDroneTour();
             }, { passive: true });
         });
