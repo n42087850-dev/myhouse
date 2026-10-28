@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
-    <!-- Подключаем GSAP для плавных анимаций камеры -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-</head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MYHOUSE PRO — Ta'mirlash va mebel kalkulyatori / Калькулятор ремонта и мебели</title>
+    <!-- Подключаем GSAP для плавных анимаций камеры -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
     <style>
         :root {
             --bg-main: #0B132B;
@@ -475,14 +476,16 @@
                         🛸 Путешествие / Sayohat
                     </button>
 
-                    <div class="r3-scene" id="r3-scene"><div class="r3-room" id="r3-room">
-                        <div class="r3-face" id="r3-back"></div>
-                        <div class="r3-face" id="r3-left"></div>
-                        <div class="r3-face" id="r3-right"></div>
-                        <div class="r3-face" id="r3-floor"></div>
-                        <div class="r3-face" id="r3-ceil"></div>
-                        <div class="r3-face" id="r3-furniture" style="display: none;"></div>
-                    </div></div>
+                   <div class="r3-scene" id="r3-scene">
+    <div class="r3-room" id="r3-room">
+        <div class="r3-face" id="r3-back"></div>
+        <div class="r3-face" id="r3-left"></div>
+        <div class="r3-face" id="r3-right"></div>
+        <div class="r3-face" id="r3-floor"></div>
+        <div class="r3-face" id="r3-ceil"></div>
+        <div class="r3-face" id="r3-furniture" style="display: none;"></div>
+    </div>
+</div>
                     <button class="r3-fs" id="r3-fs" type="button">⛶ Katta / Крупно</button>
                     <div class="r3-hint">Barmoq bilan aylantiring / Крутите пальцем</div>
                 </div>
@@ -2302,9 +2305,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>[cite: 8]
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>[cite: 8]
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>[cite: 8]
 
 <!-- ==================== THREE.JS + GSAP CINEMATIC TOUR (20 СЕКУНД) ==================== -->
 <script>
@@ -2424,7 +2424,5 @@ document.addEventListener("DOMContentLoaded", function() {
     setTimeout(initThreeEngine, 300);
 });
 </script>
-</body>
-</html>
 </body>
 </html>
