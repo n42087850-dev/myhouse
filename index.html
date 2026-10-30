@@ -965,127 +965,168 @@
         };
  
         const huvaydoCatalog = [
-            {
-                category: "🚪 Dehliz / Прихожие гарнитуры",
-                type: "hallway",
-                items: [
-                    { id: "hallway_1", name: "Khuvaydo Hallway #1", coverImg: "./images/hallway-khuvaydo-1.jpg", images: ["./images/hallway-khuvaydo-1.jpg"], desc: "Frezerovka va shisha vitrinali shkafli dahliz to'plami." },
-                    { id: "hallway_2", name: "Khuvaydo Hallway #2", coverImg: "./images/hallway-khuvaydo-2.jpg", images: ["./images/hallway-khuvaydo-2.jpg"], desc: "Zamonaviy to'q rangli ochiq kiyim ilgichli dahliz garnituri." },
-                    { id: "hallway_3", name: "Khuvaydo Hallway #3", coverImg: "./images/hallway-khuvaydo-3.jpg", images: ["./images/hallway-khuvaydo-3.jpg"], desc: "Yorug' uslubdagi vertikal chiziqli puf va ko'zguli dahliz garnituri." },
-                    { id: "hallway_4", name: "Khuvaydo Hallway #4", coverImg: "./images/hallway-khuvaydo-4.jpg", images: ["./images/hallway-khuvaydo-4.jpg"], desc: "Yog'ochli ochiq tokchaga ega shinam o'rnatma shkaf-dahliz garnituri." }
+    {
+        category: "🚪 Dehliz / Прихожие гарнитуры",
+        type: "hallway",
+        items: [
+            { id: "hallway_1", name: "Khuvaydo Hallway #1", coverImg: "./images/hallway-khuvaydo-1.jpg", images: ["./images/hallway-khuvaydo-1.jpg"], desc: "Frezerovka va shisha vitrinali shkafli dahliz to'plami." },
+            { id: "hallway_2", name: "Khuvaydo Hallway #2", coverImg: "./images/hallway-khuvaydo-2.jpg", images: ["./images/hallway-khuvaydo-2.jpg"], desc: "Zamonaviy to'q rangli ochiq kiyim ilgichli dahliz garnituri." },
+            { id: "hallway_3", name: "Khuvaydo Hallway #3", coverImg: "./images/hallway-khuvaydo-3.jpg", images: ["./images/hallway-khuvaydo-3.jpg"], desc: "Yorug' uslubdagi vertikal chiziqli puf va ko'zguli dahliz garnituri." },
+            { id: "hallway_4", name: "Khuvaydo Hallway #4", coverImg: "./images/hallway-khuvaydo-4.jpg", images: ["./images/hallway-khuvaydo-4.jpg"], desc: "Yog'ochli ochiq tokchaga ega shinam o'rnatma shkaf-dahliz garnituri." }
+        ]
+    },
+    {
+        category: "🛏 Yotoqxona to'plamlari / Спальные гарнитуры",
+        type: "bedroom_set",
+        items: [
+            { 
+                id: "set_1", name: "Khuvaydo Full Set #1", material: "LMDF (Bo'yalgan MDF / Крашеный МДФ)",
+                coverImg: "./images/bedroom-khuvaydo-full-set-1.jpg",
+                images: ["./images/bedroom-khuvaydo-full-set-1.jpg", "./images/bed-with-2-nightstands-khuvaydo-1.jpg", "./images/closet-khuvaydo-1.jpg", "./images/dresser-with-stool-khuvaydo-1.jpg", "./images/nightstand-khuvaydo-1.jpg", "./images/tall-nightstand-khuvaydo-1.jpg", "./images/bigger-dresser-khuvaydo-1.jpg"],
+                desc: "To'liq yotoqxona garnituri #1: Krovat, Shkaf, Tumbachkalar, Komod va Zerkalo.",
+                elements: [
+                    { name: "Shkaf / Шкаф", size: "220 × 220 × 65 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 220, h: 220 }, area: 1.43 },
+                    { name: "Krovat / Кровать", size: "185 × 220 см · matras / матрас 175 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 185 }, area: 4.07 },
+                    { name: "Tryumo / Трюмо", size: "110 × 45 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 110 }, area: 0.5 },
+                    { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "60 × 45 см", note: "Eni × Chuqurlik / Ш × Г (har biri / каждая)", ph: { w: 60 }, area: 0.54 },
+                    { name: "Komod / Комод", size: "70 × 110 × 45 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 70, h: 110 }, area: 0.32 }
                 ]
             },
-            {
-                category: "🛏 Yotoqxona to'plamlari / Спальные гарнитуры",
-                type: "bedroom_set",
-                items: [
-                    { 
-                        id: "set_1", name: "Khuvaydo Full Set #1", material: "LMDF (Bo'yalgan MDF / Крашеный МДФ)",
-                        coverImg: "./images/bedroom-khuvaydo-full-set-1.jpg",
-                        images: ["./images/bedroom-khuvaydo-full-set-1.jpg", "./images/bed-with-2-nightstands-khuvaydo-1.jpg", "./images/closet-khuvaydo-1.jpg", "./images/dresser-with-stool-khuvaydo-1.jpg", "./images/nightstand-khuvaydo-1.jpg", "./images/tall-nightstand-khuvaydo-1.jpg", "./images/bigger-dresser-khuvaydo-1.jpg"],
-                        desc: "To'liq yotoqxona garnituri #1: Krovat, Shkaf, Tumbachkalar, Komod va Zerkalo.",
-                        elements: [
-                            { name: "Shkaf / Шкаф", size: "220 × 220 × 65 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 220, h: 220 }, area: 1.43 },
-                            { name: "Krovat / Кровать", size: "185 × 220 см · matras / матрас 175 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 185 }, area: 4.07 },
-                            { name: "Tryumo / Трюмо", size: "110 × 45 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 110 }, area: 0.5 },
-                            { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "60 × 45 см", note: "Eni × Chuqurlik / Ш × Г (har biri / каждая)", ph: { w: 60 }, area: 0.54 },
-                            { name: "Komod / Комод", size: "70 × 110 × 45 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 70, h: 110 }, area: 0.32 }
-                        ]
-                    },
-                    { 
-                        id: "set_2", name: "Khuvaydo Full Set #2", material: "LMDF (Bo'yalgan MDF / Крашеный МДФ)",
-                        coverImg: "./images/bed-with-2-nightstands-khuvaydo-2.jpg",
-                        images: ["./images/bed-with-2-nightstands-khuvaydo-2.jpg", "./images/closet-khuvaydo-2.jpg", "./images/dresser-with-stool-khuvaydo-2.jpg", "./images/nightstand-khuvaydo-2.jpg"],
-                        desc: "Zamonaviy yotoqxona to'plami #2.",
-                        elements: [
-                            { name: "Shkaf / Шкаф", size: "210 × 220 × 65 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 210, h: 220 }, area: 1.37 },
-                            { name: "Krovat / Кровать", size: "200 × 220 см · matras / матрас 175 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 200 }, area: 4.4 },
-                            { name: "Tryumo / Трюмо", size: "140 × 45 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 140 }, area: 0.63 },
-                            { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "55 × 60 × 45 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г (har biri / каждая)", ph: { w: 55, h: 60 }, area: 0.5 }
-                        ]
-                    },
-                    { 
-                        id: "set_3", name: "Khuvaydo Full Set #3", material: "LMDF (Bo'yalgan MDF / Крашеный МДФ)",
-                        coverImg: "./images/bed-with-2-nightstands-khuvaydo-3.jpg",
-                        images: [  "./images/bed-with-2-nightstands-khuvaydo-3.jpg", "./images/2-doors-closed-closet-khuvaydo-3.jpg", "./images/left-side-opened-closet-khuvaydo-3.jpg", "./images/right-side-opened-closet-khuvaydo-3.jpg", "./images/dresser-khuvaydo-3.jpg", "./images/nightstand-khuvaydo-3.jpg"],
-                        desc: "Klassik va shinam yotoqxona garnituri #3.",
-                        elements: [
-                            { name: "Shkaf / Шкаф", size: "195 × 220 × 65 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 195, h: 220 }, area: 1.27 },
-                            { name: "Krovat / Кровать", size: "170 × 220 см · matras / матрас 155 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 170 }, area: 3.74 },
-                            { name: "Tryumo / Трюмо", size: "130 × 45 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 130 }, area: 0.59 },
-                            { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "57 × 60 × 45 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г (har biri / каждая)", ph: { w: 57, h: 60 }, area: 0.51 }
-                        ]
-                    },
-                    { 
-                        id: "set_4", name: "Khuvaydo Full Set #4", material: "LDSP (Laminatlangan DSP / ЛДСП)",
-                        coverImg: "./images/bed-with-2-nightstands-khuvaydo-4.jpg",
-                        images: ["./images/bed-with-2-nightstands-khuvaydo-4.jpg", "./images/closet-khuvaydo-4.jpg", "./images/fully-opened-closet-khuvaydo-4.jpg", "./images/dresser-with-stool-khuvaydo-4.jpg", "./images/nightstand-khuvaydo-4.jpg"],
-                        desc: "Etnik stil elementlariga ega yotoqxona to'plami #4.",
-                        elements: [
-                            { name: "Shkaf / Шкаф", size: "260 × 220 × 65 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 260, h: 220 }, area: 1.69 },
-                            { name: "Krovat / Кровать", size: "185 × 220 см · matras / матрас 175 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 185 }, area: 4.07 },
-                            { name: "Tryumo / Трюмо", size: "140 × 45 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 140 }, area: 0.63 },
-                            { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "60 × 50 × 45 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г (har biri / каждая)", ph: { w: 60, h: 50 }, area: 0.54 }
-                        ]
-                    },
-                    { 
-                        id: "set_5", name: "Khuvaydo Full Set #5", material: "LDSP + LMDF (Laminatlangan DSP + MDF / ЛДСП + МДФ)",
-                        coverImg: "./images/bed-with-2-nightstands-khuvaydo-5.jpg",
-                        images: ["./images/bed-with-2-nightstands-khuvaydo-5.jpg", "./images/closet-khuvaydo-5.jpg", "./images/fully-opened-closet-khuvaydo-5.jpg", "./images/nightstand-khuvaydo-5.jpg"],
-                        desc: "Shinam va keng yotoqxona garnituri #5.",
-                        elements: [
-                            { name: "Shkaf / Шкаф", size: "200 × 220 × 60 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 200, h: 220 }, area: 1.2 },
-                            { name: "Krovat / Кровать", size: "185 × 220 см · matras / матрас 175 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 185 }, area: 4.07 },
-                            { name: "Tryumo / Трюмо", size: "140 × 45 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 140 }, area: 0.63 },
-                            { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "60 × 50 × 45 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г (har biri / каждая)", ph: { w: 60, h: 50 }, area: 0.54 }
-                        ]
-                    },
-                    { 
-                        id: "set_7", name: "Khuvaydo Full Set #7", material: "LMDF (Bo'yalgan MDF / Крашеный МДФ)",
-                        coverImg: "./images/full-set-khuvaydo-7.jpg",
-                        images: ["./images/full-set-khuvaydo-7.jpg", "./images/closet-khuvaydo-7.jpg", "./images/dresser-khuvaydo-7.jpg"],
-                        desc: "Zamonaviy lüks yotoqxona garnituri #7.",
-                        elements: [
-                            { name: "Shkaf / Шкаф", size: "240 × 220 × 60 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 240, h: 220 }, area: 1.44 },
-                            { name: "Krovat / Кровать", size: "260 × 220 см · matras / матрас 175 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 260 }, area: 5.72 },
-                            { name: "Tryumo / Трюмо", size: "120 × 45 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 120 }, area: 0.54 },
-                            { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "50 × 45 см", note: "Eni × Chuqurlik / Ш × Г (har biri / каждая)", ph: { w: 50 }, area: 0.45 }
-                        ]
-                    },
-                    { 
-                        id: "set_8", name: "Khuvaydo Full Set #8", material: "LDSP (Laminatlangan DSP / ЛДСП)",
-                        coverImg: "./images/full-set-khuvaydo-8.jpg",
-                        images: ["./images/full-set-khuvaydo-8.jpg", "./images/closet-khuvaydo-8.jpg", "./images/dresser-with-stool-khuvaydo-8.jpg", "./images/nightsand-khuvaydo-8.jpg", "./images/tall-nightstand-khuvaydo-8.jpg"],
-                        desc: "Minimalistik uslubdagi to'liq yotoqxona to'plami #8.",
-                        elements: [
-                            { name: "Shkaf / Шкаф", size: "200 × 220 × 60 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 200, h: 220 }, area: 1.2 },
-                            { name: "Krovat / Кровать", size: "170 × 220 см · matras / матрас 155 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 170 }, area: 3.74 },
-                            { name: "Tryumo / Трюмо", size: "130 × 50 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 130 }, area: 0.65 },
-                            { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "45 × 40 × 50 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г (har biri / каждая)", ph: { w: 45, h: 40 }, area: 0.45 },
-                            { name: "Komod / Комод", size: "110 × 70 × 45 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 110, h: 70 }, area: 0.5 }
-                        ]
-                    }
+            { 
+                id: "set_2", name: "Khuvaydo Full Set #2", material: "LMDF (Bo'yalgan MDF / Крашеный МДФ)",
+                coverImg: "./images/bed-with-2-nightstands-khuvaydo-2.jpg",
+                images: ["./images/bed-with-2-nightstands-khuvaydo-2.jpg", "./images/closet-khuvaydo-2.jpg", "./images/dresser-with-stool-khuvaydo-2.jpg", "./images/nightstand-khuvaydo-2.jpg"],
+                desc: "Zamonaviy yotoqxona to'plami #2.",
+                elements: [
+                    { name: "Shkaf / Шкаф", size: "210 × 220 × 65 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 210, h: 220 }, area: 1.37 },
+                    { name: "Krovat / Кровать", size: "200 × 220 см · matras / матрас 175 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 200 }, area: 4.4 },
+                    { name: "Tryumo / Трюмо", size: "140 × 45 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 140 }, area: 0.63 },
+                    { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "55 × 60 × 45 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г (har biri / каждая)", ph: { w: 55, h: 60 }, area: 0.5 }
                 ]
             },
-            {
-                category: "🛋 Yumshoq mebellar / Мягкая мебель",
-                type: "sofa",
-                items: [
-                    { id: "set_6", name: "Khuvaydo Sofa Set #6", coverImg: "./images/sofa-with-table-full-set-khuvaydo-6.jpg", images: ["./images/sofa-with-table-full-set-khuvaydo-6.jpg", "./images/sofa-khuvaydo-6.jpg"], desc: "Mehmonxona uchun yumshoq mebel to'plami #6." }
+            { 
+                id: "set_3", name: "Khuvaydo Full Set #3", material: "LMDF (Bo'yalgan MDF / Крашеный МДФ)",
+                coverImg: "./images/bed-with-2-nightstands-khuvaydo-3.jpg",
+                images: ["./images/bed-with-2-nightstands-khuvaydo-3.jpg", "./images/2-doors-closed-closet-khuvaydo-3.jpg", "./images/left-side-opened-closet-khuvaydo-3.jpg", "./images/right-side-opened-closet-khuvaydo-3.jpg", "./images/dresser-khuvaydo-3.jpg", "./images/nightstand-khuvaydo-3.jpg"],
+                desc: "Klassik va shinam yotoqxona garnituri #3.",
+                elements: [
+                    { name: "Shkaf / Шкаф", size: "195 × 220 × 65 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 195, h: 220 }, area: 1.27 },
+                    { name: "Krovat / Кровать", size: "170 × 220 см · matras / матрас 155 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 170 }, area: 3.74 },
+                    { name: "Tryumo / Трюмо", size: "130 × 45 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 130 }, area: 0.59 },
+                    { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "57 × 60 × 45 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г (har biri / каждая)", ph: { w: 57, h: 60 }, area: 0.51 }
                 ]
             },
-            {
-                category: "🍳 Oshxona mebellari / Кухонные гарнитуры",
-                type: "kitchen",
-                items: [
-                    { id: "k9", name: "Khuvaydo Kitchen #9", coverImg: "./images/kitchen-khuvaydo-9.jpg", images: ["./images/kitchen-khuvaydo-9.jpg"], desc: "Zamonaviy oshxona garnituri #9." },
-                    { id: "k10", name: "Khuvaydo Kitchen #10", coverImg: "./images/kitchen-khuvaydo-10.jpg", images: ["./images/kitchen-khuvaydo-10.jpg"], desc: "Keng va qulay oshxona garnituri #10." },
-                    { id: "k11", name: "Khuvaydo Kitchen #11", coverImg: "./images/kitchen-khuvaydo-11.jpg", images: ["./images/kitchen-khuvaydo-11.jpg"], desc: "Etnik modern uslubidagi oshxona #11." },
-                    { id: "k12", name: "Khuvaydo Kitchen #12", coverImg: "./images/kitchen-khuvaydo-12.jpg", images: ["./images/kitchen-khuvaydo-12.jpg"], desc: "Kompakt oshxona garnituri #12." },
-                    { id: "k13", name: "Khuvaydo Kitchen #13", coverImg: "./images/kitchen-khuvaydo-13.jpg", images: ["./images/kitchen-khuvaydo-13.jpg"], desc: "Katta xonadonlar uchun oshxona to'plami #13." }
+            { 
+                id: "set_4", name: "Khuvaydo Full Set #4", material: "LDSP (Laminatlangan DSP / ЛДСП)",
+                coverImg: "./images/bed-with-2-nightstands-khuvaydo-4.jpg",
+                images: ["./images/bed-with-2-nightstands-khuvaydo-4.jpg", "./images/closet-khuvaydo-4.jpg", "./images/fully-opened-closet-khuvaydo-4.jpg", "./images/dresser-with-stool-khuvaydo-4.jpg", "./images/nightstand-khuvaydo-4.jpg"],
+                desc: "Etnik stil elementlariga ega yotoqxona to'plami #4.",
+                elements: [
+                    { name: "Shkaf / Шкаф", size: "260 × 220 × 65 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 260, h: 220 }, area: 1.69 },
+                    { name: "Krovat / Кровать", size: "185 × 220 см · matras / матрас 175 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 185 }, area: 4.07 },
+                    { name: "Tryumo / Трюмо", size: "140 × 45 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 140 }, area: 0.63 },
+                    { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "60 × 50 × 45 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г (har biri / каждая)", ph: { w: 60, h: 50 }, area: 0.54 }
+                ]
+            },
+            { 
+                id: "set_5", name: "Khuvaydo Full Set #5", material: "LDSP + LMDF (Laminatlangan DSP + MDF / ЛДСП + МДФ)",
+                coverImg: "./images/bed-with-2-nightstands-khuvaydo-5.jpg",
+                images: ["./images/bed-with-2-nightstands-khuvaydo-5.jpg", "./images/closet-khuvaydo-5.jpg", "./images/fully-opened-closet-khuvaydo-5.jpg", "./images/nightstand-khuvaydo-5.jpg"],
+                desc: "Shinam va keng yotoqxona garnituri #5.",
+                elements: [
+                    { name: "Shkaf / Шкаф", size: "200 × 220 × 60 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 200, h: 220 }, area: 1.2 },
+                    { name: "Krovat / Кровать", size: "185 × 220 см · matras / матрас 175 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 185 }, area: 4.07 },
+                    { name: "Tryumo / Трюмо", size: "140 × 45 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 140 }, area: 0.63 },
+                    { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "60 × 50 × 45 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г (har biri / каждая)", ph: { w: 60, h: 50 }, area: 0.54 }
+                ]
+            },
+            { 
+                id: "set_7", name: "Khuvaydo Full Set #7", material: "LMDF (Bo'yalgan MDF / Крашеный МДФ)",
+                coverImg: "./images/full-set-khuvaydo-7.jpg",
+                images: ["./images/full-set-khuvaydo-7.jpg", "./images/closet-khuvaydo-7.jpg", "./images/dresser-khuvaydo-7.jpg"],
+                desc: "Zamonaviy lüks yotoqxona garnituri #7.",
+                elements: [
+                    { name: "Shkaf / Шкаф", size: "240 × 220 × 60 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 240, h: 220 }, area: 1.44 },
+                    { name: "Krovat / Кровать", size: "260 × 220 см · matras / матрас 175 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 260 }, area: 5.72 },
+                    { name: "Tryumo / Трюмо", size: "120 × 45 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 120 }, area: 0.54 },
+                    { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "50 × 45 см", note: "Eni × Chuqurlik / Ш × Г (har biri / каждая)", ph: { w: 50 }, area: 0.45 }
+                ]
+            },
+            { 
+                id: "set_8", name: "Khuvaydo Full Set #8", material: "LDSP (Laminatlangan DSP / ЛДСП)",
+                coverImg: "./images/full-set-khuvaydo-8.jpg",
+                images: ["./images/full-set-khuvaydo-8.jpg", "./images/closet-khuvaydo-8.jpg", "./images/dresser-with-stool-khuvaydo-8.jpg", "./images/nightsand-khuvaydo-8.jpg", "./images/tall-nightstand-khuvaydo-8.jpg"],
+                desc: "Minimalistik uslubdagi to'liq yotoqxona to'plami #8.",
+                elements: [
+                    { name: "Shkaf / Шкаф", size: "200 × 220 × 60 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 200, h: 220 }, area: 1.2 },
+                    { name: "Krovat / Кровать", size: "170 × 220 см · matras / матрас 155 × 210", note: "Eni × Uzunlik / Ш × Д", ph: { w: 170 }, area: 3.74 },
+                    { name: "Tryumo / Трюмо", size: "130 × 50 см", note: "Eni × Chuqurlik / Ш × Г", ph: { w: 130 }, area: 0.65 },
+                    { name: "Tumbochkalar (2 dona) / Прикроватные тумбы (2 шт)", size: "45 × 40 × 50 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г (har biri / каждая)", ph: { w: 45, h: 40 }, area: 0.45 },
+                    { name: "Komod / Комод", size: "110 × 70 × 45 см", note: "Eni × Balandlik × Chuqurlik / Ш × В × Г", ph: { w: 110, h: 70 }, area: 0.5 }
                 ]
             }
-        ];
+        ]
+    },
+    {
+        category: "🛋 Yumshoq mebellar / Мягкая мебель",
+        type: "sofa",
+        items: [
+            { 
+                id: "3d_sofa_glb", 
+                name: "3D Uglovoy Divan Set (GLB)", 
+                material: "Интерактивная 3D Модель", 
+                coverImg: "./images/sofa-khuvaydo-6.jpg", 
+                is3D: true,
+                desc: "Интерактивная 3D-модель мягкого уголка для визуализатора комнаты." 
+            },
+            { 
+                id: "set_6", 
+                name: "Khuvaydo Sofa Set #6", 
+                coverImg: "./images/sofa-with-table-full-set-khuvaydo-6.jpg", 
+                images: ["./images/sofa-with-table-full-set-khuvaydo-6.jpg", "./images/sofa-khuvaydo-6.jpg"], 
+                desc: "Mehmonxona uchun yumshoq mebel to'plami #6." 
+            }
+        ]
+    },
+    {
+        category: "🍳 Oshxona mebellari / Кухонные гарнитуры",
+        type: "kitchen",
+        items: [
+            { id: "k9", name: "Khuvaydo Kitchen #9", coverImg: "./images/kitchen-khuvaydo-9.jpg", images: ["./images/kitchen-khuvaydo-9.jpg"], desc: "Zamonaviy oshxona garnituri #9." },
+            { id: "k10", name: "Khuvaydo Kitchen #10", coverImg: "./images/kitchen-khuvaydo-10.jpg", images: ["./images/kitchen-khuvaydo-10.jpg"], desc: "Keng va qulay oshxona garnituri #10." },
+            { id: "k11", name: "Khuvaydo Kitchen #11", coverImg: "./images/kitchen-khuvaydo-11.jpg", images: ["./images/kitchen-khuvaydo-11.jpg"], desc: "Etnik modern uslubidagi oshxona #11." },
+            { id: "k12", name: "Khuvaydo Kitchen #12", coverImg: "./images/kitchen-khuvaydo-12.jpg", images: ["./images/kitchen-khuvaydo-12.jpg"], desc: "Kompakt oshxona garnituri #12." },
+            { id: "k13", name: "Khuvaydo Kitchen #13", coverImg: "./images/kitchen-khuvaydo-13.jpg", images: ["./images/kitchen-khuvaydo-13.jpg"], desc: "Katta xonadonlar uchun oshxona to'plami #13." }
+        ]
+    },
+    {
+        category: "📐 Индивидуальный заказ / Индивидуальный заказ",
+        type: "custom_furniture",
+        items: [
+            { 
+                id: "custom_fold_bed", 
+                name: "Кровать-раскладушка / Raskladushka krovat", 
+                material: "Индивидуальный размер / Maxsus o'lcham", 
+                coverImg: "./images/bed-with-2-nightstands-khuvaydo-1.jpg", 
+                desc: "Компактная раскладная кровать под ваши размеры и пожелания." 
+            },
+            { 
+                id: "custom_transformer", 
+                name: "Мебель-трансформер / Transformer mebel", 
+                material: "По чертежам клиента / Mijoz chizmasi bo'yicha", 
+                coverImg: "./images/closet-khuvaydo-1.jpg", 
+                desc: "Шкаф-кровать, раздвижные столы и другие нестандартные решения." 
+            },
+            { 
+                id: "custom_other", 
+                name: "✨ Другое (Свой вариант) / Boshqa variant", 
+                material: "Любая мебель на заказ / Har qanday mebel", 
+                coverImg: "./images/dresser-khuvaydo-3.jpg", 
+                desc: "Опишите желаемую мебель, укажите размеры и отправьте заявку на расчёт." 
+            }
+        ]
+    }
+];
  
         let currentSlideIndex = 0;
         let currentItemImages = [];
