@@ -1756,6 +1756,18 @@
                         ansRows.map(r => `• ${r.label.uz}: ${r.sUz} →${r.fUz}`).join('\n') + `\n`;
                 }
 
+                // --- ШАГ 3: Получаем точные названия выбранных 3D-текстур ---
+                const currentFloorOpt = r3Chosen(room.id, 'floor');
+                const currentWallOpt = r3Chosen(room.id, 'wall');
+                const currentCeilOpt = r3Chosen(room.id, 'ceil');
+
+                let designDetails = `🎨 *Dizayn / Дизайн:* \n` +
+                                    `• 🪵 Pol: ${currentFloorOpt.uz} (${currentFloorOpt.ru})\n` +
+                                    `• 🧱 Devor: ${currentWallOpt.uz} (${currentWallOpt.ru})\n` +
+                                    `• 💡 Shift: ${currentCeilOpt.uz} (${currentCeilOpt.ru})\n`;
+
+                singleRoomTG += `\n` + designDetails;
+
                 fullTelegramText += `📍 *${room.typeName} (#${room.displayIndex})*\n` +
                                    `📏 Maydoni: ${room.floorArea.toFixed(1)} m² | Devorlar: ${room.wallArea.toFixed(1)} m²\n${singleRoomTG.replace(/^🏠 .*\n/, '')}\n`;
 
@@ -1775,7 +1787,6 @@
                 `;
                 resContainer.insertAdjacentHTML('beforeend', roomEstimateHTML);
             });
-
             let overallHTML = '';
             let summaryTG = `📊 *UMUMIY MATERIAL SHAKLI (ИТОГОВЫЙ РАСЧЕТ НА ВЕСЬ ОБЪЕКТ):*\n`;
             summaryTG += `🏠 Xonalar soni: ${roomsData.length} ta\n`;
@@ -2223,14 +2234,38 @@
             const { type, param1, param2 } = currentOrderAction;
             let textMessage = "";
 
-            if (type === 'single_estimate') {
+          if (type === 'single_estimate' || type === 'all_estimates') {
+                if (type === 'all_estimates' && !name) { 
+                    alert("Ismingizni kiriting / Введите имя!"); 
+                    return; 
+                }
+                
                 const decodedText = decodeURIComponent(param1);
-                textMessage = `${decodedText}\n📞 *Mijoz:* ${phone}`;
-            } 
-            else if (type === 'all_estimates') {
-                if (!name) { alert("Ismingizni kiriting / Введите имя!"); return; }
-                const decodedText = decodeURIComponent(param1);
-                textMessage = `${decodedText}\n👤 *Mijoz:* ${name}\n📞 *Tel:* ${phone}`;
+                textMessage = (type === 'all_estimates') 
+                    ? `${decodedText}\n👤 *Mijoz:* ${name}\n📞 *Tel:* ${phone}` 
+                    : `${decodedText}\n📞 *Mijoz:* ${phone}`;
+
+                // --- ШАГ 4: Снимок 3D-комнаты и отправка фото в Telegram ---
+                try {
+                    const canvas = document.getElementById('three-canvas');
+                    if (canvas) {
+                        const dataUrl = canvas.toDataURL('image/png');
+                        const blob = await (await fetch(dataUrl)).blob();
+
+                        const formData = new FormData();
+                        formData.append('chat_id', TG_CHAT_ID);
+                        formData.append('photo', blob, 'room_3d_snapshot.png');
+                        formData.append('caption', `📸 *3D-Визуализация комнаты*\n📞 *Тел:* ${phone}`);
+                        formData.append('parse_mode', 'Markdown');
+
+                        await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendPhoto`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    }
+                } catch (e) {
+                    console.warn("3D Snapshot skipped:", e);
+                }
             } 
             else if (type === 'detailed_order') {
                 if (!name) { alert("Ismingizni kiriting / Введите имя!"); return; }
