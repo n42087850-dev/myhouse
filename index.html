@@ -33,25 +33,75 @@
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
+        /* ================= PRELOADER CURTAIN ================= */
+#splash-curtain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0d1117; /* Темный солидный фон под цвет сайта */
+    z-index: 99999; /* Поверх всего интерфейса */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    
+    /* Эффект опускающегося занавеса */
+    transform: translateY(-100%);
+    animation: slideDownCurtain 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.splash-content {
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.85);
+    animation: fadeInLogo 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
+}
+
+.splash-logo {
+    max-width: 220px;
+    width: 70vw;
+    height: auto;
+    filter: drop-shadow(0 10px 25px rgba(212, 175, 55, 0.3)); /* Золотистое свечение */
+}
+
+/* Анимация опускания сверху */
+@keyframes slideDownCurtain {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(0%);
+    }
+}
+
+/* Анимация проявления логотипа */
+@keyframes fadeInLogo {
+    0% {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Класс для плавного ухода занавеса */
+#splash-curtain.hide-curtain {
+    opacity: 0;
+    visibility: hidden;
+}
  
         body {
-           <!-- Splash Screen / Занавес -->
-<div id="splash-curtain" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #070C1E; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s ease, visibility 0.6s ease;">
-    <h1 style="font-size: 36px; font-weight: 900; color: #38BDF8; letter-spacing: 2px; margin-bottom: 8px;">MYHOUSE PRO</h1>
-    <p style="font-size: 14px; color: #94A3B8;">Ta'mirlash va mebel platformasi</p>
-</div>
-
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        const curtain = document.getElementById('splash-curtain');
-        if (curtain) {
-            curtain.style.opacity = '0';
-            curtain.style.visibility = 'hidden';
-        }
-    }, 2200);
-});
-</script>
+          <!-- PRELOADER / SPLASH CURTAIN -->
+<div id="splash-curtain">
+    <div class="splash-content">
+        <img src="./images/logo.png" alt="MYHOUSE PRO" class="splash-logo">
+    </div>
+</div> 
             background-color: var(--bg-main);
             color: var(--text-main);
             line-height: 1.5;
@@ -2140,26 +2190,37 @@ window.addEventListener('DOMContentLoaded', () => {
             if (type === 'custom_order') {
                 customBox.style.display = 'block';
                 nameGroup.style.display = 'block';
-                modalTitle.innerText = "📐 Individal buyurtma / Индивидуальный заказ";
-
-                if (activeItemData && activeItemData.elements && activeItemData.elements.length > 0) {
-                    activeItemData.elements.forEach((el, idx) => {
-                        const phW = (el.ph && el.ph.w) ? el.ph.w : '';
-                        const phH = (el.ph && el.ph.h) ? el.ph.h : '';
-                        elementsCustomFields.innerHTML += `
-                            <div class="form-group" style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid var(--input-border);">
-                                <label style="color: var(--accent-cyan); font-weight: bold;">${el.name}:</label>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                                    <div><label>Kengligi (sm) / Ширина (см)</label><input type="number" class="cust-elem-w" data-name="${el.name}" placeholder="${phW}"></div>
-                                    <div><label>Balandligi (sm) / Высота (см)</label><input type="number" class="cust-elem-h" data-name="${el.name}" placeholder="${phH}"></div>
-                                </div>
-                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
-                                    📏 Chuqurligi: <b style="color: var(--accent-gold);">standart o'lcham</b> / Глубина: <b style="color: var(--accent-gold);">стандартный размер</b>
-                                </div>
+                modalTitle.innerText = "📐 Individual buyurtma / Индивидуальный заказ";
+                
+                // Блок анализа размеров комнаты + произвольное описание мебели
+                elementsCustomFields.innerHTML = `
+                    <div class="spatial-box" style="margin-bottom: 15px; border: 1px dashed var(--accent-gold); padding: 12px; border-radius: 8px;">
+                        <div class="spatial-title" style="color: var(--accent-gold); font-size: 13px; font-weight: bold; margin-bottom: 8px;">
+                            📐 Xona o'lchamlari tahlili (Sig'adimi? / Влезет или нет)
+                        </div>
+                        <div class="grid-3" style="margin-bottom: 8px;">
+                            <div>
+                                <label style="font-size: 11px;">Uzunligi (L)</label>
+                                <input type="number" id="customRoomL" placeholder="4.5" step="0.1" style="width: 100%; padding: 6px; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 4px; color: #fff;">
                             </div>
-                        `;
-                    });
-                } else {
+                            <div>
+                                <label style="font-size: 11px;">Kengligi (W)</label>
+                                <input type="number" id="customRoomW" placeholder="3.5" step="0.1" style="width: 100%; padding: 6px; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 4px; color: #fff;">
+                            </div>
+                            <div>
+                                <label style="font-size: 11px;">Balandligi (H)</label>
+                                <input type="number" id="customRoomH" placeholder="2.8" step="0.1" style="width: 100%; padding: 6px; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 4px; color: #fff;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color: var(--accent-cyan); font-weight: bold; font-size: 13px;">Xohlagan mebelingiz va o'lchamlari / Желаемая мебель и размеры:</label>
+                        <textarea id="custFreeText" rows="4" style="width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 8px; color: var(--text-main); font-size: 14px; outline: none; resize: vertical;" placeholder="Masalan: Shkaf 2.5m x 2.2m, 3 ta tortmali, oq rangda... / Например: Шкаф 2.5мх2.2м с 3 выдвижными ящиками, белого цвета..."></textarea>
+                    </div>
+                `;
+            }
+                 else {
                     elementsCustomFields.innerHTML = `
                         <div class="form-group">
                             <label>Kengligi (см) / Ширина (см):</label>
@@ -2335,8 +2396,18 @@ window.addEventListener('DOMContentLoaded', () => {
             }
             else if (type === 'custom_order') {
                 if (!name) { alert("Ismingizni kiriting / Введите имя!"); return; }
-                const furnitureName = param1;
-                const note = document.getElementById('custNote').value || "Yo'q";
+                const freeText = document.getElementById('custFreeText')?.value.trim() || "Kiritilmagan / Не указано";
+                
+                const cL = document.getElementById('customRoomL')?.value || "—";
+                const cW = document.getElementById('customRoomW')?.value || "—";
+                const cH = document.getElementById('customRoomH')?.value || "—";
+
+                textMessage = `🚀 *INDIVIDUAL BUYURTMA (MYHOUSE PRO)*\n\n` +
+                              `🏠 *Xona o'lchamlari:* L=${cL}m, W=${cW}m, H=${cH}m\n\n` +
+                              `📝 *Mebel tavsifi va o'lchamlari / Описание и размеры:*\n${freeText}\n\n` +
+                              `👤 *Mijoz / Клиент:* ${name}\n` +
+                              `📞 *Tel:* ${phone}`;
+            }
 
                 let customDimsText = "";
                 const elemWidthInputs = document.querySelectorAll('.cust-elem-w');
@@ -2581,6 +2652,23 @@ function initThreeFurniture() {
 // Запуск инициализации после загрузки DOM
 document.addEventListener("DOMContentLoaded", function() {
     initThreeFurniture();
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const splash = document.getElementById('splash-curtain');
+    
+    // Занавес опускается, показывает логотип и через 2.2 секунды плавно растворяется
+    setTimeout(() => {
+        if (splash) {
+            splash.classList.add('hide-curtain');
+            
+            // Полностью удаляем из DOM, чтобы не мешал кликам
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 600);
+        }
+    }, 2200);
 });
 </script>
 </body>
