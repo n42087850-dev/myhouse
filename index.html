@@ -851,14 +851,21 @@
                     
                     el.style.backgroundImage = `linear-gradient(rgba(0,0,0,${sh}),rgba(0,0,0,${sh})),url(${o.img})`;
                     
-                    if (o.kind === 'cover') {
-                        el.style.backgroundRepeat = 'no-repeat';
-                        el.style.backgroundPosition = 'center';
-                        el.style.backgroundSize = '100% 100%';
-                    } else {
-                        el.style.backgroundRepeat = 'repeat';
-                        el.style.backgroundSize = `auto,${o.sz}px ${o.sz2 || o.sz}px`;
-                    }
+                   if (o.kind === 'cover') {
+    // Если явно указан sz — включаем repeat с этим размером
+    if (o.sz) {
+        el.style.backgroundRepeat = 'repeat';
+        el.style.backgroundSize = `auto,${o.sz}px ${o.sz2 || o.sz}px`;
+    } else {
+        // Если sz нет — растягиваем на всю стену без повторов
+        el.style.backgroundRepeat = 'no-repeat';
+        el.style.backgroundPosition = 'center';
+        el.style.backgroundSize = '100% 100%';
+    }
+} else {
+    el.style.backgroundRepeat = 'repeat';
+    el.style.backgroundSize = `auto,${o.sz}px ${o.sz2 || o.sz}px`;
+} 
                 });
             });
 
