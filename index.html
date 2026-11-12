@@ -655,10 +655,10 @@
                 { id: 'f-tile', v: 'tile', uz: "Plitka / keramogranit", ru: "Плитка / керамогранит", rooms: R3_ALL, proc: r3Tiles(2, 'hsl(210,8%,86%)', 'hsl(0,0%,62%)'), sz: 150 },
                 { id: 'f-carpet', v: 'carpet', uz: "Kovrolin", ru: "Ковролин", rooms: R3_LB, proc: r3Carpet, sz: 140 },
                 { id: 'f-marble', v: 'tile', uz: "Keramogranit (marmar rasmli)", ru: "Керамогранит под мрамор", rooms: R3_ALL, file: 'tex-porcelain-marble.jpg', kind: 'marble', sz: 120, sz2: 240 },
-                { id: 'f-oak', v: 'parquet', uz: "Parket «yolka» (och eman)", ru: "Паркет «ёлочка» светлый дуб", rooms: R3_LB, file: 'tex-parquet-oak-chevron.jpg', kind: 'xy', f: 0.30, sz: 96 },
-                { id: 'f-walnut', v: 'parquet', uz: "Parket «yolka» (yong'oq)", ru: "Паркет «ёлочка» орех", rooms: R3_LB, file: 'tex-parquet-walnut-chevron.jpg', kind: 'xy', f: 0.30, sz: 96 },
+                { id: 'f-oak', v: 'parquet', uz: "Parket «yolka» (och eman)", ru: "Паркет «ёлочка» светлый дуб", rooms: R3_LB, file: 'tex-parquet-oak-chevron.jpg', kind: 'tile', sz: 140 },
+                { id: 'f-walnut', v: 'parquet', uz: "Parket «yolka» (yong'oq)", ru: "Паркет «ёлочка» орех", rooms: R3_LB, file: 'tex-parquet-walnut-chevron.jpg', kind: 'tile', sz: 140 },
                 { id: 'f-lam-oak', v: 'laminate', uz: "Laminat (och eman)", ru: "Ламинат светлый дуб", rooms: R3_DRY, file: 'tex-laminate-oak.jpg', kind: 'xy', f: 0.30, sz: 80 },
-                { id: 'f-marble-grid', v: 'tile', uz: "Marmar plitka", ru: "Мраморная плитка", rooms: R3_ALL, file: 'tex-marble-grid.jpg', kind: 'marble', sz: 120 },
+                { id: 'f-marble-grid', v: 'tile', uz: "Marmar plitka", ru: "Кафель", rooms: R3_ALL, file: 'tex-marble-grid.jpg', kind: 'marble', sz: 120 },
                 { id: 'f-calacatta', v: 'tile', uz: "Calacatta marmar", ru: "Мрамор Calacatta", rooms: R3_ALL, file: 'tex-marble-calacatta.jpg', kind: 'marble', sz: 120 }
             ],
            wall: [
@@ -669,9 +669,9 @@
     { id: 'w-decor-sand', v: 'plaster', uz: "Dekorativ qum", ru: "Декоративный песок", rooms: R3_DRY, file: 'tex-wall-decor-sand.jpg', kind: 'cover' },
     { id: 'w-dark-flowers', v: 'wallpaper', uz: "To'q gulli oboy", ru: "Тёмные обои с цветами", rooms: R3_DRY, file: 'tex-wallpaper-dark-flowers.jpg', kind: 'xy', f: 0.45, sz: 130 },
     { id: 'w-palm-leaves', v: 'wallpaper', uz: "Oboy (palma barglari)", ru: "Обои с пальмовыми листьями", rooms: R3_DRY, file: 'oboi_2.jpg', kind: 'xy', f: 0.25, sz: 180 },
-    { id: 'w-geo-arch', v: 'wallpaper', uz: "Oboy (geometrik naqsh)", ru: "Обои с геометрическим узором", rooms: R3_DRY, file: 'oboi_3.jpg', kind: 'xy', sz: 180 },
-    { id: 'w-wave-lines', v: 'wallpaper', uz: "Oboy (to'lqinli chiziqlar)", ru: "Обои с волнистыми линиями", rooms: R3_DRY, file: 'oboi_4.jpg', kind: 'xy', sz: 180 },
-    { id: 'w-loft-concrete', v: 'wallpaper', uz: "Oboy (dekorativ beton)", ru: "Обои под декоративную штукатурку", rooms: R3_DRY, file: 'oboi_5.jpg', kind: 'xy', sz: 160 },
+    { id: 'w-geo-arch', v: 'wallpaper', uz: "Oboy (geometrik naqsh)", ru: "Обои с геометрическим узором", rooms: R3_DRY, file: 'oboi_3.jpg', kind: tile, sz: 180 },
+    { id: 'w-wave-lines', v: 'wallpaper', uz: "Oboy (to'lqinli chiziqlar)", ru: "Обои с волнистыми линиями", rooms: R3_DRY, file: 'oboi_4.jpg', kind: tile, sz: 180 },
+    { id: 'w-loft-concrete', v: 'wallpaper', uz: "Oboy (dekorativ )", ru: "Обои под декоративную штукатурку", rooms: R3_DRY, file: 'oboi_5.jpg', kind: 'xy', sz: 160 },
     { id: 'w-linen-gray', v: 'wallpaper', uz: "Oboy (kulrang mato)", ru: "Обои под серый текстиль (рогожка)", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'xy', sz: 120 },
     { id: 'w-micro-leaves', v: 'wallpaper', uz: "Oboy (mayda barglar)", ru: "Обои с мелким рельефом листьев", rooms: R3_DRY, file: 'oboi_7.jpg', kind: 'xy', sz: 140 }
                ],
@@ -694,9 +694,9 @@
         Object.keys(R3_OPTS).forEach(sf => R3_OPTS[sf].forEach((o, i) => { if (o.proc) o.img = r3tex(o.proc, 7 + i * 13); }));
  
         function r3PhotoTex(im, o) {
-    const w = im.naturalWidth, h = im.naturalHeight;
+    const w = im.naturalWidth,  let h = im.naturalHeight;
     const mk = (cw, ch) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
-    if (o.kind === 'cover') {
+    if (o.kind === 'cover' || o.kind === 'tile') {
         return im.src;
     }
     if (o.kind === 'marble') {
@@ -707,20 +707,57 @@
         g.beginPath(); g.moveTo(tw, 0); g.lineTo(tw, c.height); g.moveTo(0, th); g.lineTo(c.width, th); g.stroke();
         return c.toDataURL('image/jpeg', 0.95);
     }
+
+    // Обрезаем 3% снизу (убираем кромку каталога) и выравниваем свет + убираем зеленый оттенок
+    const cropH = Math.floor(h * 0.97);
+    const norm = mk(w, cropH), ng = norm.getContext('2d');
+    ng.drawImage(im, 0, 0, w, cropH, 0, 0, w, cropH);
+    const idata = ng.getImageData(0, 0, w, cropH), d = idata.data;
+
+    let avgR = 0, avgG = 0, avgB = 0, cnt = 0;
+    for (let i = 0; i < d.length; i += 16) {
+        avgR += d[i]; avgG += d[i + 1]; avgB += d[i + 2]; cnt++;
+    }
+    avgR /= cnt; avgG /= cnt; avgB /= cnt;
+    const gray = (avgR + avgG + avgB) / 3;
+    const gFix = avgG > gray ? (gray / avgG) : 1;
+
+    const rowLum = new Float32Array(cropH);
+    let totalLum = 0;
+    for (let y = 0; y < cropH; y++) {
+        let sum = 0;
+        for (let x = 0; x < w; x += 4) {
+            const idx = (y * w + x) * 4;
+            sum += d[idx] * 0.299 + (d[idx + 1] * gFix) * 0.587 + d[idx + 2] * 0.114;
+        }
+        rowLum[y] = sum / Math.ceil(w / 4);
+        totalLum += rowLum[y];
+    }
+    const avgLum = totalLum / cropH;
+    for (let y = 0; y < cropH; y++) {
+        const gain = rowLum[y] > 10 ? (avgLum / rowLum[y]) : 1;
+        for (let x = 0; x < w; x++) {
+            const idx = (y * w + x) * 4;
+            d[idx] = Math.min(255, d[idx] * gain);
+            d[idx + 1] = Math.min(255, d[idx + 1] * gFix * gain);
+            d[idx + 2] = Math.min(255, d[idx + 2] * gain);
+        }
+    }
+    ng.putImageData(idata, 0, 0);
+    h = cropH;
     if (o.kind === 'y') {
         const c = mk(w, h * 2), g = c.getContext('2d');
-        g.drawImage(im, 0, 0, w, h);
-        g.save(); g.translate(0, h * 2); g.scale(1, -1); g.drawImage(im, 0, 0, w, h); g.restore();
+        g.drawImage(norm, 0, 0, w, h);
+        g.save(); g.translate(0, h * 2); g.scale(1, -1); g.drawImage(norm, 0, 0, w, h); g.restore();
         return c.toDataURL('image/jpeg', 0.95);
     }
     const c = mk(w * 2, h * 2), g = c.getContext('2d');
-    g.drawImage(im, 0, 0, w, h);
-    g.save(); g.translate(w * 2, 0); g.scale(-1, 1); g.drawImage(im, 0, 0, w, h); g.restore();
-    g.save(); g.translate(0, h * 2); g.scale(1, -1); g.drawImage(im, 0, 0, w, h); g.restore();
-    g.save(); g.translate(w * 2, h * 2); g.scale(-1, -1); g.drawImage(im, 0, 0, w, h); g.restore();
+    g.drawImage(norm, 0, 0, w, h);
+    g.save(); g.translate(w * 2, 0); g.scale(-1, 1); g.drawImage(norm, 0, 0, w, h); g.restore();
+    g.save(); g.translate(0, h * 2); g.scale(1, -1); g.drawImage(norm, 0, 0, w, h); g.restore();
+    g.save(); g.translate(w * 2, h * 2); g.scale(-1, -1); g.drawImage(norm, 0, 0, w, h); g.restore();
     return c.toDataURL('image/jpeg', 0.95);
 }
-
 function r3LoadPhotos() {
     Object.keys(R3_OPTS).forEach(sf => R3_OPTS[sf].filter(o => o.file).forEach(o => {
         const im = new Image();
@@ -729,6 +766,7 @@ function r3LoadPhotos() {
                 o.img = r3PhotoTex(im, o);
                 if (o.kind === 'xy') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
                 if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
+                if (o.kind === 'xy' || o.kind === 'tile') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
                 r3RenderOpts(); r3Paint();
             } catch (e) { }
         };
