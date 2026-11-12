@@ -668,9 +668,9 @@
     { id: 'w-floral', v: 'wallpaper', uz: "Oboy gulli", ru: "Обои с цветочным рисунком", rooms: R3_DRY, file: 'tex-wallpaper-floral.jpg', kind: 'xy', f: 0.45, sz: 130 },
     { id: 'w-decor-sand', v: 'plaster', uz: "Dekorativ qum", ru: "Декоративный песок", rooms: R3_DRY, file: 'tex-wall-decor-sand.jpg', kind: 'cover' },
     { id: 'w-dark-flowers', v: 'wallpaper', uz: "To'q gulli oboy", ru: "Тёмные обои с цветами", rooms: R3_DRY, file: 'tex-wallpaper-dark-flowers.jpg', kind: 'xy', f: 0.45, sz: 130 },
-    { id: 'w-palm-leaves', v: 'wallpaper', uz: "Oboy (palma barglari)", ru: "Обои с пальмовыми листьями", rooms: R3_DRY, file: 'oboi_2.jpg', kind: 'xy', f: 0.25, sz: 180 },
-    { id: 'w-geo-arch', v: 'wallpaper', uz: "Oboy (geometrik naqsh)", ru: "Обои с геометрическим узором", rooms: R3_DRY, file: 'oboi_3.jpg', kind: 'xy', sz: 180 },
-    { id: 'w-wave-lines', v: 'wallpaper', uz: "Oboy (to'lqinli chiziqlar)", ru: "Обои с волнистыми линиями", rooms: R3_DRY, file: 'oboi_4.jpg', kind: 'y', sz: 180 },
+    { id: 'w-palm-leaves', v: 'wallpaper', uz: "Oboy (palma barglari)", ru: "Обои с пальмовыми листьями", rooms: R3_DRY, file: 'oboi_2.jpg', kind: 'blend', f: 0.25, sz: 180 },
+    { id: 'w-geo-arch', v: 'wallpaper', uz: "Oboy (geometrik naqsh)", ru: "Обои с геометрическим узором", rooms: R3_DRY, file: 'oboi_3.jpg', kind: 'blend', sz: 180 },
+    { id: 'w-wave-lines', v: 'wallpaper', uz: "Oboy (to'lqinli chiziqlar)", ru: "Обои с волнистыми линиями", rooms: R3_DRY, file: 'oboi_4.jpg', kind: 'blend', sz: 180 },
     { id: 'w-loft-concrete', v: 'wallpaper', uz: "Oboy (dekorativ )", ru: "Обои под декоративную штукатурку", rooms: R3_DRY, file: 'oboi_5.jpg', kind: 'xy', sz: 160 },
     { id: 'w-linen-gray', v: 'wallpaper', uz: "Oboy (kulrang mato)", ru: "Обои под серый текстиль (рогожка)", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'xy', sz: 120 },
     { id: 'w-micro-leaves', v: 'wallpaper', uz: "Oboy (mayda barglar)", ru: "Обои с мелким рельефом листьев", rooms: R3_DRY, file: 'oboi_7.jpg', kind: 'xy', sz: 140 }
@@ -709,7 +709,7 @@
     }
 
     // Обрезаем 3% снизу (убираем кромку каталога) и выравниваем свет + убираем зеленый оттенок
-    const cropH = Math.floor(h * 0.97);
+    const cropH = h;
     const norm = mk(w, cropH), ng = norm.getContext('2d');
     ng.drawImage(im, 0, 0, w, cropH, 0, 0, w, cropH);
     const idata = ng.getImageData(0, 0, w, cropH), d = idata.data;
@@ -745,6 +745,35 @@
     }
     ng.putImageData(idata, 0, 0);
     h = cropH;
+    if (o.kind === 'blend') {
+        const bw = Math.floor(w * 0.12), bh = Math.floor(h * 0.12);
+        const tw = w - bw, th = h - bh;
+        const c = mk(tw, th), g = c.getContext('2d');
+        g.drawImage(norm, 0, 0, tw, th, 0, 0, tw, th);
+
+        // Мягкое наложение правого края на левый (без зеркала)
+        for (let x = 0; x < bw; x++) {
+            g.globalAlpha = 1 - x / bw;
+            g.drawImage(norm, tw + x, 0, 1, th, x, 0, 1, th);
+        }
+        g.globalAlpha = 1;
+
+        // Мягкое наложение нижнего края на верхний (без переворота)
+        const snap = mk(tw, th);
+        snap.getContext('2d').drawImage(c, 0, 0);
+        const bg = mk(tw, bh), bctx = bg.getContext('2d');
+        bctx.drawImage(norm, 0, th, tw, bh, 0, 0, tw, bh);
+        for (let x = 0; x < bw; x++) {
+            bctx.globalAlpha = 1 - x / bw;
+            bctx.drawImage(norm, tw + x, th, 1, bh, x, 0, 1, bh);
+        }
+        for (let y = 0; y < bh; y++) {
+            g.globalAlpha = 1 - y / bh;
+            g.drawImage(bg, 0, y, tw, 1, 0, y, tw, 1);
+        }
+        g.globalAlpha = 1;
+        return c.toDataURL('image/jpeg', 0.95);
+    }
     if (o.kind === 'y') {
         const c = mk(w, h * 2), g = c.getContext('2d');
         g.drawImage(norm, 0, 0, w, h);
@@ -764,9 +793,10 @@ function r3LoadPhotos() {
         im.onload = () => {
             try {
                 o.img = r3PhotoTex(im, o);
+                
                 if (o.kind === 'xy') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
                 if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
-                if (o.kind === 'xy' || o.kind === 'tile') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
+                if (o.kind === 'xy' || o.kind === 'blend') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
                 r3RenderOpts(); r3Paint();
             } catch (e) { }
         };
