@@ -689,49 +689,47 @@
         Object.keys(R3_OPTS).forEach(sf => R3_OPTS[sf].forEach((o, i) => { if (o.proc) o.img = r3tex(o.proc, 7 + i * 13); }));
  
         function r3PhotoTex(im, o) {
-            const w = im.naturalWidth, h = im.naturalHeight;
-            const mk = (cw, ch) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
-            if (o.kind === 'cover') {
-                return im.src;
-            }
-            if (o.kind === 'marble') {
-                const tw = 256, th = 512, c = mk(tw * 2, th * 2), g = c.getContext('2d');
-                const hw = w / 2, hh = h / 2;
-                [[0, 0], [hw, 0], [0, hh], [hw, hh]].forEach((q, i) => g.drawImage(im, q[0], q[1], hw, hh, (i % 2) * tw, Math.floor(i / 2) * th, tw, th));
-                g.strokeStyle = 'rgba(120,120,120,0.95)'; g.lineWidth = 5; g.strokeRect(0, 0, c.width, c.height);
-                g.beginPath(); g.moveTo(tw, 0); g.lineTo(tw, c.height); g.moveTo(0, th); g.lineTo(c.width, th); g.stroke();
-                return c.toDataURL('image/jpeg', 0.9);
-            }
-            const A = mk(w, h), ga = A.getContext('2d'); ga.drawImage(im, 0, 0);
-            const B = mk(w, h), gb = B.getContext('2d');
-            if (o.kind === 'y') { gb.drawImage(A, 0, -h / 2); gb.drawImage(A, 0, h / 2); }
-            else { [[-w / 2, -h / 2], [w / 2, -h / 2], [-w / 2, h / 2], [w / 2, h / 2]].forEach(p => gb.drawImage(A, p[0], p[1])); }
-            const da = ga.getImageData(0, 0, w, h), db = gb.getImageData(0, 0, w, h);
-            const sm = t => { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); };
-            const f = o.f || 0.3, m1 = t => sm(t / f) * sm((1 - t) / f);
-            for (let y = 0; y < h; y++) {
-                const my = m1(y / (h - 1));
-                for (let x = 0; x < w; x++) {
-                    const m = (o.kind === 'y' ? 1 : m1(x / (w - 1))) * my, i = (y * w + x) * 4;
-                    for (let k = 0; k < 3; k++) da.data[i + k] = da.data[i + k] * m + db.data[i + k] * (1 - m);
-                }
-            }
-            ga.putImageData(da, 0, 0);
-            return A.toDataURL('image/jpeg', 0.9);
-        }
-        function r3LoadPhotos() {
-            Object.keys(R3_OPTS).forEach(sf => R3_OPTS[sf].filter(o => o.file).forEach(o => {
-                const im = new Image();
-                im.onload = () => {
-                    try {
-                        o.img = r3PhotoTex(im, o);
-                        if (o.kind === 'xy' || o.kind === 'y') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
-                        r3RenderOpts(); r3Paint();
-                    } catch (e) { }
-                };
-                im.src = './images/' + o.file;
-            }));
-        }
+    const w = im.naturalWidth, h = im.naturalHeight;
+    const mk = (cw, ch) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
+    if (o.kind === 'cover') {
+        return im.src;
+    }
+    if (o.kind === 'marble') {
+        const tw = 512, th = 1024, c = mk(tw * 2, th * 2), g = c.getContext('2d');
+        const hw = w / 2, hh = h / 2;
+        [[0, 0], [hw, 0], [0, hh], [hw, hh]].forEach((q, i) => g.drawImage(im, q[0], q[1], hw, hh, (i % 2) * tw, Math.floor(i / 2) * th, tw, th));
+        g.strokeStyle = 'rgba(120,120,120,0.95)'; g.lineWidth = 5; g.strokeRect(0, 0, c.width, c.height);
+        g.beginPath(); g.moveTo(tw, 0); g.lineTo(tw, c.height); g.moveTo(0, th); g.lineTo(c.width, th); g.stroke();
+        return c.toDataURL('image/jpeg', 0.95);
+    }
+    if (o.kind === 'y') {
+        const c = mk(w, h * 2), g = c.getContext('2d');
+        g.drawImage(im, 0, 0, w, h);
+        g.save(); g.translate(0, h * 2); g.scale(1, -1); g.drawImage(im, 0, 0, w, h); g.restore();
+        return c.toDataURL('image/jpeg', 0.95);
+    }
+    const c = mk(w * 2, h * 2), g = c.getContext('2d');
+    g.drawImage(im, 0, 0, w, h);
+    g.save(); g.translate(w * 2, 0); g.scale(-1, 1); g.drawImage(im, 0, 0, w, h); g.restore();
+    g.save(); g.translate(0, h * 2); g.scale(1, -1); g.drawImage(im, 0, 0, w, h); g.restore();
+    g.save(); g.translate(w * 2, h * 2); g.scale(-1, -1); g.drawImage(im, 0, 0, w, h); g.restore();
+    return c.toDataURL('image/jpeg', 0.95);
+}
+
+function r3LoadPhotos() {
+    Object.keys(R3_OPTS).forEach(sf => R3_OPTS[sf].filter(o => o.file).forEach(o => {
+        const im = new Image();
+        im.onload = () => {
+            try {
+                o.img = r3PhotoTex(im, o);
+                if (o.kind === 'xy') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
+                if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
+                r3RenderOpts(); r3Paint();
+            } catch (e) { }
+        };
+        im.src = './images/' + o.file;
+    }));
+}
  
         function r3Group(type) { return (type === 'bathroom' || type === 'toilet') ? 'wet' : 'dry'; }
         function r3Type(id) { const s = document.getElementById(`type-${id}`); return s ? s.value : 'bedroom'; }
@@ -851,21 +849,22 @@
                     
                     el.style.backgroundImage = `linear-gradient(rgba(0,0,0,${sh}),rgba(0,0,0,${sh})),url(${o.img})`;
                     
-                   if (o.kind === 'cover') {
-    // Если явно указан sz — включаем repeat с этим размером
-    if (o.sz) {
-        el.style.backgroundRepeat = 'repeat';
-        el.style.backgroundSize = `auto,${o.sz}px ${o.sz2 || o.sz}px`;
-    } else {
-        // Если sz нет — растягиваем на всю стену без повторов
-        el.style.backgroundRepeat = 'no-repeat';
-        el.style.backgroundPosition = 'center';
-        el.style.backgroundSize = '100% 100%';
-    }
-} else {
-    el.style.backgroundRepeat = 'repeat';
-    el.style.backgroundSize = `auto,${o.sz}px ${o.sz2 || o.sz}px`;
-} 
+                 const mult = (o.kind === 'xy') ? 6 : 3;
+            if (o.kind === 'cover') {
+                // Если явно указан sz — включаем repeat с этим размером
+                if (o.sz) {
+                    el.style.backgroundRepeat = 'repeat';
+                    el.style.backgroundSize = `auto,${o.sz * 3}px ${(o.sz2 || o.sz) * 3}px`;
+                } else {
+                    // Если sz нет — растягиваем на всю стену без повторов
+                    el.style.backgroundRepeat = 'no-repeat';
+                    el.style.backgroundPosition = 'center';
+                    el.style.backgroundSize = '100% 100%';
+                }
+            } else {
+                el.style.backgroundRepeat = 'repeat';
+                el.style.backgroundSize = `auto,${o.sz * mult}px ${(o.sz2 || o.sz) * mult}px`;
+            } 
                 });
             });
 
@@ -889,7 +888,7 @@
             }
         }
  
-        const R3_PPM = 100;
+        const R3_PPM = 300;
         function r3Dims() {
             const id = R3.active;
             const num = (name, lo, hi, d) => { const e = document.getElementById(`${name}-${id}`); const v = e ? parseFloat(String(e.value).replace(',', '.')) : NaN; return isNaN(v) ? d : Math.max(lo, Math.min(hi, v)); };
@@ -919,7 +918,7 @@
             const k = S / 392, H0 = Math.max(300, Math.min(400 * k, maxH));
             R3.kk = Math.min(k, H0 / 400);
             const sc = document.getElementById('r3-scene'); sc.style.height = (full ? window.innerHeight : H0) + 'px'; sc.style.perspective = (620 * R3.kk) + 'px';
-            R3.fit = Math.max(0.4, Math.min(1.6, 360 / Math.max(W, D))) * R3.kk * (full ? 0.85 : 0.92);
+            R3.fit = Math.max(0.13, Math.min(0.55, 360 / Math.max(W, D))) * R3.kk * (full ? 0.85 : 0.92);
             r3Apply();
         }
         function r3Apply() {
@@ -2492,7 +2491,7 @@ function initThreeFurniture() {
     dirLight.position.set(2, 5, 3);
     dirLight.castShadow = true;
     threeScene.add(dirLight);
-
+   const loader = new THREE.GLTFLoader();
    loader.load(
         'sofa.glb',
         (gltf) => {
