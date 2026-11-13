@@ -10,6 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
 </head>
     <style>
         :root {
@@ -950,14 +952,20 @@ function r3LoadPhotos() {
                         cat.items.forEach(it => { if (it.id === furnId) furnItem = it; });
                     });
                 }
-                if (furnItem) {
-                    const furnImg = furnItem.coverImg || (furnItem.images && furnItem.images[0]);
-                    furnEl.style.backgroundImage = `url('${furnImg}')`;
-                    furnEl.style.display = 'block';
-                } else {
-                    furnEl.style.backgroundImage = 'none';
-                    furnEl.style.display = 'none';
-                }
+                if (furnItem && furnItem.glb) {
+    furnEl.style.backgroundImage = 'none';
+    furnEl.style.display = 'none';
+    setRoom3DModel(furnItem);
+} else if (furnItem) {
+    setRoom3DModel(null);
+    const furnImg = furnItem.coverImg || (furnItem.images && furnItem.images[0]);
+    furnEl.style.backgroundImage = `url('${furnImg}')`;
+    furnEl.style.display = 'block';
+} else {
+    setRoom3DModel(null);
+    furnEl.style.backgroundImage = 'none';
+    furnEl.style.display = 'none';
+}
             }
         }
  
@@ -1175,7 +1183,7 @@ function r3LoadPhotos() {
             { id: "k10", name: "Khuvaydo Kitchen #10", coverImg: "./images/kitchen-khuvaydo-10.jpg", images: ["./images/kitchen-khuvaydo-10.jpg"], desc: "Keng va qulay oshxona garnituri #10." },
             { id: "k11", name: "Khuvaydo Kitchen #11", coverImg: "./images/kitchen-khuvaydo-11.jpg", images: ["./images/kitchen-khuvaydo-11.jpg"], desc: "Etnik modern uslubidagi oshxona #11." },
             { id: "k12", name: "Khuvaydo Kitchen #12", coverImg: "./images/kitchen-khuvaydo-12.jpg", images: ["./images/kitchen-khuvaydo-12.jpg"], desc: "Kompakt oshxona garnituri #12." },
-            { id: "k13", name: "Khuvaydo Kitchen #13", coverImg: "./images/kitchen-khuvaydo-13.jpg", images: ["./images/kitchen-khuvaydo-13.jpg"], desc: "Katta xonadonlar uchun oshxona to'plami #13." }
+            { id: "k13", name: "Khuvaydo Kitchen #13", coverImg: "./images/kitchen-khuvaydo-13.jpg", images: ["./images/kitchen-khuvaydo-13.jpg"], glb: "./images/kitchen-13-v1.glb", widthM: 3.4, coversWall: true, coverArea: 7.5, desc: "Katta xonadonlar uchun oshxona to'plami #13." }
         ]
     },
     {
@@ -2533,105 +2541,51 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
+
 <!-- ==================== THREE.JS 3D FURNITURE LOADER ==================== -->
 <script>
-let threeScene, threeCamera, threeRenderer, sofaModel;
+let threeScene, threeCamera, threeRenderer, activeModel3D = null, currentLoadedGlb = null;
+
+const gltfLoader = (typeof THREE !== 'undefined' && THREE.GLTFLoader) ? new THREE.GLTFLoader() : null;
+if (gltfLoader && THREE.DRACOLoader) {
+    const dracoLoader = new THREE.DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.1/');
+    gltfLoader.setDRACOLoader(dracoLoader);
+}
 
 function initThreeFurniture() {
     const container = document.getElementById('r3-scene');
     const canvas = document.getElementById('three-canvas');
+    if (!container || !canvas || typeof THREE === 'undefined') return;
 
-    if (!container || !canvas) return;
-
-    // 1. Создание сцены
     threeScene = new THREE.Scene();
-
-    // 2. Настройка камеры
     threeCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
     threeCamera.position.set(0, 1.2, 3.5);
 
-    // 3. Рендерер с прозрачным фоном
     threeRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
     threeRenderer.setSize(container.clientWidth, container.clientHeight);
     threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    threeRenderer.shadowMap.enabled = true;
 
-    // 4. Освещение PBR (Ambient + Directional)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
-    threeScene.add(ambientLight);
-
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.1);
+    threeScene.add(new THREE.AmbientLight(0xffffff, 1.05));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
     dirLight.position.set(2, 5, 3);
-    dirLight.castShadow = true;
     threeScene.add(dirLight);
-   const loader = new THREE.GLTFLoader();
-   loader.load(
-        'sofa.glb',
-        (gltf) => {
-            const rawModel = gltf.scene;
 
-            // 1. Высчитываем размеры и масштаб
-            const box = new THREE.Box3().setFromObject(rawModel);
-            const size = new THREE.Vector3();
-            box.getSize(size);
-
-            const targetWidth = 1.8; 
-            const scaleFactor = targetWidth / size.x;
-            rawModel.scale.set(scaleFactor, scaleFactor, scaleFactor);
-
-            // 2. Центрируем саму модель ТАК, чтобы её дно стало точкой Y=0
-            box.setFromObject(rawModel);
-            const center = new THREE.Vector3();
-            box.getCenter(center);
-
-            rawModel.position.x = -center.x;
-            rawModel.position.z = -center.z;
-            rawModel.position.y = -box.min.y; // Теперь дно модели СТРОГО на Y=0 контейнера
-
-            // 3. Создаем контейнер-родитель и кладем модель в него
-            sofaModel = new THREE.Group();
-            sofaModel.add(rawModel);
-
-            // 4. Позиционируем сам контейнер в комнате:
-            sofaModel.position.x = 0;
-            sofaModel.position.y = -0.7; // Ровно уровень пола сцены R3
-            sofaModel.position.z = -1.0; // Прижимаем к задней стене
-
-            rawModel.traverse((child) => {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                }
-            });
-
-            threeScene.add(sofaModel);
-            console.log("3D-гарнитур идеально приземлился!");
-        },
-        undefined,
-        (err) => { console.warn("Файл sofa.glb не найден:", err); }
-    );
-
-    // Анимационный цикл синхронизации Three.js с углами R3
     function animate() {
         requestAnimationFrame(animate);
-
         if (typeof R3 !== 'undefined') {
             const yawRad = (R3.yaw || 0) * (Math.PI / 180);
             const pitchRad = (R3.pitch || 0) * (Math.PI / 180);
             const dist = 3.5 / (R3.zoom || 1);
-
             threeCamera.position.x = Math.sin(yawRad) * dist;
             threeCamera.position.z = Math.cos(yawRad) * dist;
             threeCamera.position.y = 1.2 + Math.sin(pitchRad) * 1.5;
             threeCamera.lookAt(0, -0.2, 0);
         }
-
         threeRenderer.render(threeScene, threeCamera);
     }
-
     animate();
 
-    // Ресайз при изменении размера экрана
     window.addEventListener('resize', () => {
         if (!container) return;
         threeCamera.aspect = container.clientWidth / container.clientHeight;
@@ -2640,7 +2594,54 @@ function initThreeFurniture() {
     });
 }
 
+function setRoom3DModel(item) {
+    if (!threeScene || !gltfLoader) return;
 
+    if (!item || !item.glb) {
+        if (activeModel3D) {
+            threeScene.remove(activeModel3D);
+            activeModel3D = null;
+            currentLoadedGlb = null;
+        }
+        return;
+    }
+
+    if (currentLoadedGlb === item.glb) return;
+    currentLoadedGlb = item.glb;
+
+    gltfLoader.load(
+        item.glb,
+        (gltf) => {
+            if (activeModel3D) threeScene.remove(activeModel3D);
+
+            const raw = gltf.scene;
+            const box = new THREE.Box3().setFromObject(raw);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+
+            const targetW = item.widthM || 2.2;
+            const scale = targetW / (size.x || 1);
+            raw.scale.set(scale, scale, scale);
+
+            box.setFromObject(raw);
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+
+            raw.position.x = -center.x;
+            raw.position.z = -center.z;
+            raw.position.y = -box.min.y;
+
+            activeModel3D = new THREE.Group();
+            activeModel3D.add(raw);
+            activeModel3D.position.set(0, -0.7, -1.0);
+            threeScene.add(activeModel3D);
+        },
+        undefined,
+        (err) => console.warn("Ошибка загрузки GLB:", item.glb, err)
+    );
+}
+
+document.addEventListener("DOMContentLoaded", initThreeFurniture);
 </script>
 </body>
 </html>
