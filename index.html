@@ -998,14 +998,16 @@ function r3LoadPhotos() {
             const maxH = full ? window.innerHeight : Math.min(0.8 * window.innerHeight, 1000);
             const k = S / 392, H0 = Math.max(300, Math.min(400 * k, maxH));
             R3.kk = Math.min(k, H0 / 400);
-            const sc = document.getElementById('r3-scene'); sc.style.height = (full ? window.innerHeight : H0) + 'px'; sc.style.perspective = (620 * R3.kk) + 'px';
-            R3.fit = Math.max(0.13, Math.min(0.55, 360 / Math.max(W, D))) * R3.kk * (full ? 0.85 : 0.92);
+            const sc = document.getElementById('r3-scene');
+            sc.style.height = (full ? window.innerHeight : H0) + 'px';
+            sc.style.perspective = (1450 * R3.kk) + 'px';
+            R3.fit = Math.max(0.14, Math.min(0.45, 320 / Math.max(W, D, H))) * R3.kk * (full ? 0.85 : 0.9);
             r3Apply();
         }
         function r3Apply() {
             const room = document.getElementById('r3-room'); if (!room) return;
-            const s2 = R3.fit * R3.zoom, D = r3Dims().l * R3_PPM;
-            room.style.transform = `translateZ(${245 * R3.kk - s2 * D / 2}px) scale(${s2}) rotateX(${R3.pitch}deg) rotateY(${R3.yaw}deg)`;
+            const s2 = R3.fit * R3.zoom;
+            room.style.transform = `translateZ(0px) scale(${s2}) rotateX(${R3.pitch}deg) rotateY(${R3.yaw}deg)`;
         }
         function r3Init() {
             const st = document.getElementById('r3-stage');
@@ -1025,8 +1027,8 @@ function r3LoadPhotos() {
             st.addEventListener('pointerdown', e => { if (e.target.closest('#r3-fs')) return; R3.drag = { x: e.clientX, y: e.clientY, yaw: R3.yaw, pitch: R3.pitch }; st.setPointerCapture(e.pointerId); });
             st.addEventListener('pointermove', e => {
                 if (!R3.drag) return;
-                R3.yaw = Math.max(-50, Math.min(50, R3.drag.yaw + (e.clientX - R3.drag.x) * 0.35));
-                R3.pitch = Math.max(-12, Math.min(14, R3.drag.pitch - (e.clientY - R3.drag.y) * 0.2));
+                R3.yaw = Math.max(-65, Math.min(65, R3.drag.yaw + (e.clientX - R3.drag.x) * 0.4));
+                R3.pitch = Math.max(-45, Math.min(45, R3.drag.pitch - (e.clientY - R3.drag.y) * 0.35));
                 r3Apply();
             });
             ['pointerup', 'pointercancel'].forEach(ev => st.addEventListener(ev, () => { R3.drag = null; }));
