@@ -1000,14 +1000,14 @@ function r3LoadPhotos() {
             R3.kk = Math.min(k, H0 / 400);
             const sc = document.getElementById('r3-scene');
             sc.style.height = (full ? window.innerHeight : H0) + 'px';
-            sc.style.perspective = (1450 * R3.kk) + 'px';
-            R3.fit = Math.max(0.14, Math.min(0.45, 320 / Math.max(W, D, H))) * R3.kk * (full ? 0.85 : 0.9);
+            sc.style.perspective = (1050 * R3.kk) + 'px';
+            R3.fit = Math.max(0.13, Math.min(0.55, 360 / Math.max(W, D))) * R3.kk * (full ? 0.85 : 0.92);
             r3Apply();
         }
         function r3Apply() {
             const room = document.getElementById('r3-room'); if (!room) return;
-            const s2 = R3.fit * R3.zoom;
-            room.style.transform = `translateZ(0px) scale(${s2}) rotateX(${R3.pitch}deg) rotateY(${R3.yaw}deg)`;
+            const s2 = R3.fit * R3.zoom, D = r3Dims().l * R3_PPM;
+            room.style.transform = `translateZ(${420 * R3.kk - s2 * D / 2}px) scale(${s2}) rotateX(${R3.pitch}deg) rotateY(${R3.yaw}deg)`;
         }
         function r3Init() {
             const st = document.getElementById('r3-stage');
@@ -2610,67 +2610,90 @@ function setRoom3DModel(item) {
         return;
     }
 
-    if (currentLoadedGlb === item.glb) return;
+    const isSameGlb = (currentLoadedGlb === item.glb);
     currentLoadedGlb = item.glb;
+
+    const placeModel = (raw) => {
+        raw.rotation.set(0, 0, 0);
+        raw.scale.set(1, 1, 1);
+        raw.position.set(0, 0, 0);
+        raw.updateMatrixWorld(true);
+
+        const d = (typeof r3Dims === 'function') ? r3Dims() : { l: 4, w: 3.5, h: 2.7 };
+        const placeAlongSide = !!(item.alongLongWall || item.coversWall || (item.widthM && item.widthM > 2.5));
+
+        if (placeAlongSide) {
+            raw.rotation.y = Math.PI / 2;
+            raw.updateMatrixWorld(true);
+        }
+
+        const box = new THREE.Box3().setFromObject(raw);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+
+        const roomHalfW = 1.15 * (d.w / 3.5);
+        const roomHalfH = 0.54 * (d.h / 2.7);
+        const roomLen   = 2.15 * (d.l / 4.0);
+
+        if (placeAlongSide) {
+            const scaleZ = (roomLen * 0.94) / (size.z || 1);
+            const scaleY = (roomHalfH * 2) / (size.y || 1);
+            raw.scale.set(scaleZ, scaleY, scaleZ);
+
+            box.setFromObject(raw);
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+
+            // Задняя стенка утоплена в правую стену (+0.03), низ на полу (-roomHalfH), верх под потолок
+            raw.position.set(
+                -box.max.x + roomHalfW + 0.03,
+                -box.min.y - roomHalfH,
+                -center.z
+            );
+        } else {
+            const roomHalfD = 1.15 * (d.l / 4.0);
+            const scaleX = (roomHalfW * 1.6) / (size.x || 1);
+            const scaleY = (roomHalfH * 2) / (size.y || 1);
+            raw.scale.set(scaleX, scaleY, scaleX);
+
+            box.setFromObject(raw);
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+
+            raw.position.set(
+                -center.x,
+                -box.min.y - roomHalfH,
+                -box.min.z - roomHalfD - 0.03
+            );
+        }
+
+        if (activeModel3D) {
+            while (activeModel3D.children.length) activeModel3D.remove(activeModel3D.children[0]);
+            activeModel3D.add(raw);
+        } else {
+            activeModel3D = new THREE.Group();
+            activeModel3D.position.set(0, 0, 0);
+            activeModel3D.add(raw);
+            threeScene.add(activeModel3D);
+        }
+    };
+
+    if (isSameGlb && activeModel3D && activeModel3D.children.length) {
+        placeModel(activeModel3D.children[0]);
+        return;
+    }
 
     gltfLoader.load(
         item.glb,
         (gltf) => {
             if (activeModel3D) threeScene.remove(activeModel3D);
-
-           const raw = gltf.scene;
-            const placeAlongSide = item.alongLongWall || (item.widthM && item.widthM > 2.5);
-
-            // Разворачиваем на +90° (Math.PI / 2), чтобы спина прилипла к правой стене, а фасады смотрели влево в комнату
-            if (placeAlongSide) {
-                raw.rotation.y = Math.PI / 2;
-            }
-
-            const box = new THREE.Box3().setFromObject(raw);
-            const size = new THREE.Vector3();
-            box.getSize(size);
-
-            if (placeAlongSide) {
-                const targetLen = 1.65;
-                const scale = targetLen / (size.z || 1);
-                raw.scale.set(scale, scale, scale);
-
-                box.setFromObject(raw);
-                const center = new THREE.Vector3();
-                box.getCenter(center);
-
-                // Прижимаем спиной (box.max.x) вплотную к правой длинной стене (+1.18) и ставим на пол (-0.62)
-                raw.position.set(
-                    -box.max.x + 1.18,
-                    -box.min.y - 0.62,
-                    -center.z
-                );
-            } else {
-                const targetW = 1.15;
-                const scale = targetW / (size.x || 1);
-                raw.scale.set(scale, scale, scale);
-
-                box.setFromObject(raw);
-                const center = new THREE.Vector3();
-                box.getCenter(center);
-
-                raw.position.set(
-                    -center.x,
-                    -box.min.y - 0.62,
-                    -box.min.z - 1.18
-                );
-            }
-
-            activeModel3D = new THREE.Group();
-            activeModel3D.position.set(0, 0, 0);
-            activeModel3D.add(raw);
-            threeScene.add(activeModel3D);
+            activeModel3D = null;
+            placeModel(gltf.scene);
         },
         undefined,
         (err) => console.warn("Ошибка загрузки GLB:", item.glb, err)
     );
 }
-
 document.addEventListener("DOMContentLoaded", initThreeFurniture);
 </script>
 </body>
