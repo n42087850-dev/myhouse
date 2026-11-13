@@ -701,7 +701,7 @@
             ]
         };
         const R3_DEFAULT = { floor: { dry: 'f-laminate', wet: 'f-tile' }, wall: { dry: 'w-floral', wet: 'w-tile' }, ceil: { dry: 'c-emb', wet: 'c-pvx-silver' } };
-        const R3_SHADE = { back: 0.10, left: 0.30, right: 0.20, floor: 0.12, ceil: 0 };
+        const R3_SHADE = { back: 0.10, left: 0.30, right: 0.20, floor: 0, ceil: 0 };
         const R3_FACES = { floor: ['r3-floor'], wall: ['r3-back', 'r3-left', 'r3-right'], ceil: ['r3-ceil'] };
  
         const R3 = { active: null, mat: {}, furniture: {}, tab: 'floor', yaw: -22, pitch: -2, zoom: 1, fit: 1, kk: 1, drag: null };
@@ -713,18 +713,17 @@
     if (o.kind === 'cover' || o.kind === 'tile') {
         return im.src;
     }
-    if (o.kind === 'herringbone_stack') {
-        // 1. Делаем белый фон прозрачным (работает и для JPG на белом фоне, и для PNG)
+   if (o.kind === 'herringbone_stack') {
+        // 1. Находим точные границы вырезанного образца (игнорируя белый фон)
         const srcC = mk(w, h), sg = srcC.getContext('2d');
         sg.drawImage(im, 0, 0, w, h);
         const id = sg.getImageData(0, 0, w, h), d = id.data;
         let minX = w, minY = h, maxX = 0, maxY = 0;
+
         for (let y = 0; y < h; y++) {
             for (let x = 0; x < w; x++) {
                 const i = (y * w + x) * 4;
-                const r = d[i], g = d[i + 1], b = d[i + 2];
-                // Мягкое удаление белого фона по краям досок
-                if (r > 240 && g > 240 && b > 240) {
+                if (d[i] > 235 && d[i + 1] > 235 && d[i + 2] > 235) {
                     d[i + 3] = 0;
                 } else {
                     if (x < minX) minX = x;
@@ -736,32 +735,35 @@
         }
         sg.putImageData(id, 0, 0);
 
-        // 2. Обрезаем пустые поля вокруг вырезанной галочки
-        const cw = Math.max(10, maxX - minX + 1);
-        const ch = Math.max(10, maxY - minY + 1);
-        const piece = mk(cw, ch);
-        piece.getContext('2d').drawImage(srcC, minX, minY, cw, ch, 0, 0, cw, ch);
+        const cw = maxX - minX + 1;
+        const ch = maxY - minY + 1;
 
-        // 3. Собираем сплошной бесшовный пол из оригинальных галочек со сдвигом
-        const outW = cw, outH = Math.round(ch * 0.72);
-        const out = mk(outW, outH), og = out.getContext('2d');
-        const stepY = Math.round(cw * 0.142); // шаг ровно в 1 ряд плашек
+        // 2. Берём чистую центральную колонку ёлочки (без ступенчатых краёв по бокам)
+        // Ширина колонки = центральные 44% от образца, где доски идут сплошным зигзагом
+        const colW = Math.round(cw * 0.44);
+        const startX = minX + Math.round((cw - colW) / 2);
 
-        for (let row = -6; row <= 8; row++) {
-            const yPos = row * stepY;
-            og.drawImage(piece, 0, yPos);
-            // Дублируем по краям (слева и справа), чтобы стык по X был бесшовным
-            og.drawImage(piece, -outW, yPos);
-            og.drawImage(piece, outW, yPos);
+        // Вырезаем центральную полосу без белых краёв (верхний и нижний край отсекаем)
+        const stripH = Math.round(ch * 0.55);
+        const startY = minY + Math.round(ch * 0.14);
+
+        const strip = mk(colW, stripH), stg = strip.getContext('2d');
+        stg.drawImage(srcC, startX, startY, colW, stripH, 0, 0, colW, stripH);
+
+        // 3. Делаем плавный вертикальный повтор (только сдвиг вниз, НИКАКИХ ромбов и зеркал!)
+        const blendH = Math.round(stripH * 0.18);
+        const tileH = stripH - blendH;
+        const tile = mk(colW, tileH), tg = tile.getContext('2d');
+
+        tg.drawImage(strip, 0, 0, colW, tileH, 0, 0, colW, tileH);
+        for (let y = 0; y < blendH; y++) {
+            tg.globalAlpha = 1 - (y / blendH);
+            tg.drawImage(strip, 0, tileH + y, colW, 1, 0, y, colW, 1);
         }
+        tg.globalAlpha = 1;
 
-        // 4. Делаем зеркальный стык 2x2 (как в kind: 'xy'), чтобы ни один край не рвался
-        const finalC = mk(outW * 2, outH * 2), fg = finalC.getContext('2d');
-        fg.drawImage(out, 0, 0);
-        fg.save(); fg.translate(outW * 2, 0); fg.scale(-1, 1); fg.drawImage(out, 0, 0); fg.restore();
-        fg.save(); fg.translate(0, outH * 2); fg.scale(1, -1); fg.drawImage(out, 0, 0); fg.restore();
-        fg.save(); fg.translate(outW * 2, outH * 2); fg.scale(-1, -1); fg.drawImage(out, 0, 0); fg.restore();
-        return finalC.toDataURL('image/jpeg', 0.96);
+        // Возвращаем PNG — 100% оригинальный цвет пиксель в пиксель, без JPEG-сжатия
+        return tile.toDataURL('image/png');
     }
     if (o.kind === 'marble') {
         const tw = 512, th = 1024, c = mk(tw * 2, th * 2), g = c.getContext('2d');
