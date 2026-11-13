@@ -841,7 +841,15 @@ function r3LoadPhotos() {
             r3RenderChips();
             if (String(R3.active) === String(id)) { r3Paint(); r3RenderOpts(); }
         }
-        function r3OnDimChange(id) { if (String(R3.active) === String(id)) r3Layout(); }
+        function r3OnDimChange(id) {
+            if (String(R3.active) === String(id)) {
+                r3Layout();
+                // Пересчитываем 3D-мебель под новые размеры комнаты
+                if (R3.furniture && R3.furniture[id]) {
+                    r3Paint();
+                }
+            }
+        }
         function r3SetActive(id) {
             id = String(id);
             if (R3.active === id) return;
@@ -2610,61 +2618,104 @@ function setRoom3DModel(item) {
         return;
     }
 
-    if (currentLoadedGlb === item.glb) return;
+    // Всегда пересчитываем позицию/масштаб под текущие размеры комнаты
+    // (даже если тот же GLB — иначе при смене длины/высоты мебель остаётся старой)
+    const isSameGlb = (currentLoadedGlb === item.glb);
     currentLoadedGlb = item.glb;
+
+    const applyModelToRoom = (raw) => {
+        // Сброс
+        raw.rotation.set(0, 0, 0);
+        raw.scale.set(1, 1, 1);
+        raw.position.set(0, 0, 0);
+        raw.updateMatrixWorld(true);
+
+        const dims = (typeof r3Dims === 'function') ? r3Dims() : { l: 4, w: 3.5, h: 2.7 };
+        const placeAlongSide = !!(item.alongLongWall || item.coversWall || (item.widthM && item.widthM > 2.5));
+
+        // Базовые «виртуальные» размеры комнаты в единицах Three.js (подогнаны под исходный визуал)
+        const DEF_L = 4, DEF_W = 3.5, DEF_H = 2.7;
+        const DEF_HALF_W = 1.18;
+        const DEF_FLOOR_Y = -0.62;
+        const DEF_FIT = 0.25;
+
+        // Текущий fit, чтобы относительный размер мебели к комнате не «плыл»
+        const fitMul = (typeof R3 !== 'undefined' && R3.fit) ? (R3.fit / DEF_FIT) : 1;
+
+        let box = new THREE.Box3().setFromObject(raw);
+        let size = box.getSize(new THREE.Vector3());
+
+        if (placeAlongSide) {
+            // Поворачиваем: длинная сторона вдоль длины комнаты (Z), спина к правой стене
+            raw.rotation.y = Math.PI / 2;
+            raw.updateMatrixWorld(true);
+            box.setFromObject(raw);
+            size = box.getSize(new THREE.Vector3());
+
+            // Целевые размеры: почти на всю длину комнаты + на всю высоту от пола до потолка
+            const targetLen    = 2.20 * (dims.l / DEF_L) * fitMul;   // вдоль Z (длина)
+            const targetDepth  = 0.58 * (dims.w / DEF_W) * fitMul;   // вдоль X (глубина шкафов ~60 см)
+            const targetHeight = 1.70 * (dims.h / DEF_H) * fitMul;   // на всю высоту комнаты
+
+            const sx = targetDepth  / (size.x || 1);
+            const sy = targetHeight / (size.y || 1);
+            const sz = targetLen    / (size.z || 1);
+            raw.scale.set(sx, sy, sz);
+
+            box.setFromObject(raw);
+            const center = box.getCenter(new THREE.Vector3());
+
+            // Правая стена и пол (масштабируем вместе с комнатой)
+            const wallX  = DEF_HALF_W * (dims.w / DEF_W) * fitMul;
+            const floorY = DEF_FLOOR_Y * (dims.h / DEF_H) * fitMul;
+
+            // Спина вплотную к правой стене, низ на полу, по длине — по центру
+            raw.position.set(
+                -box.max.x + wallX,
+                -box.min.y + floorY,
+                -center.z
+            );
+        } else {
+            // Обычная мебель (не вдоль длинной стены)
+            const targetW = 1.15 * fitMul;
+            const scale = targetW / (size.x || 1);
+            raw.scale.set(scale, scale, scale);
+
+            box.setFromObject(raw);
+            const center = box.getCenter(new THREE.Vector3());
+            const floorY = DEF_FLOOR_Y * fitMul;
+
+            raw.position.set(
+                -center.x,
+                -box.min.y + floorY,
+                -box.min.z - 1.18 * fitMul
+            );
+        }
+
+        if (activeModel3D) {
+            // Обновляем уже существующую модель
+            while (activeModel3D.children.length) activeModel3D.remove(activeModel3D.children[0]);
+            activeModel3D.add(raw);
+        } else {
+            activeModel3D = new THREE.Group();
+            activeModel3D.position.set(0, 0, 0);
+            activeModel3D.add(raw);
+            threeScene.add(activeModel3D);
+        }
+    };
+
+    if (isSameGlb && activeModel3D && activeModel3D.children.length) {
+        // Модель уже загружена — просто пересчитываем scale/position под новые размеры
+        applyModelToRoom(activeModel3D.children[0]);
+        return;
+    }
 
     gltfLoader.load(
         item.glb,
         (gltf) => {
             if (activeModel3D) threeScene.remove(activeModel3D);
-
-           const raw = gltf.scene;
-            const placeAlongSide = item.alongLongWall || (item.widthM && item.widthM > 2.5);
-
-            // Разворачиваем на +90° (Math.PI / 2), чтобы спина прилипла к правой стене, а фасады смотрели влево в комнату
-            if (placeAlongSide) {
-                raw.rotation.y = Math.PI / 2;
-            }
-
-            const box = new THREE.Box3().setFromObject(raw);
-            const size = new THREE.Vector3();
-            box.getSize(size);
-
-            if (placeAlongSide) {
-                const targetLen = 1.65;
-                const scale = targetLen / (size.z || 1);
-                raw.scale.set(scale, scale, scale);
-
-                box.setFromObject(raw);
-                const center = new THREE.Vector3();
-                box.getCenter(center);
-
-                // Прижимаем спиной (box.max.x) вплотную к правой длинной стене (+1.18) и ставим на пол (-0.62)
-                raw.position.set(
-                    -box.max.x + 1.18,
-                    -box.min.y - 0.62,
-                    -center.z
-                );
-            } else {
-                const targetW = 1.15;
-                const scale = targetW / (size.x || 1);
-                raw.scale.set(scale, scale, scale);
-
-                box.setFromObject(raw);
-                const center = new THREE.Vector3();
-                box.getCenter(center);
-
-                raw.position.set(
-                    -center.x,
-                    -box.min.y - 0.62,
-                    -box.min.z - 1.18
-                );
-            }
-
-            activeModel3D = new THREE.Group();
-            activeModel3D.position.set(0, 0, 0);
-            activeModel3D.add(raw);
-            threeScene.add(activeModel3D);
+            activeModel3D = null;
+            applyModelToRoom(gltf.scene);
         },
         undefined,
         (err) => console.warn("Ошибка загрузки GLB:", item.glb, err)
