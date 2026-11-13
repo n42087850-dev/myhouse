@@ -662,6 +662,18 @@
                 { id: 'f-lam-oak', v: 'laminate', uz: "Laminat (och eman)", ru: "Ламинат светлый дуб", rooms: R3_DRY, file: 'tex-laminate-oak.jpg', kind: 'xy', f: 0.30, sz: 80 },
                 { id: 'f-marble-grid', v: 'tile', uz: "Marmar plitka", ru: "Кафель", rooms: R3_ALL, file: 'tex-marble-grid.jpg', kind: 'marble', sz: 120 },
                 { id: 'f-calacatta', v: 'tile', uz: "Calacatta marmar", ru: "Мрамор Calacatta", rooms: R3_ALL, file: 'tex-marble-calacatta.jpg', kind: 'marble', sz: 120 }
+                { 
+                    id: 'f-lam-12015', 
+                    v: 'laminate', 
+                    uz: "Laminat «Yolka» 12015 (Hamkor)", 
+                    ru: "Ламинат «Ёлочка» 12015 (Партнер)", 
+                    rooms: R3_DRY, 
+                    file: 'floor-12015.jpg', 
+                    kind: 'herringbone_stack', 
+                    sz: 160,
+                    boxSq: 2.203,
+                    pcsInBox: 36
+                },
             ],
            wall: [
     { id: 'w-marble', v: 'keramogranit', uz: "Keramogranit (marmar rasmli)", ru: "Керамогранит под мрамор", rooms: R3_ALL, file: 'tex-porcelain-marble.jpg', kind: 'marble', sz: 120, sz2: 240 },
@@ -700,6 +712,56 @@
     const mk = (cw, ch) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
     if (o.kind === 'cover' || o.kind === 'tile') {
         return im.src;
+    }
+    if (o.kind === 'herringbone_stack') {
+        // 1. Делаем белый фон прозрачным (работает и для JPG на белом фоне, и для PNG)
+        const srcC = mk(w, h), sg = srcC.getContext('2d');
+        sg.drawImage(im, 0, 0, w, h);
+        const id = sg.getImageData(0, 0, w, h), d = id.data;
+        let minX = w, minY = h, maxX = 0, maxY = 0;
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                const i = (y * w + x) * 4;
+                const r = d[i], g = d[i + 1], b = d[i + 2];
+                // Мягкое удаление белого фона по краям досок
+                if (r > 240 && g > 240 && b > 240) {
+                    d[i + 3] = 0;
+                } else {
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+            }
+        }
+        sg.putImageData(id, 0, 0);
+
+        // 2. Обрезаем пустые поля вокруг вырезанной галочки
+        const cw = Math.max(10, maxX - minX + 1);
+        const ch = Math.max(10, maxY - minY + 1);
+        const piece = mk(cw, ch);
+        piece.getContext('2d').drawImage(srcC, minX, minY, cw, ch, 0, 0, cw, ch);
+
+        // 3. Собираем сплошной бесшовный пол из оригинальных галочек со сдвигом
+        const outW = cw, outH = Math.round(ch * 0.72);
+        const out = mk(outW, outH), og = out.getContext('2d');
+        const stepY = Math.round(cw * 0.142); // шаг ровно в 1 ряд плашек
+
+        for (let row = -6; row <= 8; row++) {
+            const yPos = row * stepY;
+            og.drawImage(piece, 0, yPos);
+            // Дублируем по краям (слева и справа), чтобы стык по X был бесшовным
+            og.drawImage(piece, -outW, yPos);
+            og.drawImage(piece, outW, yPos);
+        }
+
+        // 4. Делаем зеркальный стык 2x2 (как в kind: 'xy'), чтобы ни один край не рвался
+        const finalC = mk(outW * 2, outH * 2), fg = finalC.getContext('2d');
+        fg.drawImage(out, 0, 0);
+        fg.save(); fg.translate(outW * 2, 0); fg.scale(-1, 1); fg.drawImage(out, 0, 0); fg.restore();
+        fg.save(); fg.translate(0, outH * 2); fg.scale(1, -1); fg.drawImage(out, 0, 0); fg.restore();
+        fg.save(); fg.translate(outW * 2, outH * 2); fg.scale(-1, -1); fg.drawImage(out, 0, 0); fg.restore();
+        return finalC.toDataURL('image/jpeg', 0.96);
     }
     if (o.kind === 'marble') {
         const tw = 512, th = 1024, c = mk(tw * 2, th * 2), g = c.getContext('2d');
