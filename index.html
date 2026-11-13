@@ -2573,14 +2573,16 @@ function initThreeFurniture() {
 
     function animate() {
         requestAnimationFrame(animate);
-        if (typeof R3 !== 'undefined') {
+        if (typeof R3 !== 'undefined' && activeModel3D) {
             const yawRad = (R3.yaw || 0) * (Math.PI / 180);
             const pitchRad = (R3.pitch || 0) * (Math.PI / 180);
-            const dist = 3.5 / (R3.zoom || 1);
-            threeCamera.position.x = Math.sin(yawRad) * dist;
-            threeCamera.position.z = Math.cos(yawRad) * dist;
-            threeCamera.position.y = 1.2 + Math.sin(pitchRad) * 1.5;
-            threeCamera.lookAt(0, -0.2, 0);
+
+            activeModel3D.rotation.order = 'YXZ';
+            activeModel3D.rotation.y = yawRad;
+            activeModel3D.rotation.x = -pitchRad;
+
+            const z = R3.zoom || 1;
+            activeModel3D.scale.set(z, z, z);
         }
         threeRenderer.render(threeScene, threeCamera);
     }
@@ -2615,25 +2617,56 @@ function setRoom3DModel(item) {
             if (activeModel3D) threeScene.remove(activeModel3D);
 
             const raw = gltf.scene;
+            const d = (typeof r3Dims === 'function') ? r3Dims() : { w: 3.5, l: 4.5, h: 2.7 };
+            const isLongRoom = d.l > d.w;
+            const placeAlongSide = (item.alongLongWall || (item.widthM && item.widthM > 2.5)) && isLongRoom;
+
+            // Если длинный гарнитур и комната вытянутая — разворачиваем на 90° вдоль левой длинной стены
+            if (placeAlongSide) {
+                raw.rotation.y = Math.PI / 2;
+            }
+
             const box = new THREE.Box3().setFromObject(raw);
             const size = new THREE.Vector3();
             box.getSize(size);
 
-            const targetW = item.widthM || 2.2;
-            const scale = targetW / (size.x || 1);
-            raw.scale.set(scale, scale, scale);
+            if (placeAlongSide) {
+                // Масштабируем вдоль длины комнаты (ось Z после поворота на 90°)
+                const targetLen = 1.45;
+                const scale = targetLen / (size.z || 1);
+                raw.scale.set(scale, scale, scale);
 
-            box.setFromObject(raw);
-            const center = new THREE.Vector3();
-            box.getCenter(center);
+                box.setFromObject(raw);
+                const center = new THREE.Vector3();
+                box.getCenter(center);
 
-            raw.position.x = -center.x;
-            raw.position.z = -center.z;
-            raw.position.y = -box.min.y;
+                // Прижимаем спиной (box.min.x) вплотную к левой длинной стене (-0.78)
+                raw.position.set(
+                    -box.min.x - 0.78,
+                    -box.min.y - 0.52,
+                    -center.z
+                );
+            } else {
+                // Короткая мебель или квадратная комната — ставим к задней стене
+                const targetW = 1.15;
+                const scale = targetW / (size.x || 1);
+                raw.scale.set(scale, scale, scale);
+
+                box.setFromObject(raw);
+                const center = new THREE.Vector3();
+                box.getCenter(center);
+
+                // Прижимаем спиной (box.min.z) вплотную к задней стене (-0.85)
+                raw.position.set(
+                    -center.x,
+                    -box.min.y - 0.52,
+                    -box.min.z - 0.85
+                );
+            }
 
             activeModel3D = new THREE.Group();
+            activeModel3D.position.set(0, 0, 0);
             activeModel3D.add(raw);
-            activeModel3D.position.set(0, -0.7, -1.0);
             threeScene.add(activeModel3D);
         },
         undefined,
