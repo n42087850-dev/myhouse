@@ -2619,53 +2619,51 @@ function setRoom3DModel(item) {
         raw.position.set(0, 0, 0);
         raw.updateMatrixWorld(true);
 
-        const d = (typeof r3Dims === 'function') ? r3Dims() : { l: 4, w: 3.5, h: 2.7 };
-        const placeAlongSide = !!(item.alongLongWall || item.coversWall || (item.widthM && item.widthM > 2.5));
+        let box = new THREE.Box3().setFromObject(raw);
+        let size = box.getSize(new THREE.Vector3());
 
-        if (placeAlongSide) {
-            raw.rotation.y = Math.PI / 2;
+        // Если модель экспортирована лёжа (Z больше Y — как на видео), поднимаем её вертикально
+        if (size.z > size.y * 1.2) {
+            raw.rotation.x = -Math.PI / 2;
             raw.updateMatrixWorld(true);
+            box.setFromObject(raw);
+            size = box.getSize(new THREE.Vector3());
         }
 
-        const box = new THREE.Box3().setFromObject(raw);
-        const size = new THREE.Vector3();
-        box.getSize(size);
-
-        const roomHalfW = 1.15 * (d.w / 3.5);
-        const roomHalfH = 0.54 * (d.h / 2.7);
-        const roomLen   = 2.15 * (d.l / 4.0);
-
-        if (placeAlongSide) {
-            const scaleZ = (roomLen * 0.94) / (size.z || 1);
-            const scaleY = (roomHalfH * 2) / (size.y || 1);
-            raw.scale.set(scaleZ, scaleY, scaleZ);
-
+        // Если длинная сторона модели смотрит в глубину (Z > X), разворачиваем её вдоль дальней стены (X)
+        if (size.z > size.x) {
+            raw.rotation.y += Math.PI / 2;
+            raw.updateMatrixWorld(true);
             box.setFromObject(raw);
-            const center = new THREE.Vector3();
-            box.getCenter(center);
-
-            // Задняя стенка утоплена в правую стену (+0.03), низ на полу (-roomHalfH), верх под потолок
-            raw.position.set(
-                -box.max.x + roomHalfW + 0.03,
-                -box.min.y - roomHalfH,
-                -center.z
-            );
-        } else {
-            const roomHalfD = 1.15 * (d.l / 4.0);
-            const scaleX = (roomHalfW * 1.6) / (size.x || 1);
-            const scaleY = (roomHalfH * 2) / (size.y || 1);
-            raw.scale.set(scaleX, scaleY, scaleX);
-
-            box.setFromObject(raw);
-            const center = new THREE.Vector3();
-            box.getCenter(center);
-
-            raw.position.set(
-                -center.x,
-                -box.min.y - roomHalfH,
-                -box.min.z - roomHalfD - 0.03
-            );
+            size = box.getSize(new THREE.Vector3());
         }
+
+        const d = (typeof r3Dims === 'function') ? r3Dims() : { l: 4, w: 3.5, h: 2.7 };
+        const roomW = 2.30 * (d.w / 3.5);
+        const roomH = 1.08 * (d.h / 2.7);
+        const roomHalfD = 1.15 * (d.l / 4.0);
+
+        // Ширина — во всю дальнюю стену, высота — от пола до потолка, глубина — реальные ~0.42 (без растяжения на полкомнаты)
+        const targetW = roomW * 0.96;
+        const targetH = roomH * 0.96;
+        const targetD = 0.42;
+
+        raw.scale.set(
+            targetW / (size.x || 1),
+            targetH / (size.y || 1),
+            targetD / (size.z || 1)
+        );
+        raw.updateMatrixWorld(true);
+
+        box.setFromObject(raw);
+        const center = box.getCenter(new THREE.Vector3());
+
+        // Ставим по центру дальней стены, спиной вплотную к стене, низом на пол
+        raw.position.set(
+            -center.x,
+            -box.min.y - (roomH / 2),
+            -box.min.z - roomHalfD + 0.02
+        );
 
         if (activeModel3D) {
             while (activeModel3D.children.length) activeModel3D.remove(activeModel3D.children[0]);
