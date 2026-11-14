@@ -670,7 +670,7 @@
                     rooms: R3_DRY, 
                     file: 'floor-12015.jpg', 
                     kind: 'herringbone_stack', 
-                    sz: 160,
+                    sz: 70,
                     boxSq: 2.203,
                     pcsInBox: 36
                 },
@@ -717,14 +717,16 @@
         const srcC = mk(w, h), sg = srcC.getContext('2d');
         sg.drawImage(im, 0, 0, w, h);
         const id = sg.getImageData(0, 0, w, h), d = id.data;
-        let minX = w, minY = h, maxX = 0, maxY = 0;
 
+        // Находим границы рисунка (не белого фона)
+        let minX = w, minY = h, maxX = 0, maxY = 0;
+        const isWhite = (x, y) => {
+            const i = (y * w + x) * 4;
+            return d[i] > 235 && d[i + 1] > 235 && d[i + 2] > 235;
+        };
         for (let y = 0; y < h; y++) {
             for (let x = 0; x < w; x++) {
-                const i = (y * w + x) * 4;
-                if (d[i] > 235 && d[i + 1] > 235 && d[i + 2] > 235) {
-                    d[i + 3] = 0;
-                } else {
+                if (!isWhite(x, y)) {
                     if (x < minX) minX = x;
                     if (x > maxX) maxX = x;
                     if (y < minY) minY = y;
@@ -732,22 +734,42 @@
                 }
             }
         }
-        sg.putImageData(id, 0, 0);
 
         const cw = maxX - minX + 1;
         const ch = maxY - minY + 1;
 
-        // Берём зону строго внутри сплошных плашек (без прозрачных углов снизу)
-        const colW = Math.round(cw * 0.40);
-        const startX = minX + Math.round((cw - colW) / 2);
-        const stripH = Math.round(ch * 0.46);
-        const startY = minY + Math.round(ch * 0.11);
+        // Центр зигзага находится на 38% от левого края (не 50%!)
+        const apexX = minX + Math.round(cw * 0.38);
+        const colW = Math.round(cw * 0.34);
+        const startX = apexX - Math.round(colW / 2);
+
+        // Находим по всей ширине colW строго сплошной вертикальный диапазон БЕЗ единого белого пикселя
+        let safeTop = minY, safeBottom = maxY;
+        for (let y = minY; y <= maxY; y++) {
+            let rowHasWhite = false;
+            for (let x = startX; x < startX + colW; x++) {
+                if (isWhite(x, y)) { rowHasWhite = true; break; }
+            }
+            if (!rowHasWhite) { safeTop = y; break; }
+        }
+        for (let y = maxY; y >= safeTop; y--) {
+            let rowHasWhite = false;
+            for (let x = startX; x < startX + colW; x++) {
+                if (isWhite(x, y)) { rowHasWhite = true; break; }
+            }
+            if (!rowHasWhite) { safeBottom = y; break; }
+        }
+
+        // Оставляем небольшой отступ 4px внутрь от границы белого
+        safeTop += 4;
+        safeBottom -= 4;
+        const stripH = Math.max(20, safeBottom - safeTop);
 
         const strip = mk(colW, stripH), stg = strip.getContext('2d');
-        stg.drawImage(srcC, startX, startY, colW, stripH, 0, 0, colW, stripH);
+        stg.drawImage(srcC, startX, safeTop, colW, stripH, 0, 0, colW, stripH);
 
-        // Бесшовный стык по вертикали (сдвиг вверх/вниз)
-        const blendH = Math.round(stripH * 0.22);
+        // Мягкий стык только на самых краях (10%), чтобы не было чёрных и мутных пятен
+        const blendH = Math.round(stripH * 0.14);
         const tileH = stripH - blendH;
         const vTile = mk(colW, tileH), vtg = vTile.getContext('2d');
         vtg.drawImage(strip, 0, 0, colW, tileH, 0, 0, colW, tileH);
@@ -757,8 +779,7 @@
         }
         vtg.globalAlpha = 1;
 
-        // Бесшовный стык по горизонтали (чтобы убрать центральный вертикальный шов)
-        const blendW = Math.round(colW * 0.16);
+        const blendW = Math.round(colW * 0.10);
         const tileW = colW - blendW;
         const finalTile = mk(tileW, tileH), ftg = finalTile.getContext('2d');
         ftg.drawImage(vTile, 0, 0, tileW, tileH, 0, 0, tileW, tileH);
@@ -768,8 +789,13 @@
         }
         ftg.globalAlpha = 1;
 
+        // Сохраняем реальное соотношение сторон тайла, чтобы ёлочки не сплющивались в толстые!
+        o._aspect = tileH / tileW;
         return finalTile.toDataURL('image/png');
     }
+       
+
+        
     
     if (o.kind === 'marble') {
         const tw = 512, th = 1024, c = mk(tw * 2, th * 2), g = c.getContext('2d');
@@ -865,6 +891,7 @@ function r3LoadPhotos() {
         im.onload = () => {
             try {
                 o.img = r3PhotoTex(im, o);
+                if (o.kind === 'herringbone_stack' && o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
                 
                 if (o.kind === 'xy') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
                 if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
