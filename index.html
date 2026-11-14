@@ -670,7 +670,7 @@
                     rooms: R3_DRY, 
                     file: 'floor-12015.jpg', 
                     kind: 'herringbone_stack', 
-                    sz: 130,
+                    sz: 65,
                     boxSq: 2.203,
                     pcsInBox: 36
                 },
@@ -714,56 +714,56 @@
         return im.src;
     }
  if (o.kind === 'herringbone_stack') {
-        // 1. Вырезаем из твоей картинки 4 разных чистых фрагмента дубовых плашек (повернув на -45°, чтобы плашки стали горизонтальными)
+        // 1. Выравниваем правые плашки строго по горизонтали (поворот на -38° по геометрии исходника)
         const rotC = mk(w, h), rg = rotC.getContext('2d');
         rg.translate(w / 2, h / 2);
-        rg.rotate(-Math.PI / 4); // выравниваем левые плашки строго горизонтально
+        rg.rotate(-38 * Math.PI / 180);
         rg.drawImage(im, -w / 2, -h / 2);
 
-        // Находим центр фото, где лежат самые чистые плашки без белого фона
-        const cx = Math.round(w * 0.42);
-        const cy = Math.round(h * 0.48);
-
-        // Берём 4 полоски текстуры с разных мест твоей картинки, чтобы доски не были одинаковыми
-        const pW = 320, pH = 80; // строго 4 : 1 (классическая пропорция плашки ёлочки!)
+        // 2. Вырезаем 6 чистых участков текстуры плашек из правой части (без белого фона и швов)
+        const pW = Math.round(w * 0.28);
+        const pH = Math.round(pW / 4); // строгая пропорция плашки 4:1
         const planks = [];
-        const offsets = [
-            [-140, -90],
-            [-120, -10],
-            [-150, 70],
-            [-110, 140]
+        const samples = [
+            [0.54, 0.34],
+            [0.56, 0.42],
+            [0.52, 0.50],
+            [0.55, 0.58],
+            [0.50, 0.66],
+            [0.48, 0.74]
         ];
 
-        offsets.forEach(([ox, oy]) => {
+        samples.forEach(([rx, ry]) => {
             const pc = mk(pW, pH), pg = pc.getContext('2d');
-            pg.drawImage(rotC, cx + ox, cy + oy, pW, pH, 0, 0, pW, pH);
-            // Тонкая естественная фаска по краям плашки (как на оригинале)
-            pg.strokeStyle = 'rgba(55, 38, 16, 0.42)';
-            pg.lineWidth = 2;
-            pg.strokeRect(1, 1, pW - 2, pH - 2);
+            pg.drawImage(rotC, Math.round(w * rx), Math.round(h * ry), pW, pH, 0, 0, pW, pH);
+            // Тонкая естественная фаска по периметру плашки
+            pg.strokeStyle = 'rgba(72, 50, 22, 0.35)';
+            pg.lineWidth = Math.max(1.5, pH * 0.025);
+            pg.strokeRect(0.5, 0.5, pW - 1, pH - 1);
             planks.push(pc);
         });
 
-        // 2. Собираем бесшовный блок английской ёлочки 4x4 плашки (повернутый на 45°)
-        // В сетке плашек (ширина = 1, длина = 4) период повторения по X и Y = 8 единиц!
-        const u = 64; // 1 единица = ширина плашки (64px), длина плашки = 4*u (256px)
-        const period = u * 8; // 512px — математически точный период бесшовного тайла!
+        // 3. Строим 100% заполненную бесшовную сетку английской ёлочки (соотношение плашки 4x1, период = 8)
+        const u = 64;
+        const period = u * 8; // 512px
         const gridC = mk(period, period), gg = gridC.getContext('2d');
 
-        // Заполняем с запасом вокруг квадрата [0..period], чтобы диагональный срез был 100% бесшовным
-        let idx = 0;
+        // Базовый фон в средний цвет дуба (гарантия отсутствия микрозазоров на стыках)
+        gg.fillStyle = '#c4a464';
+        gg.fillRect(0, 0, period, period);
+
         for (let gy = -4; gy < 12; gy++) {
             for (let gx = -4; gx < 12; gx++) {
-                // Классическая формула укладки "ёлочка" на сетке (gx, gy):
-                // Каждая пара (горизонтальная 4x1 + вертикальная 1x4) сдвигается ступенькой (1, 1)
-                const diag = (gx - gy + 16) % 8;
-                if (diag === 0) {
-                    // Горизонтальная плашка (4u x 1u)
-                    const pl = planks[idx++ % planks.length];
+                // Точная формула замощения 100% плоскости без единой пустой клетки:
+                const d = ((gx - gy) % 8 + 8) % 8;
+                const hash = Math.abs((gx * 7 + gy * 13) % planks.length);
+                const pl = planks[hash];
+
+                if (d === 0) {
+                    // Горизонтальная плашка (4u × 1u)
                     gg.drawImage(pl, gx * u, gy * u, u * 4, u);
-                } else if (diag === 4) {
-                    // Вертикальная плашка (1u x 4u)
-                    const pl = planks[idx++ % planks.length];
+                } else if (d === 4) {
+                    // Вертикальная плашка (1u × 4u)
                     gg.save();
                     gg.translate((gx + 1) * u, gy * u);
                     gg.rotate(Math.PI / 2);
@@ -773,14 +773,15 @@
             }
         }
 
-        // 3. Поворачиваем собранную сетку на -45°, чтобы ёлочка смотрела вверх/вперёд по комнате (как на фото!)
-        // При повороте квадрата с периодом P на 45° новый период по X и Y равен P * sqrt(2)
+        // 4. Поворачиваем сетку на -45°, чтобы ёлочка шла классическими шевронами вперёд по комнате
         const outSize = Math.round(period * Math.SQRT2);
         const outC = mk(outSize, outSize), og = outC.getContext('2d');
+        og.fillStyle = '#c4a464';
+        og.fillRect(0, 0, outSize, outSize);
+
         og.translate(outSize / 2, outSize / 2);
         og.rotate(-Math.PI / 4);
 
-        // Рисуем 3x3 копии gridC, чтобы перекрыть весь повернутый квадрат без единого зазора
         for (let ry = -1; ry <= 1; ry++) {
             for (let rx = -1; rx <= 1; rx++) {
                 og.drawImage(gridC, rx * period - period / 2, ry * period - period / 2);
@@ -788,15 +789,15 @@
         }
 
         o._aspect = 1;
-        return outC.toDataURL('image/png');
+        return outC.toDataURL('image/jpeg', 0.96);
     }
-     
-          
-            
-            
         
-    
-    if (o.kind === 'marble') {
+               
+
+        
+            
+            
+        if (o.kind === 'marble') {
         const tw = 512, th = 1024, c = mk(tw * 2, th * 2), g = c.getContext('2d');
         const hw = w / 2, hh = h / 2;
         [[0, 0], [hw, 0], [0, hh], [hw, hh]].forEach((q, i) => g.drawImage(im, q[0], q[1], hw, hh, (i % 2) * tw, Math.floor(i / 2) * th, tw, th));
