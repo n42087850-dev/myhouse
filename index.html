@@ -670,7 +670,7 @@
                     rooms: R3_DRY, 
                     file: 'floor-12015.jpg', 
                     kind: 'herringbone_stack', 
-                    sz: 70,
+                    sz: 130,
                     boxSq: 2.203,
                     pcsInBox: 36
                 },
@@ -714,87 +714,86 @@
         return im.src;
     }
  if (o.kind === 'herringbone_stack') {
-        const srcC = mk(w, h), sg = srcC.getContext('2d');
-        sg.drawImage(im, 0, 0, w, h);
-        const id = sg.getImageData(0, 0, w, h), d = id.data;
+        // 1. Вырезаем из твоей картинки 4 разных чистых фрагмента дубовых плашек (повернув на -45°, чтобы плашки стали горизонтальными)
+        const rotC = mk(w, h), rg = rotC.getContext('2d');
+        rg.translate(w / 2, h / 2);
+        rg.rotate(-Math.PI / 4); // выравниваем левые плашки строго горизонтально
+        rg.drawImage(im, -w / 2, -h / 2);
 
-        // Находим границы рисунка (не белого фона)
-        let minX = w, minY = h, maxX = 0, maxY = 0;
-        const isWhite = (x, y) => {
-            const i = (y * w + x) * 4;
-            return d[i] > 235 && d[i + 1] > 235 && d[i + 2] > 235;
-        };
-        for (let y = 0; y < h; y++) {
-            for (let x = 0; x < w; x++) {
-                if (!isWhite(x, y)) {
-                    if (x < minX) minX = x;
-                    if (x > maxX) maxX = x;
-                    if (y < minY) minY = y;
-                    if (y > maxY) maxY = y;
+        // Находим центр фото, где лежат самые чистые плашки без белого фона
+        const cx = Math.round(w * 0.42);
+        const cy = Math.round(h * 0.48);
+
+        // Берём 4 полоски текстуры с разных мест твоей картинки, чтобы доски не были одинаковыми
+        const pW = 320, pH = 80; // строго 4 : 1 (классическая пропорция плашки ёлочки!)
+        const planks = [];
+        const offsets = [
+            [-140, -90],
+            [-120, -10],
+            [-150, 70],
+            [-110, 140]
+        ];
+
+        offsets.forEach(([ox, oy]) => {
+            const pc = mk(pW, pH), pg = pc.getContext('2d');
+            pg.drawImage(rotC, cx + ox, cy + oy, pW, pH, 0, 0, pW, pH);
+            // Тонкая естественная фаска по краям плашки (как на оригинале)
+            pg.strokeStyle = 'rgba(55, 38, 16, 0.42)';
+            pg.lineWidth = 2;
+            pg.strokeRect(1, 1, pW - 2, pH - 2);
+            planks.push(pc);
+        });
+
+        // 2. Собираем бесшовный блок английской ёлочки 4x4 плашки (повернутый на 45°)
+        // В сетке плашек (ширина = 1, длина = 4) период повторения по X и Y = 8 единиц!
+        const u = 64; // 1 единица = ширина плашки (64px), длина плашки = 4*u (256px)
+        const period = u * 8; // 512px — математически точный период бесшовного тайла!
+        const gridC = mk(period, period), gg = gridC.getContext('2d');
+
+        // Заполняем с запасом вокруг квадрата [0..period], чтобы диагональный срез был 100% бесшовным
+        let idx = 0;
+        for (let gy = -4; gy < 12; gy++) {
+            for (let gx = -4; gx < 12; gx++) {
+                // Классическая формула укладки "ёлочка" на сетке (gx, gy):
+                // Каждая пара (горизонтальная 4x1 + вертикальная 1x4) сдвигается ступенькой (1, 1)
+                const diag = (gx - gy + 16) % 8;
+                if (diag === 0) {
+                    // Горизонтальная плашка (4u x 1u)
+                    const pl = planks[idx++ % planks.length];
+                    gg.drawImage(pl, gx * u, gy * u, u * 4, u);
+                } else if (diag === 4) {
+                    // Вертикальная плашка (1u x 4u)
+                    const pl = planks[idx++ % planks.length];
+                    gg.save();
+                    gg.translate((gx + 1) * u, gy * u);
+                    gg.rotate(Math.PI / 2);
+                    gg.drawImage(pl, 0, 0, u * 4, u);
+                    gg.restore();
                 }
             }
         }
 
-        const cw = maxX - minX + 1;
-        const ch = maxY - minY + 1;
+        // 3. Поворачиваем собранную сетку на -45°, чтобы ёлочка смотрела вверх/вперёд по комнате (как на фото!)
+        // При повороте квадрата с периодом P на 45° новый период по X и Y равен P * sqrt(2)
+        const outSize = Math.round(period * Math.SQRT2);
+        const outC = mk(outSize, outSize), og = outC.getContext('2d');
+        og.translate(outSize / 2, outSize / 2);
+        og.rotate(-Math.PI / 4);
 
-        // Центр зигзага находится на 38% от левого края (не 50%!)
-        const apexX = minX + Math.round(cw * 0.38);
-        const colW = Math.round(cw * 0.34);
-        const startX = apexX - Math.round(colW / 2);
-
-        // Находим по всей ширине colW строго сплошной вертикальный диапазон БЕЗ единого белого пикселя
-        let safeTop = minY, safeBottom = maxY;
-        for (let y = minY; y <= maxY; y++) {
-            let rowHasWhite = false;
-            for (let x = startX; x < startX + colW; x++) {
-                if (isWhite(x, y)) { rowHasWhite = true; break; }
+        // Рисуем 3x3 копии gridC, чтобы перекрыть весь повернутый квадрат без единого зазора
+        for (let ry = -1; ry <= 1; ry++) {
+            for (let rx = -1; rx <= 1; rx++) {
+                og.drawImage(gridC, rx * period - period / 2, ry * period - period / 2);
             }
-            if (!rowHasWhite) { safeTop = y; break; }
-        }
-        for (let y = maxY; y >= safeTop; y--) {
-            let rowHasWhite = false;
-            for (let x = startX; x < startX + colW; x++) {
-                if (isWhite(x, y)) { rowHasWhite = true; break; }
-            }
-            if (!rowHasWhite) { safeBottom = y; break; }
         }
 
-        // Оставляем небольшой отступ 4px внутрь от границы белого
-        safeTop += 4;
-        safeBottom -= 4;
-        const stripH = Math.max(20, safeBottom - safeTop);
-
-        const strip = mk(colW, stripH), stg = strip.getContext('2d');
-        stg.drawImage(srcC, startX, safeTop, colW, stripH, 0, 0, colW, stripH);
-
-        // Мягкий стык только на самых краях (10%), чтобы не было чёрных и мутных пятен
-        const blendH = Math.round(stripH * 0.14);
-        const tileH = stripH - blendH;
-        const vTile = mk(colW, tileH), vtg = vTile.getContext('2d');
-        vtg.drawImage(strip, 0, 0, colW, tileH, 0, 0, colW, tileH);
-        for (let y = 0; y < blendH; y++) {
-            vtg.globalAlpha = 1 - (y / blendH);
-            vtg.drawImage(strip, 0, tileH + y, colW, 1, 0, y, colW, 1);
-        }
-        vtg.globalAlpha = 1;
-
-        const blendW = Math.round(colW * 0.10);
-        const tileW = colW - blendW;
-        const finalTile = mk(tileW, tileH), ftg = finalTile.getContext('2d');
-        ftg.drawImage(vTile, 0, 0, tileW, tileH, 0, 0, tileW, tileH);
-        for (let x = 0; x < blendW; x++) {
-            ftg.globalAlpha = 1 - (x / blendW);
-            ftg.drawImage(vTile, tileW + x, 0, 1, tileH, x, 0, 1, tileH);
-        }
-        ftg.globalAlpha = 1;
-
-        // Сохраняем реальное соотношение сторон тайла, чтобы ёлочки не сплющивались в толстые!
-        o._aspect = tileH / tileW;
-        return finalTile.toDataURL('image/png');
+        o._aspect = 1;
+        return outC.toDataURL('image/png');
     }
-       
-
+     
+          
+            
+            
         
     
     if (o.kind === 'marble') {
