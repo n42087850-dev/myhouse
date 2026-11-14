@@ -713,8 +713,7 @@
     if (o.kind === 'cover' || o.kind === 'tile') {
         return im.src;
     }
-   if (o.kind === 'herringbone_stack') {
-        // 1. Находим точные границы вырезанного образца (игнорируя белый фон)
+ if (o.kind === 'herringbone_stack') {
         const srcC = mk(w, h), sg = srcC.getContext('2d');
         sg.drawImage(im, 0, 0, w, h);
         const id = sg.getImageData(0, 0, w, h), d = id.data;
@@ -738,33 +737,40 @@
         const cw = maxX - minX + 1;
         const ch = maxY - minY + 1;
 
-        // 2. Берём чистую центральную колонку ёлочки (без ступенчатых краёв по бокам)
-        // Ширина колонки = центральные 44% от образца, где доски идут сплошным зигзагом
-        const colW = Math.round(cw * 0.44);
+        // Берём зону строго внутри сплошных плашек (без прозрачных углов снизу)
+        const colW = Math.round(cw * 0.40);
         const startX = minX + Math.round((cw - colW) / 2);
-
-        // Вырезаем центральную полосу без белых краёв (верхний и нижний край отсекаем)
-        const stripH = Math.round(ch * 0.55);
-        const startY = minY + Math.round(ch * 0.14);
+        const stripH = Math.round(ch * 0.46);
+        const startY = minY + Math.round(ch * 0.11);
 
         const strip = mk(colW, stripH), stg = strip.getContext('2d');
         stg.drawImage(srcC, startX, startY, colW, stripH, 0, 0, colW, stripH);
 
-        // 3. Делаем плавный вертикальный повтор (только сдвиг вниз, НИКАКИХ ромбов и зеркал!)
-        const blendH = Math.round(stripH * 0.18);
+        // Бесшовный стык по вертикали (сдвиг вверх/вниз)
+        const blendH = Math.round(stripH * 0.22);
         const tileH = stripH - blendH;
-        const tile = mk(colW, tileH), tg = tile.getContext('2d');
-
-        tg.drawImage(strip, 0, 0, colW, tileH, 0, 0, colW, tileH);
+        const vTile = mk(colW, tileH), vtg = vTile.getContext('2d');
+        vtg.drawImage(strip, 0, 0, colW, tileH, 0, 0, colW, tileH);
         for (let y = 0; y < blendH; y++) {
-            tg.globalAlpha = 1 - (y / blendH);
-            tg.drawImage(strip, 0, tileH + y, colW, 1, 0, y, colW, 1);
+            vtg.globalAlpha = 1 - (y / blendH);
+            vtg.drawImage(strip, 0, tileH + y, colW, 1, 0, y, colW, 1);
         }
-        tg.globalAlpha = 1;
+        vtg.globalAlpha = 1;
 
-        // Возвращаем PNG — 100% оригинальный цвет пиксель в пиксель, без JPEG-сжатия
-        return tile.toDataURL('image/png');
+        // Бесшовный стык по горизонтали (чтобы убрать центральный вертикальный шов)
+        const blendW = Math.round(colW * 0.16);
+        const tileW = colW - blendW;
+        const finalTile = mk(tileW, tileH), ftg = finalTile.getContext('2d');
+        ftg.drawImage(vTile, 0, 0, tileW, tileH, 0, 0, tileW, tileH);
+        for (let x = 0; x < blendW; x++) {
+            ftg.globalAlpha = 1 - (x / blendW);
+            ftg.drawImage(vTile, tileW + x, 0, 1, tileH, x, 0, 1, tileH);
+        }
+        ftg.globalAlpha = 1;
+
+        return finalTile.toDataURL('image/png');
     }
+    
     if (o.kind === 'marble') {
         const tw = 512, th = 1024, c = mk(tw * 2, th * 2), g = c.getContext('2d');
         const hw = w / 2, hh = h / 2;
