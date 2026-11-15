@@ -908,21 +908,28 @@ if (o.kind === 'marble') {
 }
 function r3LoadPhotos() {
     Object.keys(R3_OPTS).forEach(sf => R3_OPTS[sf].filter(o => o.file).forEach(o => {
+        if (!o.img) o.img = r3tex(r3Basket(28, 42, 46, 56), 99);
         const im = new Image();
         im.onload = () => {
             try {
                 o.img = r3PhotoTex(im, o);
                 if (o.kind === 'herringbone_stack' && o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
-                
-                if (o.kind === 'xy') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
                 if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
                 if (o.kind === 'xy' || o.kind === 'blend') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
                 r3RenderOpts(); r3Paint();
-            } catch (e) { }
+            } catch (e) {
+                console.error('Ошибка обработки текстуры:', o.file, e);
+            }
+        };
+        im.onerror = () => {
+            console.warn('Не удалось загрузить файл:', im.src);
+            if (im.src.endsWith('.jpg')) im.src = './images/' + o.file.replace('.jpg', '.JPG');
+            else if (im.src.endsWith('.JPG')) im.src = './images/' + o.file.replace('.jpg', '.jpeg');
         };
         im.src = './images/' + o.file;
     }));
 }
+
  
         function r3Group(type) { return (type === 'bathroom' || type === 'toilet') ? 'wet' : 'dry'; }
         function r3Type(id) { const s = document.getElementById(`type-${id}`); return s ? s.value : 'bedroom'; }
