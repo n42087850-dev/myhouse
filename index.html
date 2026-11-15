@@ -671,7 +671,7 @@
                     rooms: R3_DRY, 
                     file: 'floor-12015.jpg', 
                     kind: 'herringbone_stack', 
-                    sz: 130,
+                    sz: 175,
                     boxSq: 2.203,
                     pcsInBox: 36
                 },
@@ -715,113 +715,108 @@
         return im.src;
     }
 if (o.kind === 'herringbone_stack') {
-        // 1. Поворачиваем фото на -45°, чтобы левые плашки легли строго горизонтально
-        const rotC = mk(w, h), rg = rotC.getContext('2d');
-        rg.translate(w / 2, h / 2);
+        // 1. Поворачиваем исходное фото на -45°, чтобы вырезать чистые доски вдоль волокон без поворота цвета
+        const diag = Math.ceil(Math.hypot(w, h));
+        const rotC = mk(diag, diag), rg = rotC.getContext('2d');
+        rg.translate(diag / 2, diag / 2);
         rg.rotate(-Math.PI / 4);
         rg.drawImage(im, -w / 2, -h / 2);
 
-        // Находим центр массы не-фоновых пикселей (работает и для белого, и для чёрного фона!)
-        const rid = rg.getImageData(0, 0, w, h).data;
-        let sumX = 0, sumY = 0, count = 0;
+        const rid = rg.getImageData(0, 0, diag, diag).data;
         const isWood = (px, py) => {
-            if (px < 0 || py < 0 || px >= w || py >= h) return false;
-            const i = (py * w + px) * 4;
+            if (px < 0 || py < 0 || px >= diag || py >= diag) return false;
+            const i = (py * diag + px) * 4;
             const r = rid[i], g = rid[i + 1], b = rid[i + 2], a = rid[i + 3];
-            if (a < 200) return false;
-            const isWhite = r > 235 && g > 235 && b > 235;
-            const isBlack = r < 25 && g < 25 && b < 25;
-            return !isWhite && !isBlack;
+            if (a < 230) return false;
+            // Отсекаем белый фон стенда, тени от белого фона и чёрные края
+            const maxC = Math.max(r, g, b), minC = Math.min(r, g, b);
+            const sat = maxC === 0 ? 0 : (maxC - minC) / maxC;
+            if (r > 205 && g > 205 && b > 205) return false;
+            if (sat < 0.14 && maxC > 165) return false; // серая тень на белом фоне
+            if (maxC < 35) return false;
+            return true;
         };
 
-        for (let y = 0; y < h; y += 4) {
-            for (let x = 0; x < w; x += 4) {
-                if (isWood(x, y)) { sumX += x; sumY += y; count++; }
-            }
-        }
-        const cx = count ? Math.round(sumX / count) : Math.round(w * 0.45);
-        const cy = count ? Math.round(sumY / count) : Math.round(h * 0.48);
-
-        // 2. Вырезаем 4 чистые плашки (4 : 1) строго из области дерева, избегая фона
-        const pW = Math.max(160, Math.round(Math.min(w, h) * 0.28));
-        const pH = Math.round(pW / 4);
+        // 2. Вырезаем крупные доски (6:1 как 60x10 см) строго внутри деревянной области, сохраняя 100% оригинальный цвет и волокна
+        const pW = Math.max(240, Math.round(Math.min(w, h) * 0.36));
+        const pH = Math.round(pW / 6);
         const planks = [];
 
-        // Проверяем кандидатов вокруг центра, берём только те прямоугольники, где 100% дерево
-        const candidates = [];
-        for (let dy = -Math.round(h * 0.28); dy <= Math.round(h * 0.28); dy += Math.round(pH * 0.7)) {
-            for (let dx = -Math.round(w * 0.22); dx <= Math.round(w * 0.22); dx += Math.round(pW * 0.35)) {
-                const sx = cx + dx - Math.round(pW / 2);
-                const sy = cy + dy - Math.round(pH / 2);
+        for (let sy = 10; sy < diag - pH - 10; sy += Math.round(pH * 0.6)) {
+            for (let sx = 10; sx < diag - pW - 10; sx += Math.round(pW * 0.25)) {
                 let ok = true;
-                for (let ty = sy; ty <= sy + pH; ty += 6) {
-                    for (let tx = sx; tx <= sx + pW; tx += 12) {
+                for (let ty = sy; ty <= sy + pH; ty += 4) {
+                    for (let tx = sx; tx <= sx + pW; tx += 8) {
                         if (!isWood(tx, ty)) { ok = false; break; }
                     }
                     if (!ok) break;
                 }
-                if (ok) candidates.push([sx, sy]);
-            }
-        }
-
-        // Если фото совсем узкое, fallback на центр
-        if (candidates.length === 0) candidates.push([cx - Math.round(pW / 2), cy - Math.round(pH / 2)]);
-
-        // Берём до 4 разных плашек
-        const step = Math.max(1, Math.floor(candidates.length / 4));
-        for (let k = 0; k < candidates.length && planks.length < 4; k += step) {
-            const [sx, sy] = candidates[k];
-            const pc = mk(pW, pH), pg = pc.getContext('2d');
-            pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
-            // Тонкая заводская фаска по краю плашки
-            pg.strokeStyle = 'rgba(45, 30, 12, 0.38)';
-            pg.lineWidth = Math.max(1.5, pH * 0.025);
-            pg.strokeRect(1, 1, pW - 2, pH - 2);
-            planks.push(pc);
-        }
-
-      // 3. Укладываем в плотную бесшовную английскую ёлочку 1:4 без единого зазора и без наложения!
-        const u = 64;
-        const period = u * 8; // полный период для плашек длиной 4u
-        const gridC = mk(period, period), gg = gridC.getContext('2d');
-
-        let idx = 0;
-        for (let gy = -8; gy < 16; gy++) {
-            for (let gx = -8; gx < 16; gx++) {
-                // Классическая укладка 1:4: каждая ступенька (k, k) содержит 1 горизонтальную (4x1) и 1 вертикальную (1x4) плашку
-                // Условие начала пары: (gx - gy) кратно 4 -> в каждых 4 клетках по диагонали помещаются ровно 1 гор. + 1 верт. плашка без наложений!
-                const d1 = ((gx - gy) % 4 + 4) % 4;
-                if (d1 === 0) {
-                    // Горизонтальная плашка (4u x 1u) от (gx, gy) до (gx+4, gy+1)
-                    const pl = planks[idx++ % planks.length];
-                    gg.drawImage(pl, gx * u, gy * u, u * 4, u);
-
-                    // Вертикальная плашка (1u x 4u) встаёт сразу под её правым концом: от (gx+3, gy+1) до (gx+4, gy+5)
-                    const pl2 = planks[idx++ % planks.length];
-                    gg.save();
-                    gg.translate((gx + 4) * u, (gy + 1) * u);
-                    gg.rotate(Math.PI / 2);
-                    gg.drawImage(pl2, 0, 0, u * 4, u);
-                    gg.restore();
+                if (ok) {
+                    const pc = mk(pW, pH), pg = pc.getContext('2d');
+                    pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
+                    // Едва заметный натуральный стык (без тёмной рамки)
+                    pg.strokeStyle = 'rgba(35, 22, 10, 0.16)';
+                    pg.lineWidth = 1;
+                    pg.strokeRect(0.5, 0.5, pW - 1, pH - 1);
+                    planks.push(pc);
                 }
             }
         }
+        if (planks.length === 0) {
+            const pc = mk(pW, pH), pg = pc.getContext('2d');
+            pg.drawImage(rotC, Math.round((diag - pW) / 2), Math.round((diag - pH) / 2), pW, pH, 0, 0, pW, pH);
+            planks.push(pc);
+        }
 
-        // 4. Поворачиваем собранную сетку на -45° для бесшовного замощения пола
-        const outSize = Math.round(period * Math.SQRT2);
-        const outC = mk(outSize, outSize), og = outC.getContext('2d');
-        og.translate(outSize / 2, outSize / 2);
-        og.rotate(-Math.PI / 4);
+        // 3. Собираем классическую ёлочку, направленную ВДОЛЬ комнаты (вершины V смотрят строго на дальнюю стену)
+        // Длина плашки L = 6 * W (реальные 60x10 см). Шаг ряда по вертикали dy = W * sqrt(2), ширина одной V-секции dx = L * sqrt(2)
+        const W = 44;               // ширина одной плашки в px
+        const L = W * 6;            // длина плашки 60x10 см
+        const s2 = Math.SQRT1_2;    // cos(45°) = sin(45°)
+        const stepX = Math.round((L + W) * s2); // ширина одной «галочки» V поперёк комнаты
+        const stepY = Math.round(W * s2);       // вертикальный шаг между рядами вдоль комнаты
 
-        for (let ry = -1; ry <= 1; ry++) {
-            for (let rx = -1; rx <= 1; rx++) {
-                og.drawImage(gridC, rx * period - period / 2, ry * period - period / 2);
+        // Делаем тайл кратным stepX и (stepY * 6), чтобы стык повторялся бесшовно
+        const cols = 4;
+        const rows = 24;
+        const tileW = stepX * cols;
+        const tileH = stepY * rows;
+        const outC = mk(tileW, tileH), og = outC.getContext('2d');
+
+        let idx = 0;
+        for (let r = -6; r < rows + 6; r++) {
+            for (let c = -1; c <= cols + 1; c++) {
+                const vx = c * stepX + stepX / 2; // ось вершины V (смотрит вверх — к дальней стене)
+                const vy = r * stepY;
+
+                // Левая плашка (\) уходит от вершины (vx, vy) вниз-влево под 45°
+                const plLeft = planks[(idx * 7 + r * 3 + c) % planks.length];
+                og.save();
+                og.translate(vx, vy);
+                og.rotate(Math.PI * 0.75); // +135°: идёт влево-вниз, верхняя грань в вершине V
+                og.drawImage(plLeft, 0, 0, L, W);
+                og.restore();
+
+                // Правая плашка (/) уходит от вершины (vx, vy) вниз-вправо под 45°
+                const plRight = planks[(idx * 11 + r * 5 + c + 1) % planks.length];
+                og.save();
+                og.translate(vx, vy);
+                og.rotate(Math.PI * 0.25); // +45°: идёт вправо-вниз
+                og.drawImage(plRight, 0, -W, L, W);
+                og.restore();
+
+                idx++;
             }
         }
 
-        o._aspect = 1;
-        return outC.toDataURL('image/png');
+        o._aspect = tileH / tileW;
+        return outC.toDataURL('image/jpeg', 0.94);
     }
+
+        
+      
+
+       
     
 if (o.kind === 'marble') {
         const tw = 512, th = 1024, c = mk(tw * 2, th * 2), g = c.getContext('2d');
