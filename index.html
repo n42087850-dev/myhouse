@@ -671,7 +671,7 @@
                     rooms: R3_DRY, 
                     file: 'floor-12015.jpg', 
                     kind: 'herringbone_stack', 
-                    sz: 170,
+                    sz: 65,
                     boxSq: 2.203,
                     pcsInBox: 36
                 },
@@ -714,41 +714,112 @@
     if (o.kind === 'cover' || o.kind === 'tile') {
         return im.src;
     }
+if (o.kind === 'herringbone_stack') {
+        // 1. Поворачиваем фото на -45°, чтобы левые плашки легли строго горизонтально
+        const rotC = mk(w, h), rg = rotC.getContext('2d');
+        rg.translate(w / 2, h / 2);
+        rg.rotate(-Math.PI / 4);
+        rg.drawImage(im, -w / 2, -h / 2);
 
-    if (o.kind === 'herringbone_stack') {
-const rotC = mk(w, h), rg = rotC.getContext('2d');
-rg.translate(w / 2, h / 2);
-rg.rotate(-37.5 * Math.PI / 180);
-rg.drawImage(im, -w / 2, -h / 2);
-const pW = Math.round(w * 0.34);
-const pH = Math.round(pW / 6);
-const planks = [];
-const samples = [
-[0.54, 0.33],
-[0.55, 0.42],
-[0.53, 0.51],
-[0.54, 0.60],
-[0.50, 0.69]
-];
-// Цикл извлечения текстур плашек из образцов
-samples.forEach(([rx, ry]) => {
-// Вырезка и создание обводки для каждой плашки
-// Полный код функции доступен в исходных материалах скрипта обработки текстур
-});
-// Создание сетки и сборка узора «елочка»
-const u = 48;
-const period = u * 12;
-// Поворот и отрисовка итогового холста с фактурой дерева
-// ...
-o._aspect = 1;
-return outC.toDataURL('image/jpeg', 0.96);
-}   
+        // Находим центр массы не-фоновых пикселей (работает и для белого, и для чёрного фона!)
+        const rid = rg.getImageData(0, 0, w, h).data;
+        let sumX = 0, sumY = 0, count = 0;
+        const isWood = (px, py) => {
+            if (px < 0 || py < 0 || px >= w || py >= h) return false;
+            const i = (py * w + px) * 4;
+            const r = rid[i], g = rid[i + 1], b = rid[i + 2], a = rid[i + 3];
+            if (a < 200) return false;
+            const isWhite = r > 235 && g > 235 && b > 235;
+            const isBlack = r < 25 && g < 25 && b < 25;
+            return !isWhite && !isBlack;
+        };
 
-        
-                   
-       
-        
-       if (o.kind === 'marble') {
+        for (let y = 0; y < h; y += 4) {
+            for (let x = 0; x < w; x += 4) {
+                if (isWood(x, y)) { sumX += x; sumY += y; count++; }
+            }
+        }
+        const cx = count ? Math.round(sumX / count) : Math.round(w * 0.45);
+        const cy = count ? Math.round(sumY / count) : Math.round(h * 0.48);
+
+        // 2. Вырезаем 4 чистые плашки (4 : 1) строго из области дерева, избегая фона
+        const pW = Math.max(160, Math.round(Math.min(w, h) * 0.28));
+        const pH = Math.round(pW / 4);
+        const planks = [];
+
+        // Проверяем кандидатов вокруг центра, берём только те прямоугольники, где 100% дерево
+        const candidates = [];
+        for (let dy = -Math.round(h * 0.28); dy <= Math.round(h * 0.28); dy += Math.round(pH * 0.7)) {
+            for (let dx = -Math.round(w * 0.22); dx <= Math.round(w * 0.22); dx += Math.round(pW * 0.35)) {
+                const sx = cx + dx - Math.round(pW / 2);
+                const sy = cy + dy - Math.round(pH / 2);
+                let ok = true;
+                for (let ty = sy; ty <= sy + pH; ty += 6) {
+                    for (let tx = sx; tx <= sx + pW; tx += 12) {
+                        if (!isWood(tx, ty)) { ok = false; break; }
+                    }
+                    if (!ok) break;
+                }
+                if (ok) candidates.push([sx, sy]);
+            }
+        }
+
+        // Если фото совсем узкое, fallback на центр
+        if (candidates.length === 0) candidates.push([cx - Math.round(pW / 2), cy - Math.round(pH / 2)]);
+
+        // Берём до 4 разных плашек
+        const step = Math.max(1, Math.floor(candidates.length / 4));
+        for (let k = 0; k < candidates.length && planks.length < 4; k += step) {
+            const [sx, sy] = candidates[k];
+            const pc = mk(pW, pH), pg = pc.getContext('2d');
+            pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
+            // Тонкая заводская фаска по краю плашки
+            pg.strokeStyle = 'rgba(45, 30, 12, 0.38)';
+            pg.lineWidth = Math.max(1.5, pH * 0.025);
+            pg.strokeRect(1, 1, pW - 2, pH - 2);
+            planks.push(pc);
+        }
+
+        // 3. Укладываем в плотную бесшовную английскую ёлочку (период = 4u, без пустых полос!)
+        const u = 64;
+        const period = u * 4;
+        const gridC = mk(period, period), gg = gridC.getContext('2d');
+
+        let idx = 0;
+        for (let gy = -4; gy < 8; gy++) {
+            for (let gx = -4; gx < 8; gx++) {
+                const diag = (gx - gy + 16) % 4;
+                if (diag === 0) {
+                    const pl = planks[idx++ % planks.length];
+                    gg.drawImage(pl, gx * u, gy * u, u * 4, u);
+                } else if (diag === 2) {
+                    const pl = planks[idx++ % planks.length];
+                    gg.save();
+                    gg.translate((gx + 1) * u, gy * u);
+                    gg.rotate(Math.PI / 2);
+                    gg.drawImage(pl, 0, 0, u * 4, u);
+                    gg.restore();
+                }
+            }
+        }
+
+        // 4. Поворачиваем собранную сетку на -45° для бесшовного замощения пола
+        const outSize = Math.round(period * Math.SQRT2);
+        const outC = mk(outSize, outSize), og = outC.getContext('2d');
+        og.translate(outSize / 2, outSize / 2);
+        og.rotate(-Math.PI / 4);
+
+        for (let ry = -1; ry <= 1; ry++) {
+            for (let rx = -1; rx <= 1; rx++) {
+                og.drawImage(gridC, rx * period - period / 2, ry * period - period / 2);
+            }
+        }
+
+        o._aspect = 1;
+        return outC.toDataURL('image/png');
+    }
+    
+if (o.kind === 'marble') {
         const tw = 512, th = 1024, c = mk(tw * 2, th * 2), g = c.getContext('2d');
         const hw = w / 2, hh = h / 2;
         [[0, 0], [hw, 0], [0, hh], [hw, hh]].forEach((q, i) => g.drawImage(im, q[0], q[1], hw, hh, (i % 2) * tw, Math.floor(i / 2) * th, tw, th));
