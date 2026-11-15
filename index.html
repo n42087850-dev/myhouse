@@ -671,7 +671,7 @@
                     rooms: R3_DRY, 
                     file: 'floor-12015.jpg', 
                     kind: 'herringbone_stack', 
-                    sz: 65,
+                    sz: 130,
                     boxSq: 2.203,
                     pcsInBox: 36
                 },
@@ -780,24 +780,28 @@ if (o.kind === 'herringbone_stack') {
             planks.push(pc);
         }
 
-        // 3. Укладываем в плотную бесшовную английскую ёлочку (период = 4u, без пустых полос!)
+      // 3. Укладываем в плотную бесшовную английскую ёлочку 1:4 без единого зазора и без наложения!
         const u = 64;
-        const period = u * 4;
+        const period = u * 8; // полный период для плашек длиной 4u
         const gridC = mk(period, period), gg = gridC.getContext('2d');
 
         let idx = 0;
-        for (let gy = -4; gy < 8; gy++) {
-            for (let gx = -4; gx < 8; gx++) {
-                const diag = (gx - gy + 16) % 4;
-                if (diag === 0) {
+        for (let gy = -8; gy < 16; gy++) {
+            for (let gx = -8; gx < 16; gx++) {
+                // Классическая укладка 1:4: каждая ступенька (k, k) содержит 1 горизонтальную (4x1) и 1 вертикальную (1x4) плашку
+                // Условие начала пары: (gx - gy) кратно 4 -> в каждых 4 клетках по диагонали помещаются ровно 1 гор. + 1 верт. плашка без наложений!
+                const d1 = ((gx - gy) % 4 + 4) % 4;
+                if (d1 === 0) {
+                    // Горизонтальная плашка (4u x 1u) от (gx, gy) до (gx+4, gy+1)
                     const pl = planks[idx++ % planks.length];
                     gg.drawImage(pl, gx * u, gy * u, u * 4, u);
-                } else if (diag === 2) {
-                    const pl = planks[idx++ % planks.length];
+
+                    // Вертикальная плашка (1u x 4u) встаёт сразу под её правым концом: от (gx+3, gy+1) до (gx+4, gy+5)
+                    const pl2 = planks[idx++ % planks.length];
                     gg.save();
-                    gg.translate((gx + 1) * u, gy * u);
+                    gg.translate((gx + 4) * u, (gy + 1) * u);
                     gg.rotate(Math.PI / 2);
-                    gg.drawImage(pl, 0, 0, u * 4, u);
+                    gg.drawImage(pl2, 0, 0, u * 4, u);
                     gg.restore();
                 }
             }
