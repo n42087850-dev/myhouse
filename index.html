@@ -715,105 +715,108 @@
         return im.src;
     }
 if (o.kind === 'herringbone_stack') {
-        // 1. Поворачиваем исходное фото на -45°, чтобы вырезать чистые доски вдоль волокон без поворота цвета
-        const diag = Math.ceil(Math.hypot(w, h));
-        const rotC = mk(diag, diag), rg = rotC.getContext('2d');
-        rg.translate(diag / 2, diag / 2);
-        rg.rotate(-Math.PI / 4);
-        rg.drawImage(im, -w / 2, -h / 2);
+    // 0. Ограничиваем размер исходного фото до 1024px по длинной стороне, чтобы планшет/телефон не падал по памяти
+    const maxSide = 1024;
+    const scale = Math.min(1, maxSide / Math.max(w, h));
+    const sw = Math.round(w * scale);
+    const sh = Math.round(h * scale);
 
-        const rid = rg.getImageData(0, 0, diag, diag).data;
-        const isWood = (px, py) => {
-            if (px < 0 || py < 0 || px >= diag || py >= diag) return false;
-            const i = (py * diag + px) * 4;
-            const r = rid[i], g = rid[i + 1], b = rid[i + 2], a = rid[i + 3];
-            if (a < 230) return false;
-            // Отсекаем белый фон стенда, тени от белого фона и чёрные края
-            const maxC = Math.max(r, g, b), minC = Math.min(r, g, b);
-            const sat = maxC === 0 ? 0 : (maxC - minC) / maxC;
-            if (r > 205 && g > 205 && b > 205) return false;
-            if (sat < 0.14 && maxC > 165) return false; // серая тень на белом фоне
-            if (maxC < 35) return false;
-            return true;
-        };
+    // 1. Поворачиваем фото на -45°, чтобы вырезать доски вдоль волокон
+    const diag = Math.ceil(Math.hypot(sw, sh));
+    const rotC = mk(diag, diag), rg = rotC.getContext('2d');
+    rg.translate(diag / 2, diag / 2);
+    rg.rotate(-Math.PI / 4);
+    rg.drawImage(im, -sw / 2, -sh / 2, sw, sh);
 
-        // 2. Вырезаем крупные доски (6:1 как 60x10 см) строго внутри деревянной области, сохраняя 100% оригинальный цвет и волокна
-        const pW = Math.max(240, Math.round(Math.min(w, h) * 0.36));
-        const pH = Math.round(pW / 6);
-        const planks = [];
+    const rid = rg.getImageData(0, 0, diag, diag).data;
+    const isWood = (px, py) => {
+        if (px < 0 || py < 0 || px >= diag || py >= diag) return false;
+        const i = (py * diag + px) * 4;
+        const r = rid[i], g = rid[i + 1], b = rid[i + 2], a = rid[i + 3];
+        if (a < 230) return false;
+        const maxC = Math.max(r, g, b), minC = Math.min(r, g, b);
+        const sat = maxC === 0 ? 0 : (maxC - minC) / maxC;
+        if (r > 210 && g > 210 && b > 210) return false; // белый фон
+        if (sat < 0.12 && maxC > 170) return false;      // серая тень на белом
+        if (maxC < 30) return false;                     // пустой угол после поворота
+        return true;
+    };
 
-        for (let sy = 10; sy < diag - pH - 10; sy += Math.round(pH * 0.6)) {
-            for (let sx = 10; sx < diag - pW - 10; sx += Math.round(pW * 0.25)) {
-                let ok = true;
-                for (let ty = sy; ty <= sy + pH; ty += 4) {
-                    for (let tx = sx; tx <= sx + pW; tx += 8) {
-                        if (!isWood(tx, ty)) { ok = false; break; }
-                    }
-                    if (!ok) break;
+    // 2. Вырезаем доски 6:1 из деревянной зоны
+    const pW = Math.max(120, Math.round(Math.min(sw, sh) * 0.34));
+    const pH = Math.round(pW / 6);
+    const planks = [];
+
+    for (let sy = 8; sy < diag - pH - 8; sy += Math.max(6, Math.round(pH * 0.6))) {
+        for (let sx = 8; sx < diag - pW - 8; sx += Math.max(12, Math.round(pW * 0.25))) {
+            let ok = true;
+            for (let ty = sy; ty <= sy + pH; ty += 4) {
+                for (let tx = sx; tx <= sx + pW; tx += 8) {
+                    if (!isWood(tx, ty)) { ok = false; break; }
                 }
-                if (ok) {
-                    const pc = mk(pW, pH), pg = pc.getContext('2d');
-                    pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
-                    // Едва заметный натуральный стык (без тёмной рамки)
-                    pg.strokeStyle = 'rgba(35, 22, 10, 0.16)';
-                    pg.lineWidth = 1;
-                    pg.strokeRect(0.5, 0.5, pW - 1, pH - 1);
-                    planks.push(pc);
-                }
+                if (!ok) break;
+            }
+            if (ok) {
+                const pc = mk(pW, pH), pg = pc.getContext('2d');
+                pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
+                pg.strokeStyle = 'rgba(35, 22, 10, 0.16)';
+                pg.lineWidth = 1;
+                pg.strokeRect(0.5, 0.5, pW - 1, pH - 1);
+                planks.push(pc);
             }
         }
-        if (planks.length === 0) {
-            const pc = mk(pW, pH), pg = pc.getContext('2d');
-            pg.drawImage(rotC, Math.round((diag - pW) / 2), Math.round((diag - pH) / 2), pW, pH, 0, 0, pW, pH);
-            planks.push(pc);
-        }
-
-        // 3. Собираем классическую ёлочку, направленную ВДОЛЬ комнаты (вершины V смотрят строго на дальнюю стену)
-        // Длина плашки L = 6 * W (реальные 60x10 см). Шаг ряда по вертикали dy = W * sqrt(2), ширина одной V-секции dx = L * sqrt(2)
-        const W = 44;               // ширина одной плашки в px
-        const L = W * 6;            // длина плашки 60x10 см
-        const s2 = Math.SQRT1_2;    // cos(45°) = sin(45°)
-        const stepX = Math.round((L + W) * s2); // ширина одной «галочки» V поперёк комнаты
-        const stepY = Math.round(W * s2);       // вертикальный шаг между рядами вдоль комнаты
-
-        // Делаем тайл кратным stepX и (stepY * 6), чтобы стык повторялся бесшовно
-        const cols = 4;
-        const rows = 24;
-        const tileW = stepX * cols;
-        const tileH = stepY * rows;
-        const outC = mk(tileW, tileH), og = outC.getContext('2d');
-
-        let idx = 0;
-        for (let r = -6; r < rows + 6; r++) {
-            for (let c = -1; c <= cols + 1; c++) {
-                const vx = c * stepX + stepX / 2; // ось вершины V (смотрит вверх — к дальней стене)
-                const vy = r * stepY;
-
-                // Левая плашка (\) уходит от вершины (vx, vy) вниз-влево под 45°
-                const plLeft = planks[(idx * 7 + r * 3 + c) % planks.length];
-                og.save();
-                og.translate(vx, vy);
-                og.rotate(Math.PI * 0.75); // +135°: идёт влево-вниз, верхняя грань в вершине V
-                og.drawImage(plLeft, 0, 0, L, W);
-                og.restore();
-
-                // Правая плашка (/) уходит от вершины (vx, vy) вниз-вправо под 45°
-                const plRight = planks[(idx * 11 + r * 5 + c + 1) % planks.length];
-                og.save();
-                og.translate(vx, vy);
-                og.rotate(Math.PI * 0.25); // +45°: идёт вправо-вниз
-                og.drawImage(plRight, 0, -W, L, W);
-                og.restore();
-
-                idx++;
-            }
-        }
-
-        o._aspect = tileH / tileW;
-        return outC.toDataURL('image/jpeg', 0.94);
     }
 
+    // Гарантированный фолбэк из центра снимка, если фильтр оказался строгим
+    if (planks.length === 0) {
+        const fw = Math.round(sw * 0.45);
+        const fh = Math.round(fw / 6);
+        const pc = mk(fw, fh), pg = pc.getContext('2d');
+        pg.drawImage(rotC, Math.round((diag - fw) / 2), Math.round((diag - fh) / 2), fw, fh, 0, 0, fw, fh);
+        planks.push(pc);
+    }
+
+    // 3. Собираем ёлочку вдоль комнаты
+    const W = 44;
+    const L = W * 6;
+    const s2 = Math.SQRT1_2;
+    const stepX = Math.round((L + W) * s2);
+    const stepY = Math.round(W * s2);
+    const cols = 4, rows = 24;
+    const tileW = stepX * cols;
+    const tileH = stepY * rows;
+    const outC = mk(tileW, tileH), og = outC.getContext('2d');
+
+    let idx = 0;
+    for (let r = -6; r < rows + 6; r++) {
+        for (let c = -1; c <= cols + 1; c++) {
+            const vx = c * stepX + stepX / 2;
+            const vy = r * stepY;
+
+            const plLeft = planks[(idx * 7 + r * 3 + c) % planks.length];
+            og.save();
+            og.translate(vx, vy);
+            og.rotate(Math.PI * 0.75);
+            og.drawImage(plLeft, 0, 0, L, W);
+            og.restore();
+
+            const plRight = planks[(idx * 11 + r * 5 + c + 1) % planks.length];
+            og.save();
+            og.translate(vx, vy);
+            og.rotate(Math.PI * 0.25);
+            og.drawImage(plRight, 0, -W, L, W);
+            og.restore();
+
+            idx++;
+        }
+    }
+
+    o._aspect = tileH / tileW;
+    return outC.toDataURL('image/jpeg', 0.92);
+}
+
         
+                   
       
 
        
@@ -908,7 +911,6 @@ if (o.kind === 'marble') {
 }
 function r3LoadPhotos() {
     Object.keys(R3_OPTS).forEach(sf => R3_OPTS[sf].filter(o => o.file).forEach(o => {
-        if (!o.img) o.img = r3tex(r3Basket(28, 42, 46, 56), 99);
         const im = new Image();
         im.onload = () => {
             try {
@@ -918,13 +920,14 @@ function r3LoadPhotos() {
                 if (o.kind === 'xy' || o.kind === 'blend') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
                 r3RenderOpts(); r3Paint();
             } catch (e) {
-                console.error('Ошибка обработки текстуры:', o.file, e);
+                o.img = r3tex(r3Solid('#3b1818', 400), 1);
+                o.ru = 'Ошибка: ' + e.message;
+                r3RenderOpts();
             }
         };
         im.onerror = () => {
-            console.warn('Не удалось загрузить файл:', im.src);
-            if (im.src.endsWith('.jpg')) im.src = './images/' + o.file.replace('.jpg', '.JPG');
-            else if (im.src.endsWith('.JPG')) im.src = './images/' + o.file.replace('.jpg', '.jpeg');
+            if (im.src.endsWith('.jpg')) im.src = './images/' + o.file.replace(/\.jpg$/i, '.JPG');
+            else if (im.src.endsWith('.JPG')) im.src = './images/' + o.file.replace(/\.jpg$/i, '.jpeg');
         };
         im.src = './images/' + o.file;
     }));
