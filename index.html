@@ -680,11 +680,9 @@
     { id: 'w-marble', v: 'keramogranit', uz: "Keramogranit (marmar rasmli)", ru: "Керамогранит под мрамор", rooms: R3_ALL, file: 'tex-porcelain-marble.jpg', kind: 'marble', sz: 120, sz2: 240 },
     { id: 'w-calacatta', v: 'keramogranit', uz: "Calacatta marmar", ru: "Мрамор Calacatta", rooms: R3_ALL, file: 'tex-marble-calacatta.jpg', kind: 'marble', sz: 120 },
     { id: 'w-marble-grid', v: 'tile', uz: "Mramor plitka", ru: "Мраморная плитка", rooms: R3_ALL, file: 'tex-marble-grid.jpg', kind: 'marble', sz: 120 },
-    { id: 'w-floral', v: 'wallpaper', uz: "Oboy gulli", ru: "Обои с цветочным рисунком", rooms: R3_DRY, file: 'tex-wallpaper-floral.jpg', kind: 'xy', f: 0.45, sz: 130 },
     { id: 'w-decor-sand', v: 'plaster', uz: "Dekorativ qum", ru: "Декоративный песок", rooms: R3_DRY, file: 'tex-wall-decor-sand.jpg', kind: 'cover' },
-    { id: 'w-dark-flowers', v: 'wallpaper', uz: "To'q gulli oboy", ru: "Тёмные обои с цветами", rooms: R3_DRY, file: 'tex-wallpaper-dark-flowers.jpg', kind: 'xy', f: 0.45, sz: 130 },
     { id: 'w-palm-leaves', v: 'wallpaper', uz: "Oboy (palma barglari)", ru: "Обои с пальмовыми листьями", rooms: R3_DRY, file: 'oboi_2.jpg', kind: 'blend', f: 0.25, sz: 180 },
-    { id: 'w-geo-arch', v: 'wallpaper', uz: "Oboy (geometrik naqsh)", ru: "Обои с геометрическим узором", rooms: R3_DRY, file: 'oboi_3.jpg', kind: 'blend', sz: 180 },
+    { id: 'w-geo-arch', v: 'wallpaper', uz: "Oboy (geometrik naqsh)", ru: "Обои с геометрическим узором", rooms: R3_DRY, file: 'oboi_3.jpg', kind: 'grid_crop', sz: 160 },
     { id: 'w-wave-lines', v: 'wallpaper', uz: "Oboy (to'lqinli chiziqlar)", ru: "Обои с волнистыми линиями", rooms: R3_DRY, file: 'oboi_4.jpg', kind: 'blend', sz: 180 },
     { id: 'w-loft-concrete', v: 'wallpaper', uz: "Oboy (dekorativ )", ru: "Обои под декоративную штукатурку", rooms: R3_DRY, file: 'oboi_5.jpg', kind: 'xy', sz: 160 },
     { id: 'w-linen-gray', v: 'wallpaper', uz: "Oboy (kulrang mato)", ru: "Обои под серый текстиль (рогожка)", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'xy', sz: 120 },
@@ -701,7 +699,7 @@
                 { id: 'c-rect', v: 'drywall', uz: "To'rtburchak shift", ru: "Прямоугольный потолок", rooms: R3_DRY, file: 'tex-ceiling-rect.jpg', kind: 'cover' }
             ]
         };
-        const R3_DEFAULT = { floor: { dry: 'f-laminate', wet: 'f-tile' }, wall: { dry: 'w-floral', wet: 'w-tile' }, ceil: { dry: 'c-emb', wet: 'c-pvx-silver' } };
+        const R3_DEFAULT = { floor: { dry: 'f-laminate', wet: 'f-tile' }, wall: { dry: 'w-palm-leaves', wet: 'w-tile' }, ceil: { dry: 'c-emb', wet: 'c-pvx-silver' } };
         const R3_SHADE = { back: 0.10, left: 0.30, right: 0.20, floor: 0.14, ceil: 0 };
         const R3_FACES = { floor: ['r3-floor'], wall: ['r3-back', 'r3-left', 'r3-right'], ceil: ['r3-ceil'] };
  
