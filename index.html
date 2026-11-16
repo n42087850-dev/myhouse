@@ -10,9 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
-</head>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
     <style>
         :root {
             --bg-main: #0B132B;
@@ -714,69 +712,7 @@
     if (o.kind === 'cover' || o.kind === 'tile') {
         return im.src;
     }
-if (o.kind === 'herringbone_stack') {
-    // 0. Ограничиваем размер исходного фото до 1024px по длинной стороне, чтобы планшет/телефон не падал по памяти
-    const maxSide = 1024;
-    const scale = Math.min(1, maxSide / Math.max(w, h));
-    const sw = Math.round(w * scale);
-    const sh = Math.round(h * scale);
-
-    // 1. Поворачиваем фото на -45°, чтобы вырезать доски вдоль волокон
-    const diag = Math.ceil(Math.hypot(sw, sh));
-    const rotC = mk(diag, diag), rg = rotC.getContext('2d');
-    rg.translate(diag / 2, diag / 2);
-    rg.rotate(-Math.PI / 4);
-    rg.drawImage(im, -sw / 2, -sh / 2, sw, sh);
-
-    const rid = rg.getImageData(0, 0, diag, diag).data;
-    const isWood = (px, py) => {
-        if (px < 0 || py < 0 || px >= diag || py >= diag) return false;
-        const i = (py * diag + px) * 4;
-        const r = rid[i], g = rid[i + 1], b = rid[i + 2], a = rid[i + 3];
-        if (a < 230) return false;
-        const maxC = Math.max(r, g, b), minC = Math.min(r, g, b);
-        const sat = maxC === 0 ? 0 : (maxC - minC) / maxC;
-        if (r > 210 && g > 210 && b > 210) return false; // белый фон
-        if (sat < 0.12 && maxC > 170) return false;      // серая тень на белом
-        if (maxC < 30) return false;                     // пустой угол после поворота
-        return true;
-    };
-
-    // 2. Вырезаем доски 6:1 из деревянной зоны
-    const pW = Math.max(120, Math.round(Math.min(sw, sh) * 0.34));
-    const pH = Math.round(pW / 6);
-    const planks = [];
-
-    for (let sy = 8; sy < diag - pH - 8; sy += Math.max(6, Math.round(pH * 0.6))) {
-        for (let sx = 8; sx < diag - pW - 8; sx += Math.max(12, Math.round(pW * 0.25))) {
-            let ok = true;
-            for (let ty = sy; ty <= sy + pH; ty += 4) {
-                for (let tx = sx; tx <= sx + pW; tx += 8) {
-                    if (!isWood(tx, ty)) { ok = false; break; }
-                }
-                if (!ok) break;
-            }
-            if (ok) {
-                const pc = mk(pW, pH), pg = pc.getContext('2d');
-                pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
-                pg.strokeStyle = 'rgba(35, 22, 10, 0.16)';
-                pg.lineWidth = 1;
-                pg.strokeRect(0.5, 0.5, pW - 1, pH - 1);
-                planks.push(pc);
-            }
-        }
-    }
-
-    // Гарантированный фолбэк из центра снимка, если фильтр оказался строгим
-    if (planks.length === 0) {
-        const fw = Math.round(sw * 0.45);
-        const fh = Math.round(fw / 6);
-        const pc = mk(fw, fh), pg = pc.getContext('2d');
-        pg.drawImage(rotC, Math.round((diag - fw) / 2), Math.round((diag - fh) / 2), fw, fh, 0, 0, fw, fh);
-        planks.push(pc);
-    }
-
-    // 3. Собираем ёлочку вдоль комнаты
+// 3. Собираем ёлочку вдоль комнаты
     const W = 44;
     const L = W * 6;
     const s2 = Math.SQRT1_2;
@@ -786,6 +722,7 @@ if (o.kind === 'herringbone_stack') {
     const tileW = stepX * cols;
     const tileH = stepY * rows;
     const outC = mk(tileW, tileH), og = outC.getContext('2d');
+    const nPl = planks.length;
 
     let idx = 0;
     for (let r = -6; r < rows + 6; r++) {
@@ -793,14 +730,14 @@ if (o.kind === 'herringbone_stack') {
             const vx = c * stepX + stepX / 2;
             const vy = r * stepY;
 
-            const plLeft = planks[(idx * 7 + r * 3 + c) % planks.length];
+            const plLeft = planks[(((idx * 7 + r * 3 + c) % nPl) + nPl) % nPl];
             og.save();
             og.translate(vx, vy);
             og.rotate(Math.PI * 0.75);
             og.drawImage(plLeft, 0, 0, L, W);
             og.restore();
 
-            const plRight = planks[(idx * 11 + r * 5 + c + 1) % planks.length];
+            const plRight = planks[(((idx * 11 + r * 5 + c + 1) % nPl) + nPl) % nPl];
             og.save();
             og.translate(vx, vy);
             og.rotate(Math.PI * 0.25);
@@ -813,8 +750,6 @@ if (o.kind === 'herringbone_stack') {
 
     o._aspect = tileH / tileW;
     return outC.toDataURL('image/jpeg', 0.92);
-}
-
         
                    
       
