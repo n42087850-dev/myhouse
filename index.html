@@ -671,7 +671,7 @@
                     rooms: R3_DRY, 
                     file: 'floor-12015.jpg', 
                     kind: 'herringbone_stack', 
-                    sz: 175,
+                    sz: 198,
                     boxSq: 2.203,
                     pcsInBox: 36
                 },
@@ -720,7 +720,7 @@ if (o.kind === 'herringbone_stack') {
     const sw = Math.round(w * scale);
     const sh = Math.round(h * scale);
 
-    // 1. Поворачиваем фото на -45°, чтобы вырезать плашки без белого фона
+    // 1. Поворачиваем фото на -45°, чтобы выровнять плашки горизонтально
     const diag = Math.ceil(Math.hypot(sw, sh));
     const rotC = mk(diag, diag), rg = rotC.getContext('2d');
     rg.translate(diag / 2, diag / 2);
@@ -728,54 +728,75 @@ if (o.kind === 'herringbone_stack') {
     rg.drawImage(im, -sw / 2, -sh / 2, sw, sh);
 
     const rid = rg.getImageData(0, 0, diag, diag).data;
-    const isWood = (px, py) => {
-        if (px < 0 || py < 0 || px >= diag || py >= diag) return false;
+
+    // Строгая проверка пикселя: только дерево, без белого фона, теней и пустых углов
+    const isWoodPixel = (px, py) => {
+        if (px < 2 || py < 2 || px >= diag - 2 || py >= diag - 2) return false;
         const i = (py * diag + px) * 4;
         const r = rid[i], g = rid[i + 1], b = rid[i + 2], a = rid[i + 3];
-        if (a < 230) return false;
-        if (r > 215 && g > 215 && b > 215) return false;
-        if (Math.max(r, g, b) < 25) return false;
+        if (a < 250) return false;
+        if (r > 205 && g > 205 && b > 205) return false; // белый фон и светлый ореол
+        const maxC = Math.max(r, g, b), minC = Math.min(r, g, b);
+        if (maxC < 40) return false;                     // пустые чёрные углы
+        if (maxC - minC < 18 && maxC > 140) return false;// серая тень на белом фоне
         return true;
     };
 
-    const pW = Math.max(120, Math.round(Math.min(sw, sh) * 0.36));
-    const pH = Math.max(20, Math.round(pW / 6));
-    const cx = Math.floor(diag / 2);
-    const planks = [];
-    let y = Math.floor(diag * 0.22);
+    // Проверка прямоугольника с отступом 8px внутрь от краёв, чтобы не зацепить ни пикселя фона
+    const isCleanRect = (rx, ry, rw, rh) => {
+        const pad = 8;
+        for (let ty = ry - pad; ty <= ry + rh + pad; ty += 4) {
+            for (let tx = rx - pad; tx <= rx + rw + pad; tx += 6) {
+                if (!isWoodPixel(tx, ty)) return false;
+            }
+        }
+        return true;
+    };
 
-    while (y + pH < diag * 0.80 && planks.length < 10) {
-        if (isWood(cx, y + 3) &&
-            isWood(cx, y + pH - 3) &&
-            isWood(cx - Math.floor(pW / 2) + 4, y + Math.floor(pH / 2)) &&
-            isWood(cx + Math.floor(pW / 2) - 4, y + Math.floor(pH / 2))) {
-            const pc = mk(pW, pH), pg = pc.getContext('2d');
-            pg.drawImage(rotC, cx - Math.floor(pW / 2), y, pW, pH, 0, 0, pW, pH);
-            planks.push(pc);
-            y += pH + 3;
-        } else {
-            y += 3;
+    // 2. Вырезаем 100% оригинальные плашки 6:1 строго из чистой деревянной области
+    const planks = [];
+    const sizes = [0.34, 0.28, 0.22];
+    for (let sIdx = 0; sIdx < sizes.length && planks.length < 8; sIdx++) {
+        const pW = Math.max(96, Math.round(Math.min(sw, sh) * sizes[sIdx]));
+        const pH = Math.max(16, Math.round(pW / 6));
+        for (let sy = 16; sy < diag - pH - 16 && planks.length < 12; sy += Math.max(8, Math.round(pH * 0.7))) {
+            for (let sx = 16; sx < diag - pW - 16 && planks.length < 12; sx += Math.max(16, Math.round(pW * 0.35))) {
+                if (isCleanRect(sx, sy, pW, pH)) {
+                    const pc = mk(pW, pH), pg = pc.getContext('2d');
+                    pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
+                    pg.strokeStyle = 'rgba(42, 26, 12, 0.22)';
+                    pg.lineWidth = 1;
+                    pg.strokeRect(0.5, 0.5, pW - 1, pH - 1);
+                    planks.push(pc);
+                }
+            }
         }
     }
 
+    // Фолбэк: вырезаем из самого центра деревянного клина с гарантией отсутствия белого
     if (planks.length === 0) {
-        const fw = Math.round(sw * 0.42);
-        const fh = Math.max(16, Math.round(fw / 6));
+        const fw = Math.round(Math.min(sw, sh) * 0.20);
+        const fh = Math.max(14, Math.round(fw / 6));
         const pc = mk(fw, fh), pg = pc.getContext('2d');
-        pg.drawImage(rotC, Math.round((diag - fw) / 2), Math.round((diag - fh) / 2), fw, fh, 0, 0, fw, fh);
+        pg.drawImage(rotC, Math.round(diag * 0.42), Math.round(diag * 0.44), fw, fh, 0, 0, fw, fh);
         planks.push(pc);
     }
 
-    // 2. Рисуем ровные продольные ряды французской ёлки (шеврона) со стыком 45° по центру ряда
-    const rowW = 140;           // ширина одного двойного ряда (левая + правая плашка)
-    const halfW = rowW / 2;     // ширина одной стороны (70px)
-    const stepY = 38;           // высота шага плашки вдоль ряда
-    const diagLen = Math.ceil(halfW * Math.SQRT2);
-    const cols = 3, rows = 14;
-    const tileW = rowW * cols;
-    const tileH = stepY * rows;
+    // 3. Собираем ровные продольные ряды французской ёлки (шеврона) на 4 косички — без дыр и чёрных ромбов
+    const cols = 4;
+    const rowW = 148.5;          // 4 * 148.5 = 594px (ровно 49.5 см на косичку при R3_PPM = 300)
+    const halfW = rowW / 2;      // 74.25px
+    const stepY = Math.round(10 * 0.3 * Math.SQRT2 * 10) / 10; // ~42.4px (шаг 10см плашки под 45°)
+    const rows = 14;
+    const tileW = Math.round(rowW * cols); // 594px
+    const tileH = Math.round(stepY * rows); // 594px (ровный бесшовный квадрат 1:1)
+    const diagLen = Math.ceil(halfW * Math.SQRT2) + 4;
+
     const outC = mk(tileW, tileH), og = outC.getContext('2d');
     const nPl = planks.length;
+
+    // Базовая заливка средним тоном дерева (страховка от субпиксельных микрощелей)
+    og.drawImage(planks[0], 0, 0, tileW, tileH);
 
     let idx = 0;
     for (let c = 0; c < cols; c++) {
@@ -783,10 +804,10 @@ if (o.kind === 'herringbone_stack') {
         const xm = x0 + halfW;
         const x1 = x0 + rowW;
 
-        for (let r = -2; r < rows + 2; r++) {
+        for (let r = -3; r < rows + 3; r++) {
             const y0 = r * stepY;
 
-            // Левая половина ряда (наклон вверх к центральной линии xm)
+            // Левая плашка ряда (наклон 45° вверх к центру косички)
             const plL = planks[(((idx * 7 + r * 3 + c) % nPl) + nPl) % nPl];
             og.save();
             og.beginPath();
@@ -796,12 +817,12 @@ if (o.kind === 'herringbone_stack') {
             og.lineTo(x0, y0 + halfW + stepY);
             og.closePath();
             og.clip();
-            og.translate(x0, y0 + halfW);
+            og.translate(x0 - 2, y0 + halfW + 2);
             og.rotate(-Math.PI / 4);
-            og.drawImage(plL, 0, -stepY, diagLen + stepY, stepY * 2.2);
+            og.drawImage(plL, 0, -stepY * 0.6, diagLen + stepY, stepY * 1.8);
             og.restore();
 
-            // Правая половина ряда (зеркально вниз от центральной линии xm)
+            // Правая плашка ряда (наклон 45° вниз от центра косички)
             const plR = planks[(((idx * 11 + r * 5 + c + 1) % nPl) + nPl) % nPl];
             og.save();
             og.beginPath();
@@ -811,13 +832,13 @@ if (o.kind === 'herringbone_stack') {
             og.lineTo(xm, y0 + stepY);
             og.closePath();
             og.clip();
-            og.translate(xm, y0);
+            og.translate(xm - 2, y0 - 2);
             og.rotate(Math.PI / 4);
-            og.drawImage(plR, -stepY, -stepY, diagLen + stepY, stepY * 2.2);
+            og.drawImage(plR, -stepY * 0.5, -stepY * 0.6, diagLen + stepY, stepY * 1.8);
             og.restore();
 
-            // Тонкие швы между плашками и по центральной оси ряда
-            og.strokeStyle = 'rgba(35, 22, 10, 0.28)';
+            // Микрофаска между плашками
+            og.strokeStyle = 'rgba(42, 26, 12, 0.26)';
             og.lineWidth = 1;
             og.beginPath();
             og.moveTo(x0, y0 + halfW);
@@ -830,8 +851,8 @@ if (o.kind === 'herringbone_stack') {
             idx++;
         }
 
-        // Прямая вертикальная линия стыка между рядами (уходящая вглубь комнаты)
-        og.strokeStyle = 'rgba(35, 22, 10, 0.35)';
+        // Продольный стык между косичками
+        og.strokeStyle = 'rgba(42, 26, 12, 0.34)';
         og.lineWidth = 1.2;
         og.beginPath();
         og.moveTo(x0, 0);
@@ -839,8 +860,8 @@ if (o.kind === 'herringbone_stack') {
         og.stroke();
     }
 
-    o._aspect = tileH / tileW;
-    return outC.toDataURL('image/jpeg', 0.92);
+    o._aspect = 1;
+    return outC.toDataURL('image/jpeg', 0.94);
 }
 
         
