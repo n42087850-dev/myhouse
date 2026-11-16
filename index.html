@@ -712,6 +712,49 @@
     if (o.kind === 'cover' || o.kind === 'tile') {
         return im.src;
     }
+           function r3PhotoTex(im, o) {
+    const w = im.naturalWidth; let h = im.naturalHeight;
+    const mk = (cw, ch) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
+    if (o.kind === 'cover' || o.kind === 'tile') {
+        return im.src;
+    }
+    if (o.kind === 'grid_crop') {
+        const sx = Math.round(w * 0.082);
+        const sy = Math.round(h * 0.068);
+        const sw = Math.round(w * 0.844);
+        const sh = Math.round(h * 0.633);
+
+        const c = mk(sw, sh), g = c.getContext('2d');
+        g.drawImage(im, sx, sy, sw, sh, 0, 0, sw, sh);
+
+        const idata = g.getImageData(0, 0, sw, sh), d = idata.data;
+        const rowLum = new Float32Array(sh);
+        let totalLum = 0;
+        for (let y = 0; y < sh; y++) {
+            let sum = 0;
+            for (let x = 0; x < sw; x += 4) {
+                const i = (y * sw + x) * 4;
+                sum += d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+            }
+            rowLum[y] = sum / Math.ceil(sw / 4);
+            totalLum += rowLum[y];
+        }
+        const avgLum = totalLum / sh;
+        for (let y = 0; y < sh; y++) {
+            const gain = rowLum[y] > 10 ? (avgLum / rowLum[y]) : 1;
+            for (let x = 0; x < sw; x++) {
+                const i = (y * sw + x) * 4;
+                d[i] = Math.min(255, d[i] * gain);
+                d[i + 1] = Math.min(255, d[i + 1] * gain);
+                d[i + 2] = Math.min(255, d[i + 2] * gain);
+            }
+        }
+        g.putImageData(idata, 0, 0);
+
+        o._aspect = sh / sw;
+        return c.toDataURL('image/png');
+    }
+    if (o.kind === 'herringbone_stack') {
 if (o.kind === 'herringbone_stack') {
         const diag = Math.ceil(Math.hypot(w, h));
         const rotC = mk(diag, diag);
@@ -895,6 +938,7 @@ function r3LoadPhotos() {
                 if (o.kind === 'herringbone_stack' && o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
                 if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
                 if (o.kind === 'xy' || o.kind === 'blend') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
+                if (o.kind === 'grid_crop' && o._aspect) o.sz2 = Math.round(o.sz * o._aspect); 
                 r3RenderOpts(); r3Paint();
             } catch (e) {
                 o.img = r3tex(r3Solid('#3b1818', 400), 1);
