@@ -750,7 +750,7 @@ if (o.kind === 'herringbone_stack') {
         return true;
     };
 
-    // 2. Вырезаем 100% оригинальные плашки 6:1 из чистой деревянной зоны
+    // 2. Вырезаем 100% оригинальные плашки 6:1 и возвращаем глубину фактуры при уменьшении
     const planks = [];
     const sizes = [0.34, 0.28, 0.22];
     for (let sIdx = 0; sIdx < sizes.length && planks.length < 8; sIdx++) {
@@ -760,7 +760,9 @@ if (o.kind === 'herringbone_stack') {
             for (let sx = 16; sx < diag - pW - 16 && planks.length < 12; sx += Math.max(16, Math.round(pW * 0.35))) {
                 if (isCleanRect(sx, sy, pW, pH)) {
                     const pc = mk(pW, pH), pg = pc.getContext('2d');
+                    pg.filter = 'contrast(1.08) saturate(1.14) brightness(0.94)';
                     pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
+                    pg.filter = 'none';
                     planks.push(pc);
                 }
             }
@@ -771,7 +773,9 @@ if (o.kind === 'herringbone_stack') {
         const fw = Math.round(Math.min(sw, sh) * 0.20);
         const fh = Math.max(14, Math.round(fw / 6));
         const pc = mk(fw, fh), pg = pc.getContext('2d');
+        pg.filter = 'contrast(1.08) saturate(1.14) brightness(0.94)';
         pg.drawImage(rotC, Math.round(diag * 0.42), Math.round(diag * 0.44), fw, fh, 0, 0, fw, fh);
+        pg.filter = 'none';
         planks.push(pc);
     }
 
