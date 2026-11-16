@@ -715,13 +715,12 @@
         return im.src;
     }
 if (o.kind === 'herringbone_stack') {
-    // 0. Ограничиваем размер исходного фото до 1024px по длинной стороне, чтобы планшет/телефон не падал по памяти
     const maxSide = 1024;
     const scale = Math.min(1, maxSide / Math.max(w, h));
     const sw = Math.round(w * scale);
     const sh = Math.round(h * scale);
 
-    // 1. Поворачиваем фото на -45°, чтобы вырезать доски вдоль волокон
+    // 1. Поворачиваем фото на -45°, чтобы вырезать плашки без белого фона
     const diag = Math.ceil(Math.hypot(sw, sh));
     const rotC = mk(diag, diag), rg = rotC.getContext('2d');
     rg.translate(diag / 2, diag / 2);
@@ -734,81 +733,110 @@ if (o.kind === 'herringbone_stack') {
         const i = (py * diag + px) * 4;
         const r = rid[i], g = rid[i + 1], b = rid[i + 2], a = rid[i + 3];
         if (a < 230) return false;
-        const maxC = Math.max(r, g, b), minC = Math.min(r, g, b);
-        const sat = maxC === 0 ? 0 : (maxC - minC) / maxC;
-        if (r > 210 && g > 210 && b > 210) return false; // белый фон
-        if (sat < 0.12 && maxC > 170) return false;      // серая тень на белом
-        if (maxC < 30) return false;                     // пустой угол после поворота
+        if (r > 215 && g > 215 && b > 215) return false;
+        if (Math.max(r, g, b) < 25) return false;
         return true;
     };
 
-    // 2. Вырезаем доски 6:1 из деревянной зоны
-    const pW = Math.max(120, Math.round(Math.min(sw, sh) * 0.34));
-    const pH = Math.round(pW / 6);
+    const pW = Math.max(120, Math.round(Math.min(sw, sh) * 0.36));
+    const pH = Math.max(20, Math.round(pW / 6));
+    const cx = Math.floor(diag / 2);
     const planks = [];
+    let y = Math.floor(diag * 0.22);
 
-    for (let sy = 8; sy < diag - pH - 8; sy += Math.max(6, Math.round(pH * 0.6))) {
-        for (let sx = 8; sx < diag - pW - 8; sx += Math.max(12, Math.round(pW * 0.25))) {
-            let ok = true;
-            for (let ty = sy; ty <= sy + pH; ty += 4) {
-                for (let tx = sx; tx <= sx + pW; tx += 8) {
-                    if (!isWood(tx, ty)) { ok = false; break; }
-                }
-                if (!ok) break;
-            }
-            if (ok) {
-                const pc = mk(pW, pH), pg = pc.getContext('2d');
-                pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
-                pg.strokeStyle = 'rgba(35, 22, 10, 0.16)';
-                pg.lineWidth = 1;
-                pg.strokeRect(0.5, 0.5, pW - 1, pH - 1);
-                planks.push(pc);
-            }
+    while (y + pH < diag * 0.80 && planks.length < 10) {
+        if (isWood(cx, y + 3) &&
+            isWood(cx, y + pH - 3) &&
+            isWood(cx - Math.floor(pW / 2) + 4, y + Math.floor(pH / 2)) &&
+            isWood(cx + Math.floor(pW / 2) - 4, y + Math.floor(pH / 2))) {
+            const pc = mk(pW, pH), pg = pc.getContext('2d');
+            pg.drawImage(rotC, cx - Math.floor(pW / 2), y, pW, pH, 0, 0, pW, pH);
+            planks.push(pc);
+            y += pH + 3;
+        } else {
+            y += 3;
         }
     }
 
-    // Гарантированный фолбэк из центра снимка, если фильтр оказался строгим
     if (planks.length === 0) {
-        const fw = Math.round(sw * 0.45);
-        const fh = Math.round(fw / 6);
+        const fw = Math.round(sw * 0.42);
+        const fh = Math.max(16, Math.round(fw / 6));
         const pc = mk(fw, fh), pg = pc.getContext('2d');
         pg.drawImage(rotC, Math.round((diag - fw) / 2), Math.round((diag - fh) / 2), fw, fh, 0, 0, fw, fh);
         planks.push(pc);
     }
 
-    // 3. Собираем ёлочку вдоль комнаты
-    const W = 44;
-    const L = W * 6;
-    const s2 = Math.SQRT1_2;
-    const stepX = Math.round((L + W) * s2);
-    const stepY = Math.round(W * s2);
-    const cols = 4, rows = 24;
-    const tileW = stepX * cols;
+    // 2. Рисуем ровные продольные ряды французской ёлки (шеврона) со стыком 45° по центру ряда
+    const rowW = 140;           // ширина одного двойного ряда (левая + правая плашка)
+    const halfW = rowW / 2;     // ширина одной стороны (70px)
+    const stepY = 38;           // высота шага плашки вдоль ряда
+    const diagLen = Math.ceil(halfW * Math.SQRT2);
+    const cols = 3, rows = 14;
+    const tileW = rowW * cols;
     const tileH = stepY * rows;
     const outC = mk(tileW, tileH), og = outC.getContext('2d');
+    const nPl = planks.length;
 
     let idx = 0;
-    for (let r = -6; r < rows + 6; r++) {
-        for (let c = -1; c <= cols + 1; c++) {
-            const vx = c * stepX + stepX / 2;
-            const vy = r * stepY;
+    for (let c = 0; c < cols; c++) {
+        const x0 = c * rowW;
+        const xm = x0 + halfW;
+        const x1 = x0 + rowW;
 
-            const plLeft = planks[(idx * 7 + r * 3 + c) % planks.length];
+        for (let r = -2; r < rows + 2; r++) {
+            const y0 = r * stepY;
+
+            // Левая половина ряда (наклон вверх к центральной линии xm)
+            const plL = planks[(((idx * 7 + r * 3 + c) % nPl) + nPl) % nPl];
             og.save();
-            og.translate(vx, vy);
-            og.rotate(Math.PI * 0.75);
-            og.drawImage(plLeft, 0, 0, L, W);
+            og.beginPath();
+            og.moveTo(x0, y0 + halfW);
+            og.lineTo(xm, y0);
+            og.lineTo(xm, y0 + stepY);
+            og.lineTo(x0, y0 + halfW + stepY);
+            og.closePath();
+            og.clip();
+            og.translate(x0, y0 + halfW);
+            og.rotate(-Math.PI / 4);
+            og.drawImage(plL, 0, -stepY, diagLen + stepY, stepY * 2.2);
             og.restore();
 
-            const plRight = planks[(idx * 11 + r * 5 + c + 1) % planks.length];
+            // Правая половина ряда (зеркально вниз от центральной линии xm)
+            const plR = planks[(((idx * 11 + r * 5 + c + 1) % nPl) + nPl) % nPl];
             og.save();
-            og.translate(vx, vy);
-            og.rotate(Math.PI * 0.25);
-            og.drawImage(plRight, 0, -W, L, W);
+            og.beginPath();
+            og.moveTo(xm, y0);
+            og.lineTo(x1, y0 + halfW);
+            og.lineTo(x1, y0 + halfW + stepY);
+            og.lineTo(xm, y0 + stepY);
+            og.closePath();
+            og.clip();
+            og.translate(xm, y0);
+            og.rotate(Math.PI / 4);
+            og.drawImage(plR, -stepY, -stepY, diagLen + stepY, stepY * 2.2);
             og.restore();
+
+            // Тонкие швы между плашками и по центральной оси ряда
+            og.strokeStyle = 'rgba(35, 22, 10, 0.28)';
+            og.lineWidth = 1;
+            og.beginPath();
+            og.moveTo(x0, y0 + halfW);
+            og.lineTo(xm, y0);
+            og.lineTo(x1, y0 + halfW);
+            og.moveTo(xm, y0);
+            og.lineTo(xm, y0 + stepY);
+            og.stroke();
 
             idx++;
         }
+
+        // Прямая вертикальная линия стыка между рядами (уходящая вглубь комнаты)
+        og.strokeStyle = 'rgba(35, 22, 10, 0.35)';
+        og.lineWidth = 1.2;
+        og.beginPath();
+        og.moveTo(x0, 0);
+        og.lineTo(x0, tileH);
+        og.stroke();
     }
 
     o._aspect = tileH / tileW;
