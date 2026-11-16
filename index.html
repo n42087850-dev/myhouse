@@ -706,12 +706,7 @@
         const R3 = { active: null, mat: {}, furniture: {}, tab: 'floor', yaw: -22, pitch: -2, zoom: 1, fit: 1, kk: 1, drag: null };
         Object.keys(R3_OPTS).forEach(sf => R3_OPTS[sf].forEach((o, i) => { if (o.proc) o.img = r3tex(o.proc, 7 + i * 13); }));
  
-       function r3PhotoTex(im, o) {
-    const w = im.naturalWidth; let h = im.naturalHeight;
-    const mk = (cw, ch) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
-    if (o.kind === 'cover' || o.kind === 'tile') {
-        return im.src;
-    }
+       
     function r3PhotoTex(im, o) {
     const w = im.naturalWidth; let h = im.naturalHeight;
     const mk = (cw, ch) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
