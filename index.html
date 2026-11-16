@@ -671,7 +671,7 @@
                     rooms: R3_DRY, 
                     file: 'floor-12015.jpg', 
                     kind: 'herringbone_stack', 
-                    sz: 60,
+                    sz: 185,
                     boxSq: 2.203,
                     pcsInBox: 36
                 },
@@ -714,60 +714,92 @@
     if (o.kind === 'cover' || o.kind === 'tile') {
         return im.src;
     }
- if (o.kind === 'herringbone_stack') {
+if (o.kind === 'herringbone_stack') {
         const diag = Math.ceil(Math.hypot(w, h));
         const rotC = mk(diag, diag);
         const rg = rotC.getContext('2d');
-
-        // 1. Поворачиваем фото на -45°, чтобы вырезать чистый кусок без белых углов
         rg.translate(diag / 2, diag / 2);
         rg.rotate(-Math.PI / 4);
         rg.drawImage(im, -w / 2, -h / 2, w, h);
 
-        const side = Math.round(Math.min(w, h) * 0.33);
-        const sx = Math.round((diag - side) / 2);
-        const sy = Math.round((diag - side) / 2);
+        // 12 живых плашек 6:1 из чистого центра фото (без белых краёв и без фильтров)
+        const safeSide = Math.round(Math.min(w, h) * 0.34);
+        const cStart = Math.round((diag - safeSide) / 2);
+        const pW = Math.max(120, Math.round(safeSide * 0.75));
+        const pH = Math.max(20, Math.round(pW / 6));
 
-        const raw = mk(side, side);
-        raw.getContext('2d').drawImage(rotC, sx, sy, side, side, 0, 0, side, side);
-
-        // 2. Бесшовный тайл из живого дерева (тот самый сочный цвет и волокна)
-        const b = Math.floor(side * 0.16);
-        const tw = side - b;
-        const tile = mk(tw, tw);
-        const tg = tile.getContext('2d');
-
-        tg.drawImage(raw, 0, 0, tw, tw, 0, 0, tw, tw);
-
-        for (let x = 0; x < b; x++) {
-            tg.globalAlpha = 1 - x / b;
-            tg.drawImage(raw, tw + x, 0, 1, tw, x, 0, 1, tw);
+        const planks = [];
+        const shades = [0.93, 1.0, 0.96, 1.03, 0.95, 1.01, 0.92, 0.98, 1.04, 0.97, 0.94, 1.02];
+        for (let k = 0; k < 12; k++) {
+            const sx = cStart + ((k * 19) % Math.max(1, safeSide - pW));
+            const sy = cStart + ((k * 23) % Math.max(1, safeSide - pH));
+            const pc = mk(pW, pH), pg = pc.getContext('2d');
+            pg.filter = `brightness(${shades[k]})`;
+            pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
+            pg.filter = 'none';
+            planks.push(pc);
         }
-        tg.globalAlpha = 1;
 
-        const bg = mk(tw, b), bctx = bg.getContext('2d');
-        bctx.drawImage(raw, 0, tw, tw, b, 0, 0, tw, b);
-        for (let x = 0; x < b; x++) {
-            bctx.globalAlpha = 1 - x / b;
-            bctx.drawImage(raw, tw + x, tw, 1, b, x, 0, 1, b);
+        // Бесшовная геометрия ёлочки 45° (6:1) — без нарисованных линий
+        const W = 34;
+        const L = W * 6;
+        const s2 = Math.SQRT1_2;
+        const halfW = Math.round(L * s2);
+        const rowW = halfW * 2;
+        const stepY = Math.round(W / s2);
+        const cols = 3;
+        const rows = 18;
+        const tileW = rowW * cols;
+        const tileH = stepY * rows;
+        const outC = mk(tileW, tileH), og = outC.getContext('2d');
+        const nPl = planks.length;
+
+        og.drawImage(planks[0], 0, 0, tileW, tileH);
+
+        let idx = 0;
+        for (let c = 0; c < cols; c++) {
+            const x0 = c * rowW;
+            const xm = x0 + halfW;
+            const x1 = x0 + rowW;
+
+            for (let r = -4; r < rows + 4; r++) {
+                const y0 = r * stepY;
+
+                const plL = planks[(((idx * 7 + r * 3 + c) % nPl) + nPl) % nPl];
+                og.save();
+                og.beginPath();
+                og.moveTo(x0, y0 + halfW);
+                og.lineTo(xm, y0);
+                og.lineTo(xm, y0 + stepY);
+                og.lineTo(x0, y0 + halfW + stepY);
+                og.closePath();
+                og.clip();
+                og.translate(x0, y0 + halfW);
+                og.rotate(-Math.PI / 4);
+                og.drawImage(plL, -10, 0, L + 20, W);
+                og.restore();
+
+                const plR = planks[(((idx * 11 + r * 5 + c + 1) % nPl) + nPl) % nPl];
+                og.save();
+                og.beginPath();
+                og.moveTo(xm, y0);
+                og.lineTo(x1, y0 + halfW);
+                og.lineTo(x1, y0 + halfW + stepY);
+                og.lineTo(xm, y0 + stepY);
+                og.closePath();
+                og.clip();
+                og.translate(xm, y0);
+                og.rotate(Math.PI / 4);
+                og.drawImage(plR, -10, 0, L + 20, W);
+                og.restore();
+
+                idx++;
+            }
         }
-        for (let y = 0; y < b; y++) {
-            tg.globalAlpha = 1 - y / b;
-            tg.drawImage(bg, 0, y, tw, 1, 0, y, tw, 1);
-        }
-        tg.globalAlpha = 1;
 
-        // 3. Поворачиваем обратно на +45°, чтобы плашки снова легли «ёлочкой» (^ ^ ^)
-        const fSide = Math.floor(tw / Math.SQRT2);
-        const out = mk(fSide, fSide);
-        const og = out.getContext('2d');
-        og.translate(fSide / 2, fSide / 2);
-        og.rotate(Math.PI / 4);
-        og.drawImage(tile, -tw / 2, -tw / 2, tw, tw);
-
-        o._aspect = 1;
-        return out.toDataURL('image/png');
-    }
+        o._aspect = tileH / tileW;
+        return outC.toDataURL('image/png');
+    } 
     if (o.kind === 'marble') {
         const tw = 512, th = 1024, c = mk(tw * 2, th * 2), g = c.getContext('2d');
         const hw = w / 2, hh = h / 2;
