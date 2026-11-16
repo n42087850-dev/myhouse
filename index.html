@@ -702,7 +702,7 @@
             ]
         };
         const R3_DEFAULT = { floor: { dry: 'f-laminate', wet: 'f-tile' }, wall: { dry: 'w-floral', wet: 'w-tile' }, ceil: { dry: 'c-emb', wet: 'c-pvx-silver' } };
-        const R3_SHADE = { back: 0.10, left: 0.30, right: 0.20, floor: 0, ceil: 0 };
+        const R3_SHADE = { back: 0.10, left: 0.30, right: 0.20, floor: 0.14, ceil: 0 };
         const R3_FACES = { floor: ['r3-floor'], wall: ['r3-back', 'r3-left', 'r3-right'], ceil: ['r3-ceil'] };
  
         const R3 = { active: null, mat: {}, furniture: {}, tab: 'floor', yaw: -22, pitch: -2, zoom: 1, fit: 1, kk: 1, drag: null };
@@ -750,14 +750,19 @@
             return true;
         };
 
-        // 2. Вырезаем 100% оригинальные плашки 6:1 без единого цветового фильтра
+       // 2. Вырезаем плашки из ЦЕНТРА образца (где нет бликов лампы с краёв)
         const planks = [];
-        const sizes = [0.34, 0.28, 0.22];
-        for (let sIdx = 0; sIdx < sizes.length && planks.length < 8; sIdx++) {
+        const sizes = [0.32, 0.26, 0.20];
+        const cX = Math.round(diag * 0.5);
+        const cY = Math.round(diag * 0.5);
+        for (let sIdx = 0; sIdx < sizes.length && planks.length < 10; sIdx++) {
             const pW = Math.max(96, Math.round(Math.min(sw, sh) * sizes[sIdx]));
             const pH = Math.max(16, Math.round(pW / 6));
-            for (let sy = 16; sy < diag - pH - 16 && planks.length < 12; sy += Math.max(8, Math.round(pH * 0.7))) {
-                for (let sx = 16; sx < diag - pW - 16 && planks.length < 12; sx += Math.max(16, Math.round(pW * 0.35))) {
+            const span = Math.round(Math.min(sw, sh) * 0.28);
+            for (let dy = -span; dy <= span && planks.length < 12; dy += Math.max(10, Math.round(pH * 0.8))) {
+                for (let dx = -span; dx <= span && planks.length < 12; dx += Math.max(20, Math.round(pW * 0.4))) {
+                    const sx = cX + dx - Math.round(pW / 2);
+                    const sy = cY + dy - Math.round(pH / 2);
                     if (isCleanRect(sx, sy, pW, pH)) {
                         const pc = mk(pW, pH), pg = pc.getContext('2d');
                         pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
@@ -765,7 +770,7 @@
                     }
                 }
             }
-        }
+        } 
 
         if (planks.length === 0) {
             const fw = Math.round(Math.min(sw, sh) * 0.20);
