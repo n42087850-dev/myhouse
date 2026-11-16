@@ -671,7 +671,7 @@
                     rooms: R3_DRY, 
                     file: 'floor-12015.jpg', 
                     kind: 'herringbone_stack', 
-                    sz: 200,
+                    sz: 140,
                     boxSq: 2.203,
                     pcsInBox: 36
                 },
@@ -714,148 +714,47 @@
     if (o.kind === 'cover' || o.kind === 'tile') {
         return im.src;
     }
-    if (o.kind === 'herringbone_stack') {
-        const maxSide = 1024;
-        const scale = Math.min(1, maxSide / Math.max(w, h));
-        const sw = Math.round(w * scale);
-        const sh = Math.round(h * scale);
+   if (o.kind === 'herringbone_stack') {
+        const diag = Math.ceil(Math.hypot(w, h));
+        const rotC = mk(diag, diag);
+        const rg = rotC.getContext('2d');
 
-        // 1. Поворачиваем фото на -45°, чтобы выровнять плашки горизонтально
-        const diag = Math.ceil(Math.hypot(sw, sh));
-        const rotC = mk(diag, diag), rg = rotC.getContext('2d');
+        // 1. Поворачиваем фото на -45° вокруг центра (сетка плашек становится строго вертикально-горизонтальной)
         rg.translate(diag / 2, diag / 2);
         rg.rotate(-Math.PI / 4);
-        rg.drawImage(im, -sw / 2, -sh / 2, sw, sh);
+        rg.drawImage(im, -w / 2, -h / 2, w, h);
 
-        const rid = rg.getImageData(0, 0, diag, diag).data;
-        const isWoodPixel = (px, py) => {
-            if (px < 2 || py < 2 || px >= diag - 2 || py >= diag - 2) return false;
-            const i = (py * diag + px) * 4;
-            const r = rid[i], g = rid[i + 1], b = rid[i + 2], a = rid[i + 3];
-            if (a < 250) return false;
-            if (r > 205 && g > 205 && b > 205) return false;
-            const maxC = Math.max(r, g, b), minC = Math.min(r, g, b);
-            if (maxC < 40) return false;
-            if (maxC - minC < 18 && maxC > 140) return false;
-            return true;
-        };
+        // 2. Вырезаем целый живой квадрат прямо из центра (без белых углов и без нарисованных линий)
+        const side = Math.round(Math.min(w, h) * 0.42);
+        const sx = Math.round((diag - side) / 2);
+        const sy = Math.round((diag - side) / 2);
 
-        const isCleanRect = (rx, ry, rw, rh) => {
-            const pad = 8;
-            for (let ty = ry - pad; ty <= ry + rh + pad; ty += 4) {
-                for (let tx = rx - pad; tx <= rx + rw + pad; tx += 6) {
-                    if (!isWoodPixel(tx, ty)) return false;
-                }
-            }
-            return true;
-        };
+        // 3. Делаем бесшовный тайл 2x2 из этого живого куска
+        const out = mk(side * 2, side * 2);
+        const og = out.getContext('2d');
 
-       // 2. Вырезаем плашки из ЦЕНТРА образца (где нет бликов лампы с краёв)
-        const planks = [];
-        const sizes = [0.32, 0.26, 0.20];
-        const cX = Math.round(diag * 0.5);
-        const cY = Math.round(diag * 0.5);
-        for (let sIdx = 0; sIdx < sizes.length && planks.length < 10; sIdx++) {
-            const pW = Math.max(96, Math.round(Math.min(sw, sh) * sizes[sIdx]));
-            const pH = Math.max(16, Math.round(pW / 6));
-            const span = Math.round(Math.min(sw, sh) * 0.28);
-            for (let dy = -span; dy <= span && planks.length < 12; dy += Math.max(10, Math.round(pH * 0.8))) {
-                for (let dx = -span; dx <= span && planks.length < 12; dx += Math.max(20, Math.round(pW * 0.4))) {
-                    const sx = cX + dx - Math.round(pW / 2);
-                    const sy = cY + dy - Math.round(pH / 2);
-                    if (isCleanRect(sx, sy, pW, pH)) {
-                        const pc = mk(pW, pH), pg = pc.getContext('2d');
-                        pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
-                        planks.push(pc);
-                    }
-                }
-            }
-        } 
+        og.drawImage(rotC, sx, sy, side, side, 0, 0, side, side);
 
-        if (planks.length === 0) {
-            const fw = Math.round(Math.min(sw, sh) * 0.20);
-            const fh = Math.max(14, Math.round(fw / 6));
-            const pc = mk(fw, fh), pg = pc.getContext('2d');
-            pg.drawImage(rotC, Math.round(diag * 0.42), Math.round(diag * 0.44), fw, fh, 0, 0, fw, fh);
-            planks.push(pc);
-        }
+        og.save();
+        og.translate(side * 2, 0);
+        og.scale(-1, 1);
+        og.drawImage(rotC, sx, sy, side, side, 0, 0, side, side);
+        og.restore();
 
-        // 3. Честная геометрия 45°: плашка L x W (6:1), без искажения углов и без шва повторения
-        const W = 30;
-        const L = W * 6;
-        const s2 = Math.SQRT1_2;
-        const halfW = Math.round(L * s2);
-        const rowW = halfW * 2;
-        const stepY = Math.round(W / s2);
-        const cols = 3;
-        const rows = 18;
-        const tileW = rowW * cols;
-        const tileH = stepY * rows;
-        const outC = mk(tileW, tileH), og = outC.getContext('2d');
-        const nPl = planks.length;
+        og.save();
+        og.translate(0, side * 2);
+        og.scale(1, -1);
+        og.drawImage(rotC, sx, sy, side, side, 0, 0, side, side);
+        og.restore();
 
-        og.drawImage(planks[0], 0, 0, tileW, tileH);
+        og.save();
+        og.translate(side * 2, side * 2);
+        og.scale(-1, -1);
+        og.drawImage(rotC, sx, sy, side, side, 0, 0, side, side);
+        og.restore();
 
-        let idx = 0;
-        for (let c = 0; c < cols; c++) {
-            const x0 = c * rowW;
-            const xm = x0 + halfW;
-            const x1 = x0 + rowW;
-
-            for (let r = -4; r < rows + 4; r++) {
-                const y0 = r * stepY;
-
-                const plL = planks[(((idx * 7 + r * 3 + c) % nPl) + nPl) % nPl];
-                og.save();
-                og.beginPath();
-                og.moveTo(x0, y0 + halfW);
-                og.lineTo(xm, y0);
-                og.lineTo(xm, y0 + stepY);
-                og.lineTo(x0, y0 + halfW + stepY);
-                og.closePath();
-                og.clip();
-                og.translate(x0, y0 + halfW);
-                og.rotate(-Math.PI / 4);
-                og.drawImage(plL, -10, 0, L + 20, W);
-                og.restore();
-
-                const plR = planks[(((idx * 11 + r * 5 + c + 1) % nPl) + nPl) % nPl];
-                og.save();
-                og.beginPath();
-                og.moveTo(xm, y0);
-                og.lineTo(x1, y0 + halfW);
-                og.lineTo(x1, y0 + halfW + stepY);
-                og.lineTo(xm, y0 + stepY);
-                og.closePath();
-                og.clip();
-                og.translate(xm, y0);
-                og.rotate(Math.PI / 4);
-                og.drawImage(plR, -10, 0, L + 20, W);
-                og.restore();
-
-                og.strokeStyle = 'rgba(42, 26, 12, 0.25)';
-                og.lineWidth = 1;
-                og.beginPath();
-                og.moveTo(x0, y0 + halfW);
-                og.lineTo(xm, y0);
-                og.lineTo(x1, y0 + halfW);
-                og.moveTo(xm, y0);
-                og.lineTo(xm, y0 + stepY);
-                og.stroke();
-
-                idx++;
-            }
-
-            og.strokeStyle = 'rgba(42, 26, 12, 0.32)';
-            og.lineWidth = 1.2;
-            og.beginPath();
-            og.moveTo(x0, 0);
-            og.lineTo(x0, tileH);
-            og.stroke();
-        }
-
-        o._aspect = tileH / tileW;
-        return outC.toDataURL('image/png');
+        o._aspect = 1;
+        return out.toDataURL('image/png');
     }
 
     if (o.kind === 'marble') {
