@@ -683,9 +683,9 @@
     { id: 'w-decor-sand', v: 'plaster', uz: "Dekorativ qum", ru: "Декоративный песок", rooms: R3_DRY, file: 'tex-wall-decor-sand.jpg', kind: 'cover' },
     { id: 'w-palm-leaves', v: 'wallpaper', uz: "Oboy (palma barglari)", ru: "Обои с пальмовыми листьями", rooms: R3_DRY, file: 'oboi_2.jpg', kind: 'blend', f: 0.25, sz: 180 },
     { id: 'w-geo-arch', v: 'wallpaper', uz: "Oboy (geometrik naqsh)", ru: "Обои с геометрическим узором", rooms: R3_DRY, file: 'oboi_3.jpg', kind: 'grid_crop', sz: 160 },
-    { id: 'w-wave-lines', v: 'wallpaper', uz: "Oboy (to'lqinli chiziqlar)", ru: "Обои с волнистыми линиями", rooms: R3_DRY, file: 'oboi_4.jpg', kind: 'blend', sz: 180 },
+    { id: 'w-wave-lines', v: 'wallpaper', uz: "Oboy (to'lqinli chiziqlar)", ru: "Обои с волнистыми линиями", rooms: R3_DRY, file: 'oboi_4.jpg', kind: 'raw_repeat', sz: 130 },
     { id: 'w-loft-concrete', v: 'wallpaper', uz: "Oboy (dekorativ )", ru: "Обои под декоративную штукатурку", rooms: R3_DRY, file: 'oboi_5.jpg', kind: 'xy', sz: 160 },
-    { id: 'w-linen-gray', v: 'wallpaper', uz: "Oboy (kulrang mato)", ru: "Обои под серый текстиль (рогожка)", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'xy', sz: 120 },
+    { id: 'w-linen-gray', v: 'wallpaper', uz: "Oboy (kulrang mato)", ru: "Обои под серый текстиль (рогожка)", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'raw_repeat', sz: 85 }, 
     { id: 'w-micro-leaves', v: 'wallpaper', uz: "Oboy (mayda barglar)", ru: "Обои с мелким рельефом листьев", rooms: R3_DRY, file: 'oboi_7.jpg', kind: 'xy', sz: 140 }
                ],
             ceil: [
@@ -712,10 +712,10 @@
     if (o.kind === 'cover' || o.kind === 'tile') {
         return im.src;
     }
-           function r3PhotoTex(im, o) {
+    function r3PhotoTex(im, o) {
     const w = im.naturalWidth; let h = im.naturalHeight;
     const mk = (cw, ch) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
-    if (o.kind === 'cover' || o.kind === 'tile') {
+    if (o.kind === 'cover' || o.kind === 'tile' || o.kind === 'raw_repeat') {
         return im.src;
     }
     if (o.kind === 'grid_crop') {
@@ -755,7 +755,6 @@
         return c.toDataURL('image/png');
     }
     if (o.kind === 'herringbone_stack') {
-if (o.kind === 'herringbone_stack') {
         const diag = Math.ceil(Math.hypot(w, h));
         const rotC = mk(diag, diag);
         const rg = rotC.getContext('2d');
@@ -763,7 +762,6 @@ if (o.kind === 'herringbone_stack') {
         rg.rotate(-Math.PI / 4);
         rg.drawImage(im, -w / 2, -h / 2, w, h);
 
-        // 12 живых плашек 6:1 из чистого центра фото (без белых краёв и без фильтров)
         const safeSide = Math.round(Math.min(w, h) * 0.34);
         const cStart = Math.round((diag - safeSide) / 2);
         const pW = Math.max(120, Math.round(safeSide * 0.75));
@@ -781,7 +779,6 @@ if (o.kind === 'herringbone_stack') {
             planks.push(pc);
         }
 
-        // Бесшовная геометрия ёлочки 45° (6:1) — без нарисованных линий
         const W = 34;
         const L = W * 6;
         const s2 = Math.SQRT1_2;
@@ -854,7 +851,6 @@ if (o.kind === 'herringbone_stack') {
     const norm = mk(w, cropH), ng = norm.getContext('2d');
     ng.drawImage(im, 0, 0, w, cropH, 0, 0, w, cropH);
 
-    // Для полов (f-...) 100% сохраняем оригинальный цвет без автокоррекции
     if (!String(o.id || '').startsWith('f-')) {
         const idata = ng.getImageData(0, 0, w, cropH), d = idata.data;
 
@@ -928,7 +924,7 @@ if (o.kind === 'herringbone_stack') {
     g.save(); g.translate(0, h * 2); g.scale(1, -1); g.drawImage(norm, 0, 0, w, h); g.restore();
     g.save(); g.translate(w * 2, h * 2); g.scale(-1, -1); g.drawImage(norm, 0, 0, w, h); g.restore();
     return c.toDataURL('image/png');
-}
+}       
 function r3LoadPhotos() {
     Object.keys(R3_OPTS).forEach(sf => R3_OPTS[sf].filter(o => o.file).forEach(o => {
         const im = new Image();
@@ -937,7 +933,7 @@ function r3LoadPhotos() {
                 o.img = r3PhotoTex(im, o);
                 if (o.kind === 'herringbone_stack' && o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
                 if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
-                if (o.kind === 'xy' || o.kind === 'blend') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
+               if (o.kind === 'xy' || o.kind === 'blend' || o.kind === 'raw_repeat') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth); 
                 if (o.kind === 'grid_crop' && o._aspect) o.sz2 = Math.round(o.sz * o._aspect); 
                 r3RenderOpts(); r3Paint();
             } catch (e) {
