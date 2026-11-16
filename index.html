@@ -671,7 +671,7 @@
                     rooms: R3_DRY, 
                     file: 'floor-12015.jpg', 
                     kind: 'herringbone_stack', 
-                    sz: 140,
+                    sz: 85,
                     boxSq: 2.203,
                     pcsInBox: 36
                 },
@@ -714,49 +714,53 @@
     if (o.kind === 'cover' || o.kind === 'tile') {
         return im.src;
     }
-   if (o.kind === 'herringbone_stack') {
+ if (o.kind === 'herringbone_stack') {
         const diag = Math.ceil(Math.hypot(w, h));
         const rotC = mk(diag, diag);
         const rg = rotC.getContext('2d');
 
-        // 1. Поворачиваем фото на -45° вокруг центра (сетка плашек становится строго вертикально-горизонтальной)
+        // 1. Поворачиваем фото на -45°
         rg.translate(diag / 2, diag / 2);
         rg.rotate(-Math.PI / 4);
         rg.drawImage(im, -w / 2, -h / 2, w, h);
 
-        // 2. Вырезаем целый живой квадрат прямо из центра (без белых углов и без нарисованных линий)
-        const side = Math.round(Math.min(w, h) * 0.42);
+        // 2. Вырезаем строго внутренний квадрат без белых углов (0.33 от размера)
+        const side = Math.round(Math.min(w, h) * 0.33);
         const sx = Math.round((diag - side) / 2);
         const sy = Math.round((diag - side) / 2);
 
-        // 3. Делаем бесшовный тайл 2x2 из этого живого куска
-        const out = mk(side * 2, side * 2);
+        const raw = mk(side, side);
+        raw.getContext('2d').drawImage(rotC, sx, sy, side, side, 0, 0, side, side);
+
+        // 3. Бесшовный тайл через мягкое перекрытие краёв (сохраняет направление плашек и живой цвет)
+        const b = Math.floor(side * 0.16);
+        const tw = side - b;
+        const out = mk(tw, tw);
         const og = out.getContext('2d');
 
-        og.drawImage(rotC, sx, sy, side, side, 0, 0, side, side);
+        og.drawImage(raw, 0, 0, tw, tw, 0, 0, tw, tw);
 
-        og.save();
-        og.translate(side * 2, 0);
-        og.scale(-1, 1);
-        og.drawImage(rotC, sx, sy, side, side, 0, 0, side, side);
-        og.restore();
+        for (let x = 0; x < b; x++) {
+            og.globalAlpha = 1 - x / b;
+            og.drawImage(raw, tw + x, 0, 1, tw, x, 0, 1, tw);
+        }
+        og.globalAlpha = 1;
 
-        og.save();
-        og.translate(0, side * 2);
-        og.scale(1, -1);
-        og.drawImage(rotC, sx, sy, side, side, 0, 0, side, side);
-        og.restore();
-
-        og.save();
-        og.translate(side * 2, side * 2);
-        og.scale(-1, -1);
-        og.drawImage(rotC, sx, sy, side, side, 0, 0, side, side);
-        og.restore();
+        const bg = mk(tw, b), bctx = bg.getContext('2d');
+        bctx.drawImage(raw, 0, tw, tw, b, 0, 0, tw, b);
+        for (let x = 0; x < b; x++) {
+            bctx.globalAlpha = 1 - x / b;
+            bctx.drawImage(raw, tw + x, tw, 1, b, x, 0, 1, b);
+        }
+        for (let y = 0; y < b; y++) {
+            og.globalAlpha = 1 - y / b;
+            og.drawImage(bg, 0, y, tw, 1, 0, y, tw, 1);
+        }
+        og.globalAlpha = 1;
 
         o._aspect = 1;
         return out.toDataURL('image/png');
-    }
-
+    } 
     if (o.kind === 'marble') {
         const tw = 512, th = 1024, c = mk(tw * 2, th * 2), g = c.getContext('2d');
         const hw = w / 2, hh = h / 2;
