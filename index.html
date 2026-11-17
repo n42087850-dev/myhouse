@@ -1,3 +1,8 @@
+
+
+
+HTML icon
+index-v2
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -682,7 +687,7 @@
     { id: 'w-marble-grid', v: 'tile', uz: "Mramor plitka", ru: "Мраморная плитка", rooms: R3_ALL, file: 'tex-marble-grid.jpg', kind: 'marble', sz: 120 },
     { id: 'w-decor-sand', v: 'plaster', uz: "Dekorativ qum", ru: "Декоративный песок", rooms: R3_DRY, file: 'tex-wall-decor-sand.jpg', kind: 'cover' },
     { id: 'w-palm-leaves', v: 'wallpaper', uz: "Oboy (palma barglari)", ru: "Обои с пальмовыми листьями", rooms: R3_DRY, file: 'oboi_2.jpg', kind: 'blend', f: 0.25, sz: 180 },
-    { id: 'w-geo-arch', v: 'wallpaper', uz: "Oboy (geometrik naqsh)", ru: "Обои с геометрическим узором", rooms: R3_DRY, file: 'oboi_3.jpg', kind: 'xy', sz: 90 },
+    { id: 'w-geo-arch', v: 'wallpaper', uz: "Oboy (geometrik naqsh)", ru: "Обои с геометрическим узором", rooms: R3_DRY, file: 'oboi_3.jpg', kind: 'grid_crop', sz: 120 },
     { id: 'w-wave-lines', v: 'wallpaper', uz: "Oboy (to'lqinli chiziqlar)", ru: "Обои с волнистыми линиями", rooms: R3_DRY, file: 'oboi_4.jpg', kind: 'y', sz: 130 },
     { id: 'w-loft-concrete', v: 'wallpaper', uz: "Oboy (dekorativ )", ru: "Обои под декоративную штукатурку", rooms: R3_DRY, file: 'oboi_5.jpg', kind: 'blend', sz: 110 },
     { id: 'w-linen-gray', v: 'wallpaper', uz: "Oboy (kulrang mato)", ru: "Обои под серый текстиль (рогожка)", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'blend', sz: 75 },
@@ -714,39 +719,65 @@
         return im.src;
     }
     if (o.kind === 'grid_crop') {
-        const sx = Math.round(w * 0.082);
-        const sy = Math.round(h * 0.068);
-        const sw = Math.round(w * 0.844);
-        const sh = Math.round(h * 0.633);
+        const baseSide = Math.min(w, h);
+        const side = Math.round(baseSide * 0.80);
+        const sx = Math.round((w - side) / 2);
+        const sy = Math.round(Math.min((h - side) / 2, h * 0.08));
 
-        const c = mk(sw, sh), g = c.getContext('2d');
-        g.drawImage(im, sx, sy, sw, sh, 0, 0, sw, sh);
+        const normC = mk(side, side), ng = normC.getContext('2d');
+        ng.drawImage(im, sx, sy, side, side, 0, 0, side, side);
 
-        const idata = g.getImageData(0, 0, sw, sh), d = idata.data;
-        const rowLum = new Float32Array(sh);
+        // Выравниваем освещённость по строкам и столбцам
+        const idata = ng.getImageData(0, 0, side, side), d = idata.data;
+        const rowLum = new Float32Array(side);
         let totalLum = 0;
-        for (let y = 0; y < sh; y++) {
+        for (let y = 0; y < side; y++) {
             let sum = 0;
-            for (let x = 0; x < sw; x += 4) {
-                const i = (y * sw + x) * 4;
+            for (let x = 0; x < side; x += 4) {
+                const i = (y * side + x) * 4;
                 sum += d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
             }
-            rowLum[y] = sum / Math.ceil(sw / 4);
+            rowLum[y] = sum / Math.ceil(side / 4);
             totalLum += rowLum[y];
         }
-        const avgLum = totalLum / sh;
-        for (let y = 0; y < sh; y++) {
+        const avgLum = totalLum / side;
+        for (let y = 0; y < side; y++) {
             const gain = rowLum[y] > 10 ? (avgLum / rowLum[y]) : 1;
-            for (let x = 0; x < sw; x++) {
-                const i = (y * sw + x) * 4;
+            for (let x = 0; x < side; x++) {
+                const i = (y * side + x) * 4;
                 d[i] = Math.min(255, d[i] * gain);
                 d[i + 1] = Math.min(255, d[i + 1] * gain);
                 d[i + 2] = Math.min(255, d[i + 2] * gain);
             }
         }
-        g.putImageData(idata, 0, 0);
+        ng.putImageData(idata, 0, 0);
 
-        o._aspect = sh / sw;
+        // Мягкое бесшовное сшивание краёв (6%) для прямого тайлинга без калейдоскопа
+        const bw = Math.max(8, Math.floor(side * 0.06));
+        const bh = Math.max(8, Math.floor(side * 0.06));
+        const tw = side - bw, th = side - bh;
+        const c = mk(tw, th), g = c.getContext('2d');
+        g.drawImage(normC, 0, 0, tw, th, 0, 0, tw, th);
+
+        for (let x = 0; x < bw; x++) {
+            g.globalAlpha = 1 - x / bw;
+            g.drawImage(normC, tw + x, 0, 1, th, x, 0, 1, th);
+        }
+        g.globalAlpha = 1;
+
+        const bg = mk(tw, bh), bctx = bg.getContext('2d');
+        bctx.drawImage(normC, 0, th, tw, bh, 0, 0, tw, bh);
+        for (let x = 0; x < bw; x++) {
+            bctx.globalAlpha = 1 - x / bw;
+            bctx.drawImage(normC, tw + x, th, 1, bh, x, 0, 1, bh);
+        }
+        for (let y = 0; y < bh; y++) {
+            g.globalAlpha = 1 - y / bh;
+            g.drawImage(bg, 0, y, tw, 1, 0, y, tw, 1);
+        }
+        g.globalAlpha = 1;
+
+        o._aspect = 1;
         return c.toDataURL('image/png');
     }
     if (o.kind === 'herringbone_stack') {
@@ -2836,3 +2867,4 @@ document.addEventListener("DOMContentLoaded", initThreeFurniture);
 </script>
 </body>
 </html>
+
