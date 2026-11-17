@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYHOUSE PRO — Three.js GLTF Loader Test</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #0B132B; }
+        #canvas-container { width: 100vw; height: 100vh; }
+        .info {
+            position: absolute; top: 10px; left: 10px; color: #38BDF8;
+            font-family: sans-serif; font-size: 14px; background: rgba(0,0,0,0.7);
+            padding: 10px 15px; border-radius: 8px; pointer-events: none; z-index: 10;
+        }
+        #loading {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: #fff; font-family: sans-serif; font-size: 18px; background: rgba(0,0,0,0.8);
+            padding: 15px 25px; border-radius: 10px; font-family: sans-serif; display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="info">
+        <b>MYHOUSE PRO — Загрузка 3D-модели (.glb)</b><br>
+        Крути мышкой или пальцем экран!
+    </div>
+
+    <div id="loading">Загрузка 3D-мебели...</div>
+    <div id="canvas-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <script>
+        const container = document.getElementById('canvas-container');
+        const loadingEl = document.getElementById('loading');
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0B132B);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 1.8, 3.5);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+        dirLight.position.set(3, 5, 3);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 1024;
+        dirLight.shadow.mapSize.height = 1024;
+        scene.add(dirLight);
+
+        // Пол
+        const floorGeo = new THREE.PlaneGeometry(4, 4);
+        const floorMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.5 });
+        const floor = new THREE.Mesh(floorGeo, floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        // Задняя стена
+        const wallGeo = new THREE.PlaneGeometry(4, 2.8);
+        const wallMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9 });
+        const wall = new THREE.Mesh(wallGeo, wallMat);
+        wall.position.set(0, 1.4, -2);
+        scene.add(wall);
+
+        // Загрузка GLB
+        const loader = new THREE.GLTFLoader();
+        loadingEl.style.display = 'block';
+
+        loader.load(
+            './sofa.glb',
+            function (gltf) {
+                loadingEl.style.display = 'none';
+                const model = gltf.scene;
+
+                model.traverse((node) => {
+                    if (node.isMesh) {
+                        node.castShadow = true;
+                        node.receiveShadow = true;
+                    }
+                });
+
+                // Автоматическое центрирование и подгонка масштаба
+                const box = new THREE.Box3().setFromObject(model);
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const scale = 1.8 / maxDim; // Подгоняем под размер комнаты
+                model.scale.set(scale, scale, scale);
+
+                // Ставим на пол у стены
+                const newBox = new THREE.Box3().setFromObject(model);
+                model.position.set(0, -newBox.min.y, -1.2);
+
+                scene.add(model);
+            },
+            function (xhr) {
+                if (xhr.lengthComputable) {
+                    const percent = Math.round((xhr.loaded / xhr.total) * 100);
+                    loadingEl.innerText = `Загрузка 3D-мебели: ${percent}%`;
+                }
+            },
+            function (error) {
+                loadingEl.innerText = 'Ошибка загрузки sofa.glb!';
+                console.error(error);
+            }
+        );
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

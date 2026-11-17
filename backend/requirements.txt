@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 fastapi==0.115.5
 uvicorn[standard]==0.32.1
 httpx==0.27.2
 pydantic-settings==2.6.1
+======= 
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+>>>>>>> b52b35673e553216f3fd7e761288b2b6317d5898
