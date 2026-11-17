@@ -692,6 +692,7 @@ index-v2
     { id: 'w-loft-concrete', v: 'wallpaper', uz: "Oboy (dekorativ )", ru: "Обои под декоративную штукатурку", rooms: R3_DRY, file: 'oboi_5.jpg', kind: 'blend', sz: 110 },
     { id: 'w-linen-gray', v: 'wallpaper', uz: "Oboy (kulrang mato)", ru: "Обои под серый текстиль (рогожка)", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'blend', sz: 75 },
     { id: 'w-micro-leaves', v: 'wallpaper', uz: "Oboy (mayda barglar)", ru: "Обои с мелким рельефом листьев", rooms: R3_DRY, file: 'oboi_7.jpg', kind: 'xy', sz: 140 }
+    { id: 'w-chevron-gold', v: 'wallpaper', uz: "Oboy (oltin chiziqli yolka)", ru: "Обои шеврон с золотыми линиями", rooms: R3_DRY, file: 'oboi_8.jpg', kind: 'chevron_stack', sz: 150 }
                ],
             ceil: [
                 { id: 'c-slat', v: 'slat', uz: "Reykali shift", ru: "Реечный потолок", rooms: R3_KBW, proc: r3Slats, sz: 128 },
@@ -780,6 +781,91 @@ index-v2
         o._aspect = 1;
         return c.toDataURL('image/png');
     }
+   if (o.kind === 'chevron_stack') {
+        const sx = Math.round(w * 0.14), sy = Math.round(h * 0.14);
+        const sw = Math.round(w * 0.72), sh = Math.round(h * 0.72);
+        const srcC = mk(sw, sh), sg = srcC.getContext('2d');
+        sg.drawImage(im, sx, sy, sw, sh, 0, 0, sw, sh);
+
+        const idata = sg.getImageData(0, 0, sw, sh), d = idata.data;
+        const pSz = 48, candidates = [];
+        for (let py = 0; py <= sh - pSz; py += 24) {
+            for (let px = 0; px <= sw - pSz; px += 24) {
+                let sumL = 0, minL = 255, maxL = 0, cnt = 0;
+                for (let y = py; y < py + pSz; y += 3) {
+                    for (let x = px; x < px + pSz; x += 3) {
+                        const i = (y * sw + x) * 4;
+                        const l = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+                        sumL += l;
+                        if (l < minL) minL = l;
+                        if (l > maxL) maxL = l;
+                        cnt++;
+                    }
+                }
+                if (maxL - minL < 38) candidates.push({ px, py, lum: sumL / cnt });
+            }
+        }
+        candidates.sort((a, b) => a.lum - b.lum);
+
+        const makePatch = (cand, fallbackRgb) => {
+            const pc = mk(pSz, pSz), pg = pc.getContext('2d');
+            if (cand) pg.drawImage(srcC, cand.px, cand.py, pSz, pSz, 0, 0, pSz, pSz);
+            else { pg.fillStyle = fallbackRgb; pg.fillRect(0, 0, pSz, pSz); }
+            return pg.createPattern(pc, 'repeat');
+        };
+
+        const darkPat  = makePatch(candidates[Math.floor(candidates.length * 0.15)], 'rgb(122,135,137)');
+        const midPat   = makePatch(candidates[Math.floor(candidates.length * 0.50)], 'rgb(154,165,166)');
+        const lightPat = makePatch(candidates[Math.floor(candidates.length * 0.85)], 'rgb(184,191,191)');
+
+        const colW = 140, cols = 4, rise = 62;
+        const bands = [
+            { h: 52, pat: lightPat }, { h: 24, pat: midPat }, { h: 56, pat: darkPat },
+            { h: 22, pat: lightPat }, { h: 48, pat: midPat }, { h: 38, pat: darkPat }
+        ];
+        const cycleH = bands.reduce((s, b) => s + b.h, 0);
+        const tileW = colW * cols, tileH = cycleH * 2;
+        const outC = mk(tileW, tileH), og = outC.getContext('2d');
+
+        for (let c = 0; c < cols; c++) {
+            const x0 = c * colW, x1 = x0 + colW;
+            const dir = (c % 2 === 0) ? -1 : 1;
+            const yShift = (c % 2 === 0) ? 0 : Math.round(cycleH * 0.35);
+
+            for (let rep = -2; rep <= 3; rep++) {
+                let curY = rep * cycleH + yShift;
+                for (let b = 0; b < bands.length; b++) {
+                    const bh = bands[b].h;
+                    const yL0 = curY + (dir === -1 ? rise : 0);
+                    const yR0 = curY + (dir === -1 ? 0 : rise);
+                    og.beginPath();
+                    og.moveTo(x0, yL0);
+                    og.lineTo(x1, yR0);
+                    og.lineTo(x1, yR0 + bh);
+                    og.lineTo(x0, yL0 + bh);
+                    og.closePath();
+                    og.fillStyle = bands[b].pat;
+                    og.fill();
+                    og.strokeStyle = '#d4cbb3';
+                    og.lineWidth = 2.2;
+                    og.stroke();
+                    curY += bh;
+                }
+            }
+        }
+
+        og.strokeStyle = '#d4cbb3';
+        og.lineWidth = 2.4;
+        for (let c = 0; c <= cols; c++) {
+            og.beginPath();
+            og.moveTo(c * colW, 0);
+            og.lineTo(c * colW, tileH);
+            og.stroke();
+        }
+
+        o._aspect = tileH / tileW;
+        return outC.toDataURL('image/png');
+    } 
     if (o.kind === 'herringbone_stack') {
         const diag = Math.ceil(Math.hypot(w, h));
         const rotC = mk(diag, diag);
@@ -957,7 +1043,8 @@ function r3LoadPhotos() {
         im.onload = () => {
             try {
                 o.img = r3PhotoTex(im, o);
-                if (o.kind === 'herringbone_stack' && o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
+                if ((o.kind === 'herringbone_stack' || o.kind === 'chevron_stack') && o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
+                
                 if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
                if (o.kind === 'xy' || o.kind === 'blend' || o.kind === 'raw_repeat') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth); 
                 if (o.kind === 'grid_crop' && o._aspect) o.sz2 = Math.round(o.sz * o._aspect); 
