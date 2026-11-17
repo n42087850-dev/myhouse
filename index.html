@@ -693,6 +693,8 @@ index-v2
     { id: 'w-linen-gray', v: 'wallpaper', uz: "Oboy (kulrang mato)", ru: "Обои под серый текстиль (рогожка)", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'blend', sz: 75 },
     { id: 'w-micro-leaves', v: 'wallpaper', uz: "Oboy (mayda barglar)", ru: "Обои с мелким рельефом листьев", rooms: R3_DRY, file: 'oboi_7.jpg', kind: 'xy', sz: 140 },
     { id: 'w-chevron-gold', v: 'wallpaper', uz: "Oboy (oltin chiziqli yolka)", ru: "Обои шеврон с золотыми линиями", rooms: R3_DRY, file: 'oboi_8.jpg', kind: 'chevron_stack', sz: 150 }
+    { id: 'w-brush-gray', v: 'wallpaper', uz: "Oboy (kulrang mazoklar)", ru: "Обои с серыми мазками кисти", rooms: R3_DRY, file: 'oboi_9.jpg', kind: 'roll_crop_blend', sz: 160 },
+    { id: 'w-brush-beige', v: 'wallpaper', uz: "Oboy (bej mazoklar)", ru: "Обои с бежевыми мазками кисти", rooms: R3_DRY, file: 'oboi_10.jpg', kind: 'roll_crop_blend', sz: 160 }
                ],
             ceil: [
                 { id: 'c-slat', v: 'slat', uz: "Reykali shift", ru: "Реечный потолок", rooms: R3_KBW, proc: r3Slats, sz: 128 },
@@ -779,6 +781,61 @@ index-v2
         g.globalAlpha = 1;
 
         o._aspect = 1;
+        return c.toDataURL('image/png');
+    }
+    if (o.kind === 'roll_crop_blend') {
+        const sx = Math.round(w * 0.02), sy = Math.round(h * 0.12);
+        const sw = Math.round(w * 0.64), sh = Math.round(h * 0.76);
+        const norm = mk(sw, sh), ng = norm.getContext('2d');
+        ng.drawImage(im, sx, sy, sw, sh, 0, 0, sw, sh);
+
+        const idata = ng.getImageData(0, 0, sw, sh), d = idata.data;
+        const rowLum = new Float32Array(sh);
+        let totalLum = 0;
+        for (let y = 0; y < sh; y++) {
+            let sum = 0;
+            for (let x = 0; x < sw; x += 4) {
+                const idx = (y * sw + x) * 4;
+                sum += d[idx] * 0.299 + d[idx + 1] * 0.587 + d[idx + 2] * 0.114;
+            }
+            rowLum[y] = sum / Math.ceil(sw / 4);
+            totalLum += rowLum[y];
+        }
+        const avgLum = totalLum / sh;
+        for (let y = 0; y < sh; y++) {
+            const gain = rowLum[y] > 10 ? (avgLum / rowLum[y]) : 1;
+            for (let x = 0; x < sw; x++) {
+                const idx = (y * sw + x) * 4;
+                d[idx] = Math.min(255, d[idx] * gain);
+                d[idx + 1] = Math.min(255, d[idx + 1] * gain);
+                d[idx + 2] = Math.min(255, d[idx + 2] * gain);
+            }
+        }
+        ng.putImageData(idata, 0, 0);
+
+        const bw = Math.floor(sw * 0.14), bh = Math.floor(sh * 0.14);
+        const tw = sw - bw, th = sh - bh;
+        const c = mk(tw, th), g = c.getContext('2d');
+        g.drawImage(norm, 0, 0, tw, th, 0, 0, tw, th);
+
+        for (let x = 0; x < bw; x++) {
+            g.globalAlpha = 1 - x / bw;
+            g.drawImage(norm, tw + x, 0, 1, th, x, 0, 1, th);
+        }
+        g.globalAlpha = 1;
+
+        const bg = mk(tw, bh), bctx = bg.getContext('2d');
+        bctx.drawImage(norm, 0, th, tw, bh, 0, 0, tw, bh);
+        for (let x = 0; x < bw; x++) {
+            bctx.globalAlpha = 1 - x / bw;
+            bctx.drawImage(norm, tw + x, th, 1, bh, x, 0, 1, bh);
+        }
+        for (let y = 0; y < bh; y++) {
+            g.globalAlpha = 1 - y / bh;
+            g.drawImage(bg, 0, y, tw, 1, 0, y, tw, 1);
+        }
+        g.globalAlpha = 1;
+        o._aspect = th / tw;
         return c.toDataURL('image/png');
     }
    if (o.kind === 'chevron_stack') {
@@ -1043,7 +1100,7 @@ function r3LoadPhotos() {
         im.onload = () => {
             try {
                 o.img = r3PhotoTex(im, o);
-                if ((o.kind === 'herringbone_stack' || o.kind === 'chevron_stack') && o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
+                if ((o.kind === 'grid_crop' || o.kind === 'roll_crop_blend') && o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
                 
                 if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
                if (o.kind === 'xy' || o.kind === 'blend' || o.kind === 'raw_repeat') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth); 
