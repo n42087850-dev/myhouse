@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYHOUSE PRO — Ta'mirlash va mebel kalkulyatori / Калькулятор ремонта и мебели</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+</head>
+<body>
+ 
+    <div class="header">
+        <h1>MYHOUSE PRO</h1>
+        <p>Xonadon ta'miri va mebellar kalkulyatori</p>
+    </div>
+ 
+    <div class="container">
+ 
+        <!-- ================= СТРАНИЦА 1 ================= -->
+        <div id="page-1">
+            
+            <div class="intro-banner">
+                <div class="uz-text">
+                    💡 Ta'mirlamoqchi bo'lgan xona turini tanlang, o'lchamlarini (uzunligi, kengligi, balandligi) hamda deraza va eshiklar yig'indi hajmini kiriting. Agar bir nechta xonani ta'mirlamoqchi bo'lsangiz, "Xona qo'shish" tugmasini bosing.
+                </div>
+                <div class="ru-text">
+                    📌 Выберите тип комнаты, укажите длину, ширину, высоту и общую площадь окон/дверей (если есть). Если ремонтируете несколько комнат, нажмите кнопку "Добавить комнату".
+                </div>
+            </div>
+ 
+            <div id="rooms-container"></div>
+ 
+            <div class="r3-wrap" id="r3-wrap">
+                <div class="r3-head">🏠 Pardozni sinab ko'ring / Примерьте отделку</div>
+                <div class="r3-sub" id="r3-sub"></div>
+                <div class="r3-chips" id="r3-chips"></div>
+               <div class="r3-stage" id="r3-stage">
+                    <!-- НАША КНОПКА КИНЕМАТОГРАФИЧНОГО ПРОЛЁТА -->
+                    <button class="btn-tour" id="btn-drone-tour" type="button" style="position: absolute; top: 10px; left: 10px; z-index: 9999; pointer-events: auto; background: linear-gradient(135deg, #38BDF8, #10B981); color: #0F172A; border: none; border-radius: 10px; padding: 8px 14px; font-size: 12px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);">
+    🛸 Путешествие / Sayohat
+</button>
+                   <div class="r3-scene" id="r3-scene">
+ <!-- Холст Three.js для 3D-модели дивана -->
+    <canvas id="three-canvas" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 10;"></canvas>
+    <div class="r3-room" id="r3-room">
+        <div class="r3-face" id="r3-back"></div>
+        <div class="r3-face" id="r3-left"></div>
+        <div class="r3-face" id="r3-right"></div>
+        <div class="r3-face" id="r3-floor"></div>
+        <div class="r3-face" id="r3-ceil"></div>
+        <div class="r3-face" id="r3-furniture" style="display: none;"></div>
+    </div>
+</div>
+                    <button class="r3-fs" id="r3-fs" type="button">⛶ Katta / Крупно</button>
+                    <div class="r3-hint">Barmoq bilan aylantiring / Крутите пальцем</div>
+                </div>
+                <div class="r3-zoom"><label for="r3-z">Yaqinlashtirish / Приблизить</label><input id="r3-z" type="range" min="0.6" max="1.8" step="0.05" value="1"></div>
+                <div class="r3-tabs" id="r3-tabs">
+                    <button class="r3-tab" type="button" data-s="floor" aria-selected="true">Pol<small>Пол</small></button>
+                    <button class="r3-tab" type="button" data-s="wall" aria-selected="false">Devorlar<small>Стены</small></button>
+                    <button class="r3-tab" type="button" data-s="ceil" aria-selected="false">Shift<small>Потолок</small></button>
+                    <button class="r3-tab" type="button" data-s="furniture" aria-selected="false">Mebel<small>Мебель</small></button>
+                </div>
+                <div class="r3-opts" id="r3-opts"></div>
+            </div>
+ 
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">
+                <button class="btn btn-secondary" onclick="addRoom()">+ Xona qo'shish / Добавить комнату</button>
+                <button class="btn btn-custom" onclick="openFurnitureModal()">🛋 Mebel katalogi / Каталог мебели</button>
+                <button class="btn btn-calc" onclick="processPage1AndGoToPage2()">📊 Hisoblash / Рассчитать</button>
+            </div>
+ 
+            <div id="crew-slot-1"></div>
+        </div>
+ 
+ 
+        <!-- ================= СТРАНИЦА 2 ================= -->
+        <div id="page-2" style="display: none;">
+            
+            <div class="top-nav-bar">
+                <button class="btn btn-secondary" style="width: auto; padding: 10px 14px; font-size: 12px;" onclick="goToPage(1)">❮ O'lchamlarni o'zgartirish</button>
+                <span style="font-weight: bold; color: var(--accent-cyan); font-size: 13px;">2-qadam / Шаг 2 из 2</span>
+            </div>
+ 
+            <div id="questions-container"></div>
+ 
+            <div id="estimate-results-container"></div>
+ 
+        </div>
+ 
+        <div class="footer">
+            <p><b style="color: var(--text-main);">NODIRJON SOBIROV</b> — Founder & Lead Developer</p>
+            <p>© 2026 MYHOUSE PRO. All Rights Reserved.</p>
+        </div>
+    </div>
+ 
+ 
+    <!-- ================= МОДАЛЬНОЕ ОКНО МЕБЕЛИ ================= -->
+    <div class="modal" id="furnitureModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeFurnitureModal()">&times;</span>
+            <div id="modalCatalogTitle" style="font-size: 16px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 15px;">
+                HUVAYDO MEBEL KATALOGI
+            </div>
+            <div id="huvaydoCatalogList"></div>
+        </div>
+    </div>
+ 
+    <!-- ================= УНИВЕРСАЛЬНОЕ МОДАЛЬНОЕ ОКНО ОФОРМЛЕНИЯ ================= -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content order-modal-content">
+            <span class="close-modal" onclick="closeOrderModal()">&times;</span>
+            <h3 id="orderModalTitle" style="color: var(--accent-cyan); margin-bottom: 15px; font-size: 16px;">
+                Ma'lumotlarni kiriting / Введите данные
+            </h3>
+            
+            <div id="customDimensionsBox" style="display: none;">
+                <div id="elementsCustomFields"></div>
+                <div class="form-group">
+                    <label id="custNoteLabel">Izoh / Комментарий:</label>
+                    <input type="text" id="custNote" placeholder="Aloxida istaklar / Особые пожелания">
+                </div>
+            </div>
+ 
+            <div class="form-group" id="nameGroup">
+                <label>Ismingiz / Ваше имя:</label>
+                <input type="text" id="userNameInput" placeholder="Иван">
+            </div>
+ 
+            <div class="form-group">
+                <label>Telefon raqamingiz / Номер телефона:</label>
+                <input type="tel" id="userPhoneInput" value="+998 " maxlength="17" placeholder="+998 90 123 45 67">
+            </div>
+ 
+            <div id="crewNotice" class="wz-warn" style="display: none;">
+                Ariza brigadaga uzatiladi, narx va shartlarni siz brigada bilan kelishasiz. MYHOUSE PRO brigada bajargan ish uchun javobgar emas.<br>
+                Заявка передаётся бригаде, цену и условия вы согласуете с ней. MYHOUSE PRO не отвечает за работы, выполненные бригадой.
+            </div>
+ 
+            <div class="modal-actions">
+                <button class="btn btn-calc" id="confirmOrderBtn" onclick="submitOrderModal()">Yuborish / Отправить</button>
+                <button class="btn btn-secondary" onclick="closeOrderModal()">Bekor qilish / Отмена</button>
+            </div>
+        </div>
+    </div>
+ 
+ 
+    <!-- ================= JS ЛОГИКА ================= -->
+    <div class="wz-lb" id="wzLightbox" onclick="this.style.display='none'">
+        <img id="wzLbImg" src="" alt="">
+    </div>
+ 
+
+    <script src="js/config.js"></script>
+    <script src="js/room3d.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/rooms.js"></script>
+    <script src="js/wizard.js"></script>
+    <script src="js/estimate.js"></script>
+    <script src="js/furniture.js"></script>
+    <script src="js/order.js"></script>
+    <script src="js/tour.js"></script>
+    <script src="js/furniture3d.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

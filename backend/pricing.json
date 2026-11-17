@@ -1,0 +1,7 @@
+{
+  "price_per_sqm_uzs": 800000,
+  "laminate_waste_factor": 1.08,
+  "putty_kg_per_sqm": 1.2,
+  "paint_coverage_sqm_per_liter": 6.0,
+  "paint_coats": 2
+}
