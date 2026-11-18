@@ -681,11 +681,11 @@
     { id: 'w-calacatta', v: 'keramogranit', uz: "Calacatta marmar", ru: "Мрамор Calacatta", rooms: R3_ALL, file: 'tex-marble-calacatta.jpg', kind: 'marble', sz: 120 },
     { id: 'w-marble-grid', v: 'tile', uz: "Mramor plitka", ru: "Мраморная плитка", rooms: R3_ALL, file: 'tex-marble-grid.jpg', kind: 'marble', sz: 120 },
     { id: 'w-decor-sand', v: 'plaster', uz: "Dekorativ qum", ru: "Декоративный песок", rooms: R3_DRY, file: 'tex-wall-decor-sand.jpg', kind: 'cover' },
-    { id: 'w-palm-leaves', v: 'wallpaper', uz: "Oboy (palma barglari)", ru: "Обои с пальмовыми листьями", rooms: R3_DRY, file: 'oboi_2.jpg', kind: 'blend', f: 0.25, sz: 90 },
+    { id: 'w-palm-leaves', v: 'wallpaper', uz: "Oboy (palma barglari)", ru: "Обои с пальмовыми листьями", rooms: R3_DRY, file: 'oboi_2.jpg', kind: 'clean_repeat', sz: 90 },
     { id: 'w-geo-arch', v: 'wallpaper', uz: "Oboy (geometrik naqsh)", ru: "Обои с геометрическим узором", rooms: R3_DRY, file: 'oboi_3.jpg', kind: 'grid_crop', sz: 120 },
     { id: 'w-wave-lines', v: 'wallpaper', uz: "Oboy (to'lqinli chiziqlar)", ru: "Обои с волнистыми линиями", rooms: R3_DRY, file: 'oboi_4.jpg', kind: 'y', sz: 130 },
-    { id: 'w-loft-concrete', v: 'wallpaper', uz: "Oboy (dekorativ )", ru: "Обои под декоративную штукатурку", rooms: R3_DRY, file: 'oboi_5.jpg', kind: 'blend', sz: 110 },
-    { id: 'w-linen-gray', v: 'wallpaper', uz: "Oboy (kulrang mato)", ru: "Обои под серый текстиль (рогожка)", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'blend', sz: 75 },
+    { id: 'w-loft-concrete', v: 'wallpaper', uz: "Oboy (dekorativ )", ru: "Обои под декоративную штукатурку", rooms: R3_DRY, file: 'oboi_5.jpg', kind: 'clean_repeat', sz: 150 },
+    { id: 'w-linen-gray', v: 'wallpaper', uz: "Oboy (kulrang mato)", ru: "Обои под серый текстиль (рогожка)", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'clean_repeat', sz: 110 },
     { id: 'w-micro-leaves', v: 'wallpaper', uz: "Oboy (mayda barglar)", ru: "Обои с мелким рельефом листьев", rooms: R3_DRY, file: 'oboi_7.jpg', kind: 'xy', sz: 140 },
     { id: 'w-chevron-gold', v: 'wallpaper', uz: "Oboy (oltin chiziqli yolka)", ru: "Обои шеврон с золотыми линиями", rooms: R3_DRY, file: 'oboi_8.jpg', kind: 'chevron_stack', sz: 150 },
     { id: 'w-brush-gray', v: 'wallpaper', uz: "Oboy (kulrang mazoklar)", ru: "Обои с серыми мазками кисти", rooms: R3_DRY, file: 'oboi_9.jpg', kind: 'roll_crop_blend', sz: 65 },
@@ -715,6 +715,73 @@
     const mk = (cw, ch) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
     if (o.kind === 'cover' || o.kind === 'tile' || o.kind === 'raw_repeat') {
         return im.src;
+    }
+    if (o.kind === 'clean_repeat') {
+        // 1. Обрезаем 4% по краям (убираем возможную кромку/тень от края рулона)
+        const padX = Math.round(w * 0.04);
+        const padY = Math.round(h * 0.04);
+        const cw = w - padX * 2;
+        const ch = h - padY * 2;
+
+        const c = mk(cw, ch), g = c.getContext('2d');
+        g.drawImage(im, padX, padY, cw, ch, 0, 0, cw, ch);
+
+        // 2. Мягкое 2D-выравнивание освещённости (убираем виньетку по углам и боковые тени, цвет RGB НЕ трогаем)
+        const idata = g.getImageData(0, 0, cw, ch), d = idata.data;
+        const grid = 8; // сетка 8x8 для плавного локального света
+        const cellW = cw / grid, cellH = ch / grid;
+        const cellLum = new Float32Array(grid * grid);
+        let totalLum = 0;
+
+        for (let gy = 0; gy < grid; gy++) {
+            for (let gx = 0; gx < grid; gx++) {
+                let sum = 0, cnt = 0;
+                const x0 = Math.floor(gx * cellW), x1 = Math.floor((gx + 1) * cellW);
+                const y0 = Math.floor(gy * cellH), y1 = Math.floor((gy + 1) * cellH);
+                for (let y = y0; y < y1; y += 3) {
+                    for (let x = x0; x < x1; x += 3) {
+                        const i = (y * cw + x) * 4;
+                        sum += d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+                        cnt++;
+                    }
+                }
+                const lum = cnt ? (sum / cnt) : 128;
+                cellLum[gy * grid + gx] = lum;
+                totalLum += lum;
+            }
+        }
+        const avgLum = totalLum / (grid * grid);
+
+        // Билинейная интерполяция коэффициента яркости по всей площади без полос и пятен
+        for (let y = 0; y < ch; y++) {
+            const fy = Math.min(grid - 1.001, Math.max(0, (y / ch) * grid - 0.5));
+            const gy0 = Math.floor(fy), gy1 = Math.min(grid - 1, gy0 + 1), wy = fy - gy0;
+
+            for (let x = 0; x < cw; x++) {
+                const fx = Math.min(grid - 1.001, Math.max(0, (x / cw) * grid - 0.5));
+                const gx0 = Math.floor(fx), gx1 = Math.min(grid - 1, gx0 + 1), wx = fx - gx0;
+
+                const l00 = cellLum[gy0 * grid + gx0];
+                const l10 = cellLum[gy0 * grid + gx1];
+                const l01 = cellLum[gy1 * grid + gx0];
+                const l11 = cellLum[gy1 * grid + gx1];
+
+                const localLum = (l00 * (1 - wx) + l10 * wx) * (1 - wy) + (l01 * (1 - wx) + l11 * wx) * wy;
+                // Ограничиваем коррекцию (±18%), чтобы сохранить живой рельеф рисунка, но убрать выступы/подушки
+                const rawGain = localLum > 15 ? (avgLum / localLum) : 1;
+                const gain = Math.max(0.82, Math.min(1.18, rawGain));
+
+                const i = (y * cw + x) * 4;
+                d[i]     = Math.min(255, d[i] * gain);
+                d[i + 1] = Math.min(255, d[i + 1] * gain);
+                d[i + 2] = Math.min(255, d[i + 2] * gain);
+            }
+        }
+        g.putImageData(idata, 0, 0);
+
+        // 3. Сохраняем точные пропорции кадра, чтобы картинка не растягивалась
+        o._aspect = ch / cw;
+        return c.toDataURL('image/jpeg', 0.92);
     }
     if (o.kind === 'grid_crop') {
         const baseSide = Math.min(w, h);
@@ -1098,8 +1165,8 @@ function r3LoadPhotos() {
                 if ((o.kind === 'grid_crop' || o.kind === 'roll_crop_blend') && o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
                 
                 if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
-               if (o.kind === 'xy' || o.kind === 'blend' || o.kind === 'raw_repeat') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth); 
-                if (o.kind === 'grid_crop' && o._aspect) o.sz2 = Math.round(o.sz * o._aspect); 
+                if (o.kind === 'xy' || o.kind === 'blend' || o.kind === 'raw_repeat') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
+                if ((o.kind === 'grid_crop' || o.kind === 'clean_repeat') && o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
                 r3RenderOpts(); r3Paint();
             } catch (e) {
                 o.img = r3tex(r3Solid('#3b1818', 400), 1);
