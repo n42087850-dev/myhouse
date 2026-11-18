@@ -950,8 +950,7 @@ function r3LoadPhotos() {
                 try {
                     o.img = r3PhotoTex(im, o);
                    if (o.kind === 'kg_pair' || o.kind === 'kg_zen_tilt' || o.kind === 'kg_stand_base' || o.kind === 'kg_stand_decor') {
-    if (o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
-} 
+                        if (o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
                     } else if (o.kind === 'y') {
                         o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
                     } else if (o.kind === 'xy' || o.kind === 'blend' || o.kind === 'raw_repeat') {
