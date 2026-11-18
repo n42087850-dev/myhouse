@@ -649,48 +649,76 @@
 
         // --- каталог вариантов ---
        const R3_OPTS = {
-            floor: [
-                { id: 'f-laminate', v: 'laminate', uz: "Laminat", ru: "Ламинат", rooms: R3_DRY, proc: r3Wood(28, 46, 46, 56), sz: 160 },
-                { id: 'f-spc', v: 'spc', uz: "Kvars-vinil (SPC)", ru: "Кварц-винил (SPC)", rooms: R3_DRY, proc: r3Wood(34, 22, 62, 72), sz: 160 },
-                { id: 'f-parquet', v: 'parquet', uz: "Parket taxtasi", ru: "Паркетная доска", rooms: R3_LB, proc: r3Basket(26, 52, 38, 50), sz: 160 },
-                { id: 'f-linoleum', v: 'linoleum', uz: "Linoleum", ru: "Линолеум", rooms: R3_DRY, proc: r3Solid('hsl(38,12%,70%)', 1400), sz: 120 },
-                { id: 'f-tile', v: 'tile', uz: "Plitka / keramogranit", ru: "Плитка / керамогранит", rooms: R3_ALL, proc: r3Tiles(2, 'hsl(210,8%,86%)', 'hsl(0,0%,62%)'), sz: 150 },
-                { id: 'f-carpet', v: 'carpet', uz: "Kovrolin", ru: "Ковролин", rooms: R3_LB, proc: r3Carpet, sz: 140 },
-                { id: 'f-marble', v: 'tile', uz: "Keramogranit (marmar rasmli)", ru: "Керамогранит под мрамор", rooms: R3_ALL, file: 'tex-porcelain-marble.jpg', kind: 'marble', sz: 120, sz2: 240 },
-                { id: 'f-oak', v: 'parquet', uz: "Parket «yolka» (och eman)", ru: "Паркет «ёлочка» светлый дуб", rooms: R3_LB, file: 'tex-parquet-oak-chevron.jpg', kind: 'xy', sz: 140 },
-                { id: 'f-walnut', v: 'parquet', uz: "Parket «yolka» (yong'oq)", ru: "Паркет «ёлочка» орех", rooms: R3_LB, file: 'tex-parquet-walnut-chevron.jpg', kind: 'xy', sz: 140 },
-                { id: 'f-lam-oak', v: 'laminate', uz: "Laminat (och eman)", ru: "Ламинат светлый дуб", rooms: R3_DRY, file: 'tex-laminate-oak.jpg', kind: 'xy', f: 0.30, sz: 80 },
-                { id: 'f-marble-grid', v: 'tile', uz: "Marmar plitka", ru: "Кафель", rooms: R3_ALL, file: 'tex-marble-grid.jpg', kind: 'marble', sz: 120 },
-                { id: 'f-calacatta', v: 'tile', uz: "Calacatta marmar", ru: "Мрамор Calacatta", rooms: R3_ALL, file: 'tex-marble-calacatta.jpg', kind: 'marble', sz: 120 },
-                 
-                    { 
-                    id: 'f-lam-12015', 
-                    v: 'laminate', 
-                    uz: "Laminat «Yolka» 12015 (Hamkor)", 
-                    ru: "Ламинат «Ёлочка» 12015 (Партнер)", 
-                    rooms: R3_DRY, 
-                    file: 'floor-12015.jpg', 
-                    kind: 'herringbone_stack', 
-                    sz: 185,
-                    boxSq: 2.203,
-                    pcsInBox: 36
-                },
-            ], 
-           wall: [
-    { id: 'w-marble', v: 'keramogranit', uz: "Keramogranit (marmar rasmli)", ru: "Керамогранит под мрамор", rooms: R3_ALL, file: 'tex-porcelain-marble.jpg', kind: 'marble', sz: 120, sz2: 240 },
-    { id: 'w-calacatta', v: 'keramogranit', uz: "Calacatta marmar", ru: "Мрамор Calacatta", rooms: R3_ALL, file: 'tex-marble-calacatta.jpg', kind: 'marble', sz: 120 },
-    { id: 'w-marble-grid', v: 'tile', uz: "Mramor plitka", ru: "Мраморная плитка", rooms: R3_ALL, file: 'tex-marble-grid.jpg', kind: 'marble', sz: 120 },
-    { id: 'w-decor-sand', v: 'plaster', uz: "Dekorativ qum", ru: "Декоративный песок", rooms: R3_DRY, file: 'tex-wall-decor-sand.jpg', kind: 'cover' },
-    { id: 'w-palm-leaves', v: 'wallpaper', uz: "Oboy (palma barglari)", ru: "Обои с пальмовыми листьями", rooms: R3_DRY, file: 'oboi_2.jpg', kind: 'clean_repeat', sz: 90 },
-    { id: 'w-geo-arch', v: 'wallpaper', uz: "Oboy (geometrik naqsh)", ru: "Обои с геометрическим узором", rooms: R3_DRY, file: 'oboi_3.jpg', kind: 'grid_crop', sz: 120 },
-    { id: 'w-wave-lines', v: 'wallpaper', uz: "Oboy (to'lqinli chiziqlar)", ru: "Обои с волнистыми линиями", rooms: R3_DRY, file: 'oboi_4.jpg', kind: 'y', sz: 130 },
-    { id: 'w-loft-concrete', v: 'wallpaper', uz: "Oboy (dekorativ )", ru: "Обои под декоративную штукатурку", rooms: R3_DRY, file: 'oboi_5.jpg', kind: 'clean_repeat', sz: 150 },
-    { id: 'w-linen-gray', v: 'wallpaper', uz: "Oboy (kulrang mato)", ru: "Обои под серый текстиль (рогожка)", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'clean_repeat', sz: 110 },
-    { id: 'w-micro-leaves', v: 'wallpaper', uz: "Oboy (mayda barglar)", ru: "Обои с мелким рельефом листьев", rooms: R3_DRY, file: 'oboi_7.jpg', kind: 'xy', sz: 140 },
-    { id: 'w-chevron-gold', v: 'wallpaper', uz: "Oboy (oltin chiziqli yolka)", ru: "Обои шеврон с золотыми линиями", rooms: R3_DRY, file: 'oboi_8.jpg', kind: 'chevron_stack', sz: 150 },
-    { id: 'w-brush-gray', v: 'wallpaper', uz: "Oboy (kulrang mazoklar)", ru: "Обои с серыми мазками кисти", rooms: R3_DRY, file: 'oboi_9.jpg', kind: 'roll_crop_blend', sz: 65 },
-    { id: 'w-brush-beige', v: 'wallpaper', uz: "Oboy (bej mazoklar)", ru: "Обои с бежевыми мазками кисти", rooms: R3_DRY, file: 'oboi_10.jpg', kind: 'roll_crop_blend', sz: 65 }
-               ],
+           floor: [
+    { id: 'f-lam-12015', v: 'laminate', uz: "Laminat «Archa» 12015", ru: "Ламинат «Ёлочка» 12015", rooms: R3_DRY, file: 'floor-12015.jpg', kind: 'herringbone_stack', sz: 130 },
+    { id: 'f-kg-1', v: 'keramogranit', uz: "Keramogranit #1", ru: "Керамогранит №1", rooms: R3_ALL, file: 'keramogranit_1.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-2', v: 'keramogranit', uz: "Keramogranit #2", ru: "Керамогранит №2", rooms: R3_ALL, file: 'keramogranit_2.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-3', v: 'keramogranit', uz: "Keramogranit #3", ru: "Керамогранит №3", rooms: R3_ALL, file: 'keramogranit_3.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-4', v: 'keramogranit', uz: "Keramogranit #4", ru: "Керамогранит №4", rooms: R3_ALL, file: 'keramogranit_4.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-5', v: 'keramogranit', uz: "Keramogranit #5", ru: "Керамогранит №5", rooms: R3_ALL, file: 'keramogranit_5.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-6', v: 'keramogranit', uz: "Keramogranit #6", ru: "Керамогранит №6", rooms: R3_ALL, file: 'keramogranit_6.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-7', v: 'keramogranit', uz: "Keramogranit #7", ru: "Керамогранит №7", rooms: R3_ALL, file: 'keramogranit_7.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-8', v: 'keramogranit', uz: "Keramogranit #8", ru: "Керамогранит №8", rooms: R3_ALL, file: 'keramogranit_8.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-9', v: 'keramogranit', uz: "Keramogranit #9", ru: "Керамогранит №9", rooms: R3_ALL, file: 'keramogranit_9.jpg', kind: 'kg_stand_base', sz: 60, sz2: 120 },
+    { id: 'f-kg-10', v: 'keramogranit', uz: "Keramogranit #10", ru: "Керамогранит №10", rooms: R3_ALL, file: 'keramogranit_10.jpg', kind: 'kg_stand_base', sz: 60, sz2: 120 },
+    { id: 'f-kg-11', v: 'keramogranit', uz: "Keramogranit #11", ru: "Керамогранит №11", rooms: R3_ALL, file: 'keramogranit_11.jpg', kind: 'kg_stand_base', sz: 60, sz2: 120 },
+    { id: 'f-kg-12', v: 'keramogranit', uz: "Keramogranit #12", ru: "Керамогранит №12", rooms: R3_ALL, file: 'keramogranit_12.jpg', kind: 'kg_stand_base', sz: 60, sz2: 120 },
+    { id: 'f-kg-13', v: 'keramogranit', uz: "Keramogranit #13", ru: "Керамогранит №13", rooms: R3_ALL, file: 'keramogranit_13.jpg', kind: 'kg_stand_base', sz: 60, sz2: 120 },
+    { id: 'f-kg-14', v: 'keramogranit', uz: "Keramogranit #14", ru: "Керамогранит №14", rooms: R3_ALL, file: 'keramogranit_14.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-15', v: 'keramogranit', uz: "Keramogranit #15", ru: "Керамогранит №15", rooms: R3_ALL, file: 'keramogranit_15.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-16', v: 'keramogranit', uz: "Keramogranit #16", ru: "Керамогранит №16", rooms: R3_ALL, file: 'keramogranit_16.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-17', v: 'keramogranit', uz: "Keramogranit #17", ru: "Керамогранит №17", rooms: R3_ALL, file: 'keramogranit_17.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-18', v: 'keramogranit', uz: "Keramogranit #18", ru: "Керамогранит №18", rooms: R3_ALL, file: 'keramogranit_18.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-19', v: 'keramogranit', uz: "Keramogranit #19", ru: "Керамогранит №19", rooms: R3_ALL, file: 'keramogranit_19.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-20', v: 'keramogranit', uz: "Keramogranit #20", ru: "Керамогранит №20", rooms: R3_ALL, file: 'keramogranit_20.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-21', v: 'keramogranit', uz: "Keramogranit #21", ru: "Керамогранит №21", rooms: R3_ALL, file: 'keramogranit_21.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-22', v: 'keramogranit', uz: "Keramogranit #22", ru: "Керамогранит №22", rooms: R3_ALL, file: 'keramogranit_22.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-23', v: 'keramogranit', uz: "Keramogranit #23", ru: "Керамогранит №23", rooms: R3_ALL, file: 'keramogranit_23.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-24', v: 'keramogranit', uz: "Keramogranit #24", ru: "Керамогранит №24", rooms: R3_ALL, file: 'keramogranit_24.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'f-kg-25', v: 'keramogranit', uz: "Keramogranit #25", ru: "Керамогранит №25", rooms: R3_ALL, file: 'keramogranit_25.jpg', kind: 'kg_zen_tilt', sz: 120 }
+  ],
+         wall: [
+    { id: 'w-palm-leaves', v: 'wallpaper', uz: "Gulqog'oz #1", ru: "Обои №1", rooms: R3_DRY, file: 'oboi_2.jpg', kind: 'seamless', sz: 110 },
+    { id: 'w-geo-arch', v: 'wallpaper', uz: "Gulqog'oz #2", ru: "Обои №2", rooms: R3_DRY, file: 'oboi_3.jpg', kind: 'grid_crop', sz: 120 },
+    { id: 'w-wave-lines', v: 'wallpaper', uz: "Gulqog'oz #3", ru: "Обои №3", rooms: R3_DRY, file: 'oboi_4.jpg', kind: 'y', sz: 130 },
+    { id: 'w-loft-concrete', v: 'wallpaper', uz: "Gulqog'oz #4", ru: "Обои №4", rooms: R3_DRY, file: 'oboi_5.jpg', kind: 'seamless_mirror', sz: 140 },
+    { id: 'w-linen-gray', v: 'wallpaper', uz: "Gulqog'oz #5", ru: "Обои №5", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'seamless_mirror', sz: 110 },
+    { id: 'w-micro-leaves', v: 'wallpaper', uz: "Gulqog'oz #6", ru: "Обои №6", rooms: R3_DRY, file: 'oboi_7.jpg', kind: 'xy', sz: 140 },
+    { id: 'w-chevron-gold', v: 'wallpaper', uz: "Gulqog'oz #7", ru: "Обои №7", rooms: R3_DRY, file: 'oboi_8.jpg', kind: 'chevron_stack', sz: 150 },
+    { id: 'w-brush-gray', v: 'wallpaper', uz: "Gulqog'oz #8", ru: "Обои №8", rooms: R3_DRY, file: 'oboi_9.jpg', kind: 'seamless_mirror', sz: 90 },
+    { id: 'w-brush-beige', v: 'wallpaper', uz: "Gulqog'oz #9", ru: "Обои №9", rooms: R3_DRY, file: 'oboi_10.jpg', kind: 'seamless_mirror', sz: 90 },
+
+    { id: 'w-kg-1', v: 'keramogranit', uz: "Keramogranit #1", ru: "Керамогранит №1", rooms: R3_ALL, file: 'keramogranit_1.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-2', v: 'keramogranit', uz: "Keramogranit #2", ru: "Керамогранит №2", rooms: R3_ALL, file: 'keramogranit_2.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-3', v: 'keramogranit', uz: "Keramogranit #3", ru: "Керамогранит №3", rooms: R3_ALL, file: 'keramogranit_3.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-4', v: 'keramogranit', uz: "Keramogranit #4", ru: "Керамогранит №4", rooms: R3_ALL, file: 'keramogranit_4.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-5', v: 'keramogranit', uz: "Keramogranit #5", ru: "Керамогранит №5", rooms: R3_ALL, file: 'keramogranit_5.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-6', v: 'keramogranit', uz: "Keramogranit #6", ru: "Керамогранит №6", rooms: R3_ALL, file: 'keramogranit_6.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-7', v: 'keramogranit', uz: "Keramogranit #7", ru: "Керамогранит №7", rooms: R3_ALL, file: 'keramogranit_7.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-8', v: 'keramogranit', uz: "Keramogranit #8", ru: "Керамогранит №8", rooms: R3_ALL, file: 'keramogranit_8.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-9', v: 'keramogranit', uz: "Keramogranit #9", ru: "Керамогранит №9", rooms: R3_ALL, file: 'keramogranit_9.jpg', kind: 'kg_stand_base', sz: 60, sz2: 120 },
+    { id: 'w-kg-9d', v: 'keramogranit', uz: "Keramogranit #9 (Dekor)", ru: "Керамогранит №9 (Декор)", rooms: R3_ALL, file: 'keramogranit_9.jpg', kind: 'kg_stand_decor', sz: 60, sz2: 120 },
+    { id: 'w-kg-10', v: 'keramogranit', uz: "Keramogranit #10", ru: "Керамогранит №10", rooms: R3_ALL, file: 'keramogranit_10.jpg', kind: 'kg_stand_base', sz: 60, sz2: 120 },
+    { id: 'w-kg-10d', v: 'keramogranit', uz: "Keramogranit #10 (Dekor)", ru: "Керамогранит №10 (Декор)", rooms: R3_ALL, file: 'keramogranit_10.jpg', kind: 'kg_stand_decor', sz: 60, sz2: 120 },
+    { id: 'w-kg-11', v: 'keramogranit', uz: "Keramogranit #11", ru: "Керамогранит №11", rooms: R3_ALL, file: 'keramogranit_11.jpg', kind: 'kg_stand_base', sz: 60, sz2: 120 },
+    { id: 'w-kg-11d', v: 'keramogranit', uz: "Keramogranit #11 (Dekor)", ru: "Керамогранит №11 (Декор)", rooms: R3_ALL, file: 'keramogranit_11.jpg', kind: 'kg_stand_decor', sz: 60, sz2: 120 },
+    { id: 'w-kg-12', v: 'keramogranit', uz: "Keramogranit #12", ru: "Керамогранит №12", rooms: R3_ALL, file: 'keramogranit_12.jpg', kind: 'kg_stand_base', sz: 60, sz2: 120 },
+    { id: 'w-kg-12d', v: 'keramogranit', uz: "Keramogranit #12 (Dekor)", ru: "Керамогранит №12 (Декор)", rooms: R3_ALL, file: 'keramogranit_12.jpg', kind: 'kg_stand_decor', sz: 60, sz2: 120 },
+    { id: 'w-kg-13', v: 'keramogranit', uz: "Keramogranit #13", ru: "Керамогранит №13", rooms: R3_ALL, file: 'keramogranit_13.jpg', kind: 'kg_stand_base', sz: 60, sz2: 120 },
+    { id: 'w-kg-13d', v: 'keramogranit', uz: "Keramogranit #13 (Dekor)", ru: "Керамогранит №13 (Декор)", rooms: R3_ALL, file: 'keramogranit_13.jpg', kind: 'kg_stand_decor', sz: 60, sz2: 120 },
+    { id: 'w-kg-14', v: 'keramogranit', uz: "Keramogranit #14", ru: "Керамогранит №14", rooms: R3_ALL, file: 'keramogranit_14.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-15', v: 'keramogranit', uz: "Keramogranit #15", ru: "Керамогранит №15", rooms: R3_ALL, file: 'keramogranit_15.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-16', v: 'keramogranit', uz: "Keramogranit #16", ru: "Керамогранит №16", rooms: R3_ALL, file: 'keramogranit_16.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-17', v: 'keramogranit', uz: "Keramogranit #17", ru: "Керамогранит №17", rooms: R3_ALL, file: 'keramogranit_17.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-18', v: 'keramogranit', uz: "Keramogranit #18", ru: "Керамогранит №18", rooms: R3_ALL, file: 'keramogranit_18.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-19', v: 'keramogranit', uz: "Keramogranit #19", ru: "Керамогранит №19", rooms: R3_ALL, file: 'keramogranit_19.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-20', v: 'keramogranit', uz: "Keramogranit #20", ru: "Керамогранит №20", rooms: R3_ALL, file: 'keramogranit_20.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-21', v: 'keramogranit', uz: "Keramogranit #21", ru: "Керамогранит №21", rooms: R3_ALL, file: 'keramogranit_21.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-22', v: 'keramogranit', uz: "Keramogranit #22", ru: "Керамогранит №22", rooms: R3_ALL, file: 'keramogranit_22.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-23', v: 'keramogranit', uz: "Keramogranit #23", ru: "Керамогранит №23", rooms: R3_ALL, file: 'keramogranit_23.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-24', v: 'keramogranit', uz: "Keramogranit #24", ru: "Керамогранит №24", rooms: R3_ALL, file: 'keramogranit_24.jpg', kind: 'kg_pair', sz: 120 },
+    { id: 'w-kg-25', v: 'keramogranit', uz: "Keramogranit #25", ru: "Керамогранит №25", rooms: R3_ALL, file: 'keramogranit_25.jpg', kind: 'kg_zen_tilt', sz: 120 }
+  ], 
             ceil: [
                 { id: 'c-slat', v: 'slat', uz: "Reykali shift", ru: "Реечный потолок", rooms: R3_KBW, proc: r3Slats, sz: 128 },
                 { id: 'c-emb', v: 'stretch', uz: "Tortma shift, mat (naqshli)", ru: "Натяжной матовый с тиснением", rooms: R3_ALL, file: 'tex-ceiling-emboss.jpg', kind: 'cover' },
@@ -716,72 +744,108 @@
     if (o.kind === 'cover' || o.kind === 'tile' || o.kind === 'raw_repeat') {
         return im.src;
     }
-    if (o.kind === 'clean_repeat') {
-        // 1. Обрезаем 4% по краям (убираем возможную кромку/тень от края рулона)
-        const padX = Math.round(w * 0.04);
-        const padY = Math.round(h * 0.04);
-        const cw = w - padX * 2;
-        const ch = h - padY * 2;
-
+   if (o.kind === 'seamless' || o.kind === 'seamless_mirror') {
+        const padX = Math.round(w * 0.05), padY = Math.round(h * 0.05);
+        const cw = w - padX * 2, ch = h - padY * 2;
         const c = mk(cw, ch), g = c.getContext('2d');
         g.drawImage(im, padX, padY, cw, ch, 0, 0, cw, ch);
 
-        // 2. Мягкое 2D-выравнивание освещённости (убираем виньетку по углам и боковые тени, цвет RGB НЕ трогаем)
+        // Выравниваем плавный градиент света по X и Y (цвет не трогаем)
         const idata = g.getImageData(0, 0, cw, ch), d = idata.data;
-        const grid = 8; // сетка 8x8 для плавного локального света
-        const cellW = cw / grid, cellH = ch / grid;
-        const cellLum = new Float32Array(grid * grid);
-        let totalLum = 0;
-
-        for (let gy = 0; gy < grid; gy++) {
-            for (let gx = 0; gx < grid; gx++) {
-                let sum = 0, cnt = 0;
-                const x0 = Math.floor(gx * cellW), x1 = Math.floor((gx + 1) * cellW);
-                const y0 = Math.floor(gy * cellH), y1 = Math.floor((gy + 1) * cellH);
-                for (let y = y0; y < y1; y += 3) {
-                    for (let x = x0; x < x1; x += 3) {
-                        const i = (y * cw + x) * 4;
-                        sum += d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
-                        cnt++;
-                    }
-                }
-                const lum = cnt ? (sum / cnt) : 128;
-                cellLum[gy * grid + gx] = lum;
-                totalLum += lum;
-            }
-        }
-        const avgLum = totalLum / (grid * grid);
-
-        // Билинейная интерполяция коэффициента яркости по всей площади без полос и пятен
+        const rowLum = new Float32Array(ch), colLum = new Float32Array(cw);
+        let total = 0;
         for (let y = 0; y < ch; y++) {
-            const fy = Math.min(grid - 1.001, Math.max(0, (y / ch) * grid - 0.5));
-            const gy0 = Math.floor(fy), gy1 = Math.min(grid - 1, gy0 + 1), wy = fy - gy0;
+            let s = 0;
+            for (let x = 0; x < cw; x++) { const i = (y * cw + x) * 4; s += d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114; }
+            rowLum[y] = s / cw; total += rowLum[y];
+        }
+        const avg = total / ch;
+        for (let x = 0; x < cw; x++) {
+            let s = 0;
+            for (let y = 0; y < ch; y++) { const i = (y * cw + x) * 4; s += d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114; }
+            colLum[x] = s / ch;
+        }
+        const smooth = (arr, rad) => arr.map((_, i) => {
+            let sum = 0, cnt = 0;
+            for (let k = Math.max(0, i - rad); k <= Math.min(arr.length - 1, i + rad); k++) { sum += arr[k]; cnt++; }
+            return sum / cnt;
+        });
+        const sRow = smooth(rowLum, Math.round(ch * 0.15));
+        const sCol = smooth(colLum, Math.round(cw * 0.15));
 
+        for (let y = 0; y < ch; y++) {
+            const gy = avg / Math.max(20, sRow[y]);
             for (let x = 0; x < cw; x++) {
-                const fx = Math.min(grid - 1.001, Math.max(0, (x / cw) * grid - 0.5));
-                const gx0 = Math.floor(fx), gx1 = Math.min(grid - 1, gx0 + 1), wx = fx - gx0;
-
-                const l00 = cellLum[gy0 * grid + gx0];
-                const l10 = cellLum[gy0 * grid + gx1];
-                const l01 = cellLum[gy1 * grid + gx0];
-                const l11 = cellLum[gy1 * grid + gx1];
-
-                const localLum = (l00 * (1 - wx) + l10 * wx) * (1 - wy) + (l01 * (1 - wx) + l11 * wx) * wy;
-                // Ограничиваем коррекцию (±18%), чтобы сохранить живой рельеф рисунка, но убрать выступы/подушки
-                const rawGain = localLum > 15 ? (avgLum / localLum) : 1;
-                const gain = Math.max(0.82, Math.min(1.18, rawGain));
-
+                const gx = avg / Math.max(20, sCol[x]);
+                const gain = Math.max(0.75, Math.min(1.28, gx * gy));
                 const i = (y * cw + x) * 4;
-                d[i]     = Math.min(255, d[i] * gain);
+                d[i] = Math.min(255, d[i] * gain);
                 d[i + 1] = Math.min(255, d[i + 1] * gain);
                 d[i + 2] = Math.min(255, d[i + 2] * gain);
             }
         }
         g.putImageData(idata, 0, 0);
-
-        // 3. Сохраняем точные пропорции кадра, чтобы картинка не растягивалась
         o._aspect = ch / cw;
+       if (o.kind === 'kg_pair' || o.kind === 'kg_zen_tilt' || o.kind === 'kg_stand_base' || o.kind === 'kg_stand_decor') {
+        let sx = 0, sy = 0, sw = w, sh = h;
+        if (o.kind === 'kg_pair') {
+            sx = Math.round(w * 0.025);
+            sy = Math.round(h * 0.012);
+            sw = Math.round(w * 0.95);
+            sh = Math.round(h * 0.805);
+        } else if (o.kind === 'kg_zen_tilt') {
+            sx = Math.round(w * 0.085);
+            sy = Math.round(h * 0.015);
+            sw = Math.round(w * 0.87);
+            sh = Math.round(h * 0.72);
+        } else if (o.kind === 'kg_stand_decor') {
+            // Левая рельефная плита (кирпичики / гексагоны) без софитов сверху и подписи снизу
+            sx = Math.round(w * 0.095);
+            sy = Math.round(h * 0.165);
+            sw = Math.round(w * 0.398);
+            sh = Math.round(h * 0.585);
+        } else if (o.kind === 'kg_stand_base') {
+            // Правая гладкая фоновая плита без софитов сверху и подписи снизу
+            sx = Math.round(w * 0.507);
+            sy = Math.round(h * 0.165);
+            sw = Math.round(w * 0.398);
+            sh = Math.round(h * 0.585);
+        }
+
+        const c = mk(sw, sh), g = c.getContext('2d');
+        g.drawImage(im, sx, sy, sw, sh, 0, 0, sw, sh);
+
+        // Тонкая естественная фаска-шов по краю плиты (1.5px), чтобы плиты читались как настоящий керамогранит
+        g.strokeStyle = 'rgba(45,42,38,0.22)';
+        g.lineWidth = Math.max(1, Math.round(sw * 0.002));
+        g.strokeRect(0, 0, sw, sh);
+
         return c.toDataURL('image/jpeg', 0.92);
+    }
+
+        if (o.kind === 'seamless_mirror') {
+            const m = mk(cw * 2, ch * 2), mg = m.getContext('2d');
+            mg.drawImage(c, 0, 0);
+            mg.save(); mg.translate(cw * 2, 0); mg.scale(-1, 1); mg.drawImage(c, 0, 0); mg.restore();
+            mg.save(); mg.translate(0, ch * 2); mg.scale(1, -1); mg.drawImage(c, 0, 0); mg.restore();
+            mg.save(); mg.translate(cw * 2, ch * 2); mg.scale(-1, -1); mg.drawImage(c, 0, 0); mg.restore();
+            return m.toDataURL('image/jpeg', 0.92);
+        }
+
+        // Для Обои №1 (пальмы) сшиваем только крайние 6%, чтобы не было шва
+        const bw = Math.max(8, Math.floor(cw * 0.06)), bh = Math.max(8, Math.floor(ch * 0.06));
+        const tw = cw - bw, th = ch - bh;
+        const out = mk(tw, th), og = out.getContext('2d');
+        og.drawImage(c, 0, 0, tw, th, 0, 0, tw, th);
+        for (let x = 0; x < bw; x++) { og.globalAlpha = 1 - x / bw; og.drawImage(c, tw + x, 0, 1, th, x, 0, 1, th); }
+        og.globalAlpha = 1;
+        const strip = mk(tw, bh), sg = strip.getContext('2d');
+        sg.drawImage(c, 0, th, tw, bh, 0, 0, tw, bh);
+        for (let x = 0; x < bw; x++) { sg.globalAlpha = 1 - x / bw; sg.drawImage(c, tw + x, th, 1, bh, x, 0, 1, bh); }
+        for (let y = 0; y < bh; y++) { og.globalAlpha = 1 - y / bh; og.drawImage(strip, 0, y, tw, 1, 0, y, tw, 1); }
+        og.globalAlpha = 1;
+        o._aspect = th / tw;
+        return out.toDataURL('image/jpeg', 0.92);
     }
     if (o.kind === 'grid_crop') {
         const baseSide = Math.min(w, h);
@@ -1162,11 +1226,11 @@ function r3LoadPhotos() {
         im.onload = () => {
             try {
                 o.img = r3PhotoTex(im, o);
-                if ((o.kind === 'grid_crop' || o.kind === 'roll_crop_blend') && o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
+               
                 
                 if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
                 if (o.kind === 'xy' || o.kind === 'blend' || o.kind === 'raw_repeat') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth);
-                if ((o.kind === 'grid_crop' || o.kind === 'clean_repeat') && o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
+                if ((o.kind === 'grid_crop' || o.kind === 'seamless' || o.kind === 'seamless_mirror') && o._aspect) o.sz2 = Math.round(o.sz * o._aspect); 
                 r3RenderOpts(); r3Paint();
             } catch (e) {
                 o.img = r3tex(r3Solid('#3b1818', 400), 1);
@@ -1301,7 +1365,7 @@ function r3LoadPhotos() {
                     
                     el.style.backgroundImage = `linear-gradient(rgba(0,0,0,${sh}),rgba(0,0,0,${sh})),url(${o.img})`;
                     
-                 const mult = (o.kind === 'xy') ? 6 : 3;
+                 const mult = (o.kind === 'xy' || o.kind === 'seamless_mirror') ? 6 : 3;
             if (o.kind === 'cover') {
                 // Если явно указан sz — включаем repeat с этим размером
                 if (o.sz) {
