@@ -695,7 +695,7 @@
     { id: 'w-micro-leaves', v: 'wallpaper', uz: "Oboy (mayda barglar)", ru: "Обои с мелким рельефом листьев", rooms: R3_DRY, file: 'oboi_7.jpg', kind: 'xy', sz: 140 },
     { id: 'w-chevron-gold', v: 'wallpaper', uz: "Oboy (oltin chiziqli yolka)", ru: "Обои шеврон с золотыми линиями", rooms: R3_DRY, file: 'oboi_8.jpg', kind: 'chevron_stack', sz: 150 },
     { id: 'w-brush-gray', v: 'wallpaper', uz: "Oboy (kulrang mazoklar)", ru: "Обои с серыми мазками кисти", rooms: R3_DRY, file: 'oboi_9.jpg', kind: 'roll_crop_blend', sz: 65 },
-    { id: 'w-brush-beige', v: 'wallpaper', uz: "Oboy (bej mazoklar)", ru: "Обои с бежевыми мазками кисти", rooms: R3_DRY, file: 'oboi_10.jpg', kind: 'roll_crop_blend', sz: 65 }
+    { id: 'w-brush-beige', v: 'wallpaper', uz: "Oboy (bej mazoklar)", ru: "Обои с бежевыми мазками кисти", rooms: R3_DRY, file: 'oboi_10.jpg', kind: 'roll_crop_blend', sz: 65 },
     { id: 'w-kg-1', v: 'keramogranit', uz: "Keramogranit №1 (och bej yolka)", ru: "Керамогранит №1 (светло-бежевая ёлочка)", rooms: R3_ALL, file: 'keramogranit-1.jpg', kind: 'tile_slab', sz: 65 },
     { id: 'w-kg-2', v: 'keramogranit', uz: "Keramogranit №2 (iliq eman shevron)", ru: "Керамогранит №2 (тёплый дуб шеврон)", rooms: R3_ALL, file: 'keramogranit-2.jpg', kind: 'tile_slab', sz: 65 },
     { id: 'w-kg-3', v: 'keramogranit', uz: "Keramogranit №3 (kulrang-bej yolka)", ru: "Керамогранит №3 (серо-бежевая ёлочка)", rooms: R3_ALL, file: 'keramogranit-3.jpg', kind: 'tile_slab', sz: 65 },
@@ -726,7 +726,7 @@
     const w = im.naturalWidth; let h = im.naturalHeight;
     const mk = (cw, ch) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
     if (o.kind === 'cover' || o.kind === 'tile' || o.kind === 'raw_repeat') {
-        return im.src;
+        return im.src;}
        if (o.kind === 'tile_slab') {
         const trim = 3;
         const sw = Math.max(10, w - trim * 2);
