@@ -675,6 +675,12 @@
                     boxSq: 2.203,
                     pcsInBox: 36
                 },
+                { id: 'f-kg-1', v: 'tile', uz: "Keramogranit №1 (och bej yolka)", ru: "Керамогранит №1 (светло-бежевая ёлочка)", rooms: R3_ALL, file: 'keramogranit-1.jpg', kind: 'tile_slab', sz: 65 },
+                { id: 'f-kg-2', v: 'tile', uz: "Keramogranit №2 (iliq eman shevron)", ru: "Керамогранит №2 (тёплый дуб шеврон)", rooms: R3_ALL, file: 'keramogranit-2.jpg', kind: 'tile_slab', sz: 65 },
+                { id: 'f-kg-3', v: 'tile', uz: "Keramogranit №3 (kulrang-bej yolka)", ru: "Керамогранит №3 (серо-бежевая ёлочка)", rooms: R3_ALL, file: 'keramogranit-3.jpg', kind: 'tile_slab', sz: 65 },
+                { id: 'f-kg-4', v: 'tile', uz: "Keramogranit №4 (to'q yong'oq shevron)", ru: "Керамогранит №4 (тёмный орех шеврон)", rooms: R3_ALL, file: 'keramogranit-4.jpg', kind: 'tile_slab', sz: 65 },
+                { id: 'f-kg-5', v: 'tile', uz: "Keramogranit №5 (yong'oq teksturasi shevron)", ru: "Керамогранит №5 (текстурный орех шеврон)", rooms: R3_ALL, file: 'keramogranit-5.jpg', kind: 'tile_slab', sz: 65 },
+                { id: 'f-kg-6', v: 'tile', uz: "Keramogranit №6 (och kulrang yolka)", ru: "Керамогранит №6 (светло-серый дуб ёлочка)", rooms: R3_ALL, file: 'keramogranit-6.jpg', kind: 'tile_slab', sz: 65 },
             ], 
            wall: [
     { id: 'w-marble', v: 'keramogranit', uz: "Keramogranit (marmar rasmli)", ru: "Керамогранит под мрамор", rooms: R3_ALL, file: 'tex-porcelain-marble.jpg', kind: 'marble', sz: 120, sz2: 240 },
@@ -690,6 +696,12 @@
     { id: 'w-chevron-gold', v: 'wallpaper', uz: "Oboy (oltin chiziqli yolka)", ru: "Обои шеврон с золотыми линиями", rooms: R3_DRY, file: 'oboi_8.jpg', kind: 'chevron_stack', sz: 150 },
     { id: 'w-brush-gray', v: 'wallpaper', uz: "Oboy (kulrang mazoklar)", ru: "Обои с серыми мазками кисти", rooms: R3_DRY, file: 'oboi_9.jpg', kind: 'roll_crop_blend', sz: 65 },
     { id: 'w-brush-beige', v: 'wallpaper', uz: "Oboy (bej mazoklar)", ru: "Обои с бежевыми мазками кисти", rooms: R3_DRY, file: 'oboi_10.jpg', kind: 'roll_crop_blend', sz: 65 }
+    { id: 'w-kg-1', v: 'keramogranit', uz: "Keramogranit №1 (och bej yolka)", ru: "Керамогранит №1 (светло-бежевая ёлочка)", rooms: R3_ALL, file: 'keramogranit-1.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'w-kg-2', v: 'keramogranit', uz: "Keramogranit №2 (iliq eman shevron)", ru: "Керамогранит №2 (тёплый дуб шеврон)", rooms: R3_ALL, file: 'keramogranit-2.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'w-kg-3', v: 'keramogranit', uz: "Keramogranit №3 (kulrang-bej yolka)", ru: "Керамогранит №3 (серо-бежевая ёлочка)", rooms: R3_ALL, file: 'keramogranit-3.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'w-kg-4', v: 'keramogranit', uz: "Keramogranit №4 (to'q yong'oq shevron)", ru: "Керамогранит №4 (тёмный орех шеврон)", rooms: R3_ALL, file: 'keramogranit-4.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'w-kg-5', v: 'keramogranit', uz: "Keramogranit №5 (yong'oq teksturasi shevron)", ru: "Керамогранит №5 (текстурный орех шеврон)", rooms: R3_ALL, file: 'keramogranit-5.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'w-kg-6', v: 'keramogranit', uz: "Keramogranit №6 (och kulrang yolka)", ru: "Керамогранит №6 (светло-серый дуб ёлочка)", rooms: R3_ALL, file: 'keramogranit-6.jpg', kind: 'tile_slab', sz: 65 }
                ],
             ceil: [
                 { id: 'c-slat', v: 'slat', uz: "Reykali shift", ru: "Реечный потолок", rooms: R3_KBW, proc: r3Slats, sz: 128 },
@@ -715,7 +727,19 @@
     const mk = (cw, ch) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
     if (o.kind === 'cover' || o.kind === 'tile' || o.kind === 'raw_repeat') {
         return im.src;
-    }
+       if (o.kind === 'tile_slab') {
+        const trim = 3;
+        const sw = Math.max(10, w - trim * 2);
+        const sh = Math.max(10, h - trim * 2);
+        const c = mk(sw, sh), g = c.getContext('2d');
+        g.drawImage(im, trim, trim, sw, sh, 0, 0, sw, sh);
+        g.strokeStyle = 'rgba(75, 70, 65, 0.45)';
+        g.lineWidth = 2;
+        g.strokeRect(0.5, 0.5, sw - 1, sh - 1);
+        o._aspect = sh / sw;
+        return c.toDataURL('image/jpeg', 0.92);
+    } 
+    
     if (o.kind === 'grid_crop') {
         const baseSide = Math.min(w, h);
         const side = Math.round(baseSide * 0.80);
@@ -1095,7 +1119,7 @@ function r3LoadPhotos() {
         im.onload = () => {
             try {
                 o.img = r3PhotoTex(im, o);
-                if ((o.kind === 'grid_crop' || o.kind === 'roll_crop_blend') && o._aspect) o.sz2 = Math.round(o.sz * o._aspect);
+               if ((o.kind === 'grid_crop' || o.kind === 'roll_crop_blend' || o.kind === 'tile_slab') && o._aspect) o.sz2 = Math.round(o.sz * o._aspect); 
                 
                 if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
                if (o.kind === 'xy' || o.kind === 'blend' || o.kind === 'raw_repeat') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth); 
