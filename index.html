@@ -650,7 +650,7 @@
         // --- каталог вариантов ---
        const R3_OPTS = {
             floor: [
-                { id: 'f-parket-1', v: 'parquet', uz: "Parket-1", ru: "Паркет №1 ", rooms: R3_LB, file: 'parket-1.jpg', kind: 'raw_repeat', sz: 100 }, 
+                { id: 'f-parket-1', v: 'parquet', uz: "Parket-1", ru: "Паркет №1", rooms: R3_LB, file: 'parket-1.jpg', kind: 'parquet_tile', sz: 100 },
                 { id: 'f-kg-1', v: 'tile', uz: "Keramogranit №1", ru: "Керамогранит №1", rooms: R3_ALL, file: 'keramogranit-1.jpg', kind: 'tile_slab', sz: 65 },
                 { id: 'f-kg-2', v: 'tile', uz: "Keramogranit №2", ru: "Керамогранит №2", rooms: R3_ALL, file: 'keramogranit-2.jpg', kind: 'tile_slab', sz: 65 },
                 { id: 'f-kg-3', v: 'tile', uz: "Keramogranit №3", ru: "Керамогранит №3", rooms: R3_ALL, file: 'keramogranit-3.jpg', kind: 'tile_slab', sz: 65 },
@@ -712,7 +712,53 @@
         o._aspect = sh / sw;
         return c.toDataURL('image/jpeg', 0.92);
     } 
-    
+   if (o.kind === 'parquet_tile') {
+        const s = Math.min(w, h);
+        const src = mk(s, s), sg = src.getContext('2d');
+        sg.drawImage(im, 0, 0, s, s, 0, 0, s, s);
+        const d = sg.getImageData(0, 0, s, s).data;
+
+        const lum = (x, y) => {
+            const i = (y * s + x) * 4;
+            return d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+        };
+
+        // Ищем точный период повторения рисунка по вертикали (dy) и горизонтали (dx)
+        const findPeriod = (axis, minP, maxP) => {
+            let bestP = s, bestScore = Infinity;
+            for (let p = minP; p <= maxP; p++) {
+                let diff = 0, cnt = 0;
+                if (axis === 'y') {
+                    for (let y = 0; y < s - p; y += 2) {
+                        for (let x = 0; x < s; x += 4) {
+                            diff += Math.abs(lum(x, y) - lum(x, y + p));
+                            cnt++;
+                        }
+                    }
+                } else {
+                    for (let y = 0; y < s; y += 4) {
+                        for (let x = 0; x < s - p; x += 2) {
+                            diff += Math.abs(lum(x, y) - lum(x + p, y));
+                            cnt++;
+                        }
+                    }
+                }
+                const score = diff / (cnt || 1);
+                if (score < bestScore) { bestScore = score; bestP = p; }
+            }
+            return bestP;
+        };
+
+        const minP = Math.round(s * 0.45);
+        const maxP = Math.round(s * 0.96);
+        const tileW = findPeriod('x', minP, maxP);
+        const tileH = findPeriod('y', minP, maxP);
+
+        const c = mk(tileW, tileH), g = c.getContext('2d');
+        g.drawImage(src, 0, 0, tileW, tileH, 0, 0, tileW, tileH);
+        o._aspect = tileH / tileW;
+        return c.toDataURL('image/jpeg', 0.92);
+    } 
     if (o.kind === 'grid_crop') {
         const baseSide = Math.min(w, h);
         const side = Math.round(baseSide * 0.80);
@@ -1092,7 +1138,7 @@ function r3LoadPhotos() {
         im.onload = () => {
             try {
                 o.img = r3PhotoTex(im, o);
-               if ((o.kind === 'grid_crop' || o.kind === 'roll_crop_blend' || o.kind === 'tile_slab') && o._aspect) o.sz2 = Math.round(o.sz * o._aspect); 
+              if ((o.kind === 'grid_crop' || o.kind === 'roll_crop_blend' || o.kind === 'tile_slab' || o.kind === 'parquet_tile') && o._aspect) o.sz2 = Math.round(o.sz * o._aspect); 
                 
                 if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
                if (o.kind === 'xy' || o.kind === 'blend' || o.kind === 'raw_repeat') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth); 
