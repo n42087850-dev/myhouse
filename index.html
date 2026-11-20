@@ -712,53 +712,28 @@
         o._aspect = sh / sw;
         return c.toDataURL('image/jpeg', 0.92);
     } 
-   if (o.kind === 'parquet_tile') {
+  if (o.kind === 'parquet_tile') {
         const s = Math.min(w, h);
-        const src = mk(s, s), sg = src.getContext('2d');
-        sg.drawImage(im, 0, 0, s, s, 0, 0, s, s);
-        const d = sg.getImageData(0, 0, s, s).data;
-
-        const lum = (x, y) => {
-            const i = (y * s + x) * 4;
-            return d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
-        };
-
-        // Ищем точный период повторения рисунка по вертикали (dy) и горизонтали (dx)
-        const findPeriod = (axis, minP, maxP) => {
-            let bestP = s, bestScore = Infinity;
-            for (let p = minP; p <= maxP; p++) {
-                let diff = 0, cnt = 0;
-                if (axis === 'y') {
-                    for (let y = 0; y < s - p; y += 2) {
-                        for (let x = 0; x < s; x += 4) {
-                            diff += Math.abs(lum(x, y) - lum(x, y + p));
-                            cnt++;
-                        }
-                    }
-                } else {
-                    for (let y = 0; y < s; y += 4) {
-                        for (let x = 0; x < s - p; x += 2) {
-                            diff += Math.abs(lum(x, y) - lum(x + p, y));
-                            cnt++;
-                        }
-                    }
-                }
-                const score = diff / (cnt || 1);
-                if (score < bestScore) { bestScore = score; bestP = p; }
-            }
-            return bestP;
-        };
-
-        const minP = Math.round(s * 0.45);
-        const maxP = Math.round(s * 0.96);
-        const tileW = findPeriod('x', minP, maxP);
-        const tileH = findPeriod('y', minP, maxP);
+        // Точный период для плашки 60x10 см (6:1) под 45°:
+        // 1 полный цикл по ширине (12 шагов) и 6 шагов по высоте -> ровно 2:1
+        const tileW = s;
+        const tileH = Math.round(s * 0.50);
 
         const c = mk(tileW, tileH), g = c.getContext('2d');
-        g.drawImage(src, 0, 0, tileW, tileH, 0, 0, tileW, tileH);
+        g.drawImage(im, 0, 0, tileW, tileH, 0, 0, tileW, tileH);
+
+        const blendH = 6;
+        if (h >= tileH + blendH) {
+            for (let y = 0; y < blendH; y++) {
+                g.globalAlpha = 1 - y / blendH;
+                g.drawImage(im, 0, tileH + y, tileW, 1, 0, y, tileW, 1);
+            }
+            g.globalAlpha = 1;
+        }
+
         o._aspect = tileH / tileW;
         return c.toDataURL('image/jpeg', 0.92);
-    } 
+    }
     if (o.kind === 'grid_crop') {
         const baseSide = Math.min(w, h);
         const side = Math.round(baseSide * 0.80);
