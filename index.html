@@ -712,54 +712,30 @@
         o._aspect = sh / sw;
         return c.toDataURL('image/jpeg', 0.92);
     } 
-if (o.kind === 'parquet_tile') {
+    if (o.kind === 'parquet_tile') {
         const s = Math.min(w, h);
-        const norm = mk(s, s), ng = norm.getContext('2d');
-        ng.drawImage(im, 0, 0, s, s, 0, 0, s, s);
-
-        // Выравниваем перепад яркости по краям, чтобы светлые и тёмные плашки не давали полосу на стыке
-        const idata = ng.getImageData(0, 0, s, s), d = idata.data;
-        const rowLum = new Float32Array(s);
-        let totalLum = 0;
-        for (let y = 0; y < s; y++) {
-            let sum = 0;
-            for (let x = 0; x < s; x += 4) {
-                const i = (y * s + x) * 4;
-                sum += d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
-            }
-            rowLum[y] = sum / Math.ceil(s / 4);
-            totalLum += rowLum[y];
-        }
-        const avgLum = totalLum / s;
-        for (let y = 0; y < s; y++) {
-            const gain = rowLum[y] > 10 ? (0.45 + 0.55 * (avgLum / rowLum[y])) : 1;
-            for (let x = 0; x < s; x++) {
-                const i = (y * s + x) * 4;
-                d[i] = Math.min(255, d[i] * gain);
-                d[i + 1] = Math.min(255, d[i + 1] * gain);
-                d[i + 2] = Math.min(255, d[i + 2] * gain);
-            }
-        }
-        ng.putImageData(idata, 0, 0);
-
-        // Плавное сшивание правого края с левым и нижнего с верхним (14%)
-       const bw = Math.floor(s * 0.04);
-       const bh = Math.floor(s * 0.04);
+        const bw = Math.floor(s * 0.13);
+        const bh = Math.floor(s * 0.13);
         const tw = s - bw, th = s - bh;
+
         const c = mk(tw, th), g = c.getContext('2d');
-        g.drawImage(norm, 0, 0, tw, th, 0, 0, tw, th);
+        g.fillStyle = '#b68e52';
+        g.fillRect(0, 0, tw, th);
+        g.drawImage(im, 0, 0, tw, th, 0, 0, tw, th);
 
         for (let x = 0; x < bw; x++) {
             g.globalAlpha = 1 - x / bw;
-            g.drawImage(norm, tw + x, 0, 1, th, x, 0, 1, th);
+            g.drawImage(im, tw + x, 0, 1, th, x, 0, 1, th);
         }
         g.globalAlpha = 1;
 
         const bg = mk(tw, bh), bctx = bg.getContext('2d');
-        bctx.drawImage(norm, 0, th, tw, bh, 0, 0, tw, bh);
+        bctx.fillStyle = '#b68e52';
+        bctx.fillRect(0, 0, tw, bh);
+        bctx.drawImage(im, 0, th, tw, bh, 0, 0, tw, bh);
         for (let x = 0; x < bw; x++) {
             bctx.globalAlpha = 1 - x / bw;
-            bctx.drawImage(norm, tw + x, th, 1, bh, x, 0, 1, bh);
+            bctx.drawImage(im, tw + x, th, 1, bh, x, 0, 1, bh);
         }
         for (let y = 0; y < bh; y++) {
             g.globalAlpha = 1 - y / bh;
@@ -769,7 +745,7 @@ if (o.kind === 'parquet_tile') {
 
         o._aspect = 1;
         return c.toDataURL('image/jpeg', 0.92);
-    } 
+    }
     if (o.kind === 'grid_crop') {
         const baseSide = Math.min(w, h);
         const side = Math.round(baseSide * 0.80);
