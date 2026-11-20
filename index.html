@@ -714,30 +714,92 @@
     } 
  if (o.kind === 'parquet_tile') {
         const s = Math.min(w, h);
-        // Берём точный период 5 уровней (99.3% от исходника — все 5 уровней сохраняются)
-        const period = Math.round(s * 0.993);
-        const c = mk(period, period), g = c.getContext('2d');
-        g.drawImage(im, 0, 0, period, period, 0, 0, period, period);
+        // Поворачиваем центр parket-1.jpg на 45°, чтобы вырезать реальные плашки вдоль волокон
+        const diag = Math.ceil(s * Math.SQRT2);
+        const rotC = mk(diag, diag), rg = rotC.getContext('2d');
+        rg.translate(diag / 2, diag / 2);
+        rg.rotate(-Math.PI / 4);
+        rg.drawImage(im, -s / 2, -s / 2, s, s);
 
-        // Плавно сводим оттенок дерева на границе (16px) по X и Y, используя оставшийся край исходника
-        const b = Math.min(16, s - period > 2 ? s - period : 12);
-        // Если в исходнике остаётся запас пикселей — берём из него; иначе перекрываем противоположный край
-        for (let y = 0; y < b; y++) {
-            const alpha = (1 - y / b) * 0.85;
-            g.globalAlpha = alpha;
-            const srcY = (period + y < h) ? (period + y) : (period - b + y);
-            g.drawImage(im, 0, srcY, period, 1, 0, y, period, 1);
-        }
-        for (let x = 0; x < b; x++) {
-            const alpha = (1 - x / b) * 0.85;
-            g.globalAlpha = alpha;
-            const srcX = (period + x < w) ? (period + x) : (period - b + x);
-            g.drawImage(im, srcX, 0, 1, period, x, 0, 1, period);
-        }
-        g.globalAlpha = 1;
+        const safe = Math.round(s * 0.56);
+        const c0 = Math.round((diag - safe) / 2);
+        const pW = Math.round(safe * 0.78);
+        const pH = Math.max(18, Math.round(pW / 5.5));
 
-        o._aspect = 1;
-        return c.toDataURL('image/jpeg', 0.92);
+        // Вырезаем 16 живых плашек из центра фото (сохраняя оригинальный цвет и сучки)
+        const planks = [];
+        for (let k = 0; k < 16; k++) {
+            const sx = c0 + ((k * 17) % Math.max(1, safe - pW));
+            const sy = c0 + ((k * 29) % Math.max(1, safe - pH));
+            const pc = mk(pW, pH), pg = pc.getContext('2d');
+            pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
+            // Тонкая естественная фаска по краю плашки
+            pg.strokeStyle = 'rgba(55, 38, 18, 0.35)';
+            pg.lineWidth = 1.5;
+            pg.strokeRect(0.5, 0.5, pW - 1, pH - 1);
+            planks.push(pc);
+        }
+
+        // Собираем математически бесшовный блок 5 уровней (2 колонки x 10 шагов)
+        const W = 40;
+        const L = Math.round(W * 5.2);
+        const s2 = Math.SQRT1_2;
+        const halfW = Math.round(L * s2);
+        const rowW = halfW * 2;
+        const stepY = Math.round(W / s2);
+
+        const cols = 2;
+        const rows = 10;
+        const tileW = rowW * cols;
+        const tileH = stepY * rows;
+        const out = mk(tileW, tileH), og = out.getContext('2d');
+        const nPl = planks.length;
+
+        og.drawImage(planks[0], 0, 0, tileW, tileH);
+
+        for (let c = 0; c < cols; c++) {
+            const x0 = c * rowW;
+            const xm = x0 + halfW;
+            const x1 = x0 + rowW;
+
+            // Рисуем с запасом сверху и снизу, чтобы верхний край тайла (y=0) и нижний (y=tileH)
+            // содержали ровно те же плашки с тем же смещением (100% бесшовный стык)
+            for (let r = -6; r < rows + 6; r++) {
+                const rMod = ((r % rows) + rows) % rows;
+                const y0 = r * stepY;
+
+                const plL = planks[(rMod * 3 + c * 5) % nPl];
+                og.save();
+                og.beginPath();
+                og.moveTo(x0, y0 + halfW);
+                og.lineTo(xm, y0);
+                og.lineTo(xm, y0 + stepY);
+                og.lineTo(x0, y0 + halfW + stepY);
+                og.closePath();
+                og.clip();
+                og.translate(x0, y0 + halfW);
+                og.rotate(-Math.PI / 4);
+                og.drawImage(plL, -4, 0, L + 8, W);
+                og.restore();
+
+                const plR = planks[(rMod * 7 + c * 3 + 1) % nPl];
+                og.save();
+                og.beginPath();
+                og.moveTo(xm, y0);
+                og.lineTo(x1, y0 + halfW);
+                og.lineTo(x1, y0 + halfW + stepY);
+                og.lineTo(xm, y0 + stepY);
+                og.closePath();
+                og.clip();
+                og.translate(xm, y0);
+                og.rotate(Math.PI / 4);
+                og.drawImage(plR, -4, 0, L + 8, W);
+                og.restore();
+            }
+        }
+
+        o._aspect = tileH / tileW;
+        return out.toDataURL('image/jpeg', 0.92);
     }
     if (o.kind === 'grid_crop') {
         const baseSide = Math.min(w, h);
