@@ -687,7 +687,7 @@
                 { id: 'c-rect', v: 'drywall', uz: "To'rtburchak shift", ru: "Прямоугольный потолок", rooms: R3_DRY, file: 'tex-ceiling-rect.jpg', kind: 'cover' }
             ]
         };
-        const R3_DEFAULT = { floor: { dry: 'f-laminate', wet: 'f-tile' }, wall: { dry: 'w-palm-leaves', wet: 'w-tile' }, ceil: { dry: 'c-emb', wet: 'c-pvx-silver' } };
+        const R3_DEFAULT = { floor: { dry: 'parket-1', wet: 'f-tile' }, wall: { dry: 'w-palm-leaves', wet: 'w-tile' }, ceil: { dry: 'c-emb', wet: 'c-pvx-silver' } };
         const R3_SHADE = { back: 0.10, left: 0.30, right: 0.20, floor: 0.14, ceil: 0 };
         const R3_FACES = { floor: ['r3-floor'], wall: ['r3-back', 'r3-left', 'r3-right'], ceil: ['r3-ceil'] };
  
@@ -712,26 +712,31 @@
         o._aspect = sh / sw;
         return c.toDataURL('image/jpeg', 0.92);
     } 
-  if (o.kind === 'parquet_tile') {
+ if (o.kind === 'parquet_tile') {
         const s = Math.min(w, h);
-        // Точный период для плашки 60x10 см (6:1) под 45°:
-        // 1 полный цикл по ширине (12 шагов) и 6 шагов по высоте -> ровно 2:1
-        const tileW = s;
-        const tileH = Math.round(s * 0.50);
+        // Берём точный период 5 уровней (99.3% от исходника — все 5 уровней сохраняются)
+        const period = Math.round(s * 0.993);
+        const c = mk(period, period), g = c.getContext('2d');
+        g.drawImage(im, 0, 0, period, period, 0, 0, period, period);
 
-        const c = mk(tileW, tileH), g = c.getContext('2d');
-        g.drawImage(im, 0, 0, tileW, tileH, 0, 0, tileW, tileH);
-
-        const blendH = 6;
-        if (h >= tileH + blendH) {
-            for (let y = 0; y < blendH; y++) {
-                g.globalAlpha = 1 - y / blendH;
-                g.drawImage(im, 0, tileH + y, tileW, 1, 0, y, tileW, 1);
-            }
-            g.globalAlpha = 1;
+        // Плавно сводим оттенок дерева на границе (16px) по X и Y, используя оставшийся край исходника
+        const b = Math.min(16, s - period > 2 ? s - period : 12);
+        // Если в исходнике остаётся запас пикселей — берём из него; иначе перекрываем противоположный край
+        for (let y = 0; y < b; y++) {
+            const alpha = (1 - y / b) * 0.85;
+            g.globalAlpha = alpha;
+            const srcY = (period + y < h) ? (period + y) : (period - b + y);
+            g.drawImage(im, 0, srcY, period, 1, 0, y, period, 1);
         }
+        for (let x = 0; x < b; x++) {
+            const alpha = (1 - x / b) * 0.85;
+            g.globalAlpha = alpha;
+            const srcX = (period + x < w) ? (period + x) : (period - b + x);
+            g.drawImage(im, srcX, 0, 1, period, x, 0, 1, period);
+        }
+        g.globalAlpha = 1;
 
-        o._aspect = tileH / tileW;
+        o._aspect = 1;
         return c.toDataURL('image/jpeg', 0.92);
     }
     if (o.kind === 'grid_crop') {
