@@ -650,7 +650,7 @@
         // --- каталог вариантов ---
        const R3_OPTS = {
             floor: [
-                { id: 'f-parket-1', v: 'parquet', uz: "Parket-1", ru: "Паркет №1", rooms: R3_LB, file: 'parket-1.jpg', kind: 'parquet_tile', sz: 100 },
+                { id: 'f-parket-1', v: 'parquet', uz: "Parket-1", ru: "Паркет №1", rooms: R3_LB, file: 'parket-1.jpg', kind: 'parquet_tile', sz: 140 },
                 { id: 'f-kg-1', v: 'tile', uz: "Keramogranit №1", ru: "Керамогранит №1", rooms: R3_ALL, file: 'keramogranit-1.jpg', kind: 'tile_slab', sz: 65 },
                 { id: 'f-kg-2', v: 'tile', uz: "Keramogranit №2", ru: "Керамогранит №2", rooms: R3_ALL, file: 'keramogranit-2.jpg', kind: 'tile_slab', sz: 65 },
                 { id: 'f-kg-3', v: 'tile', uz: "Keramogranit №3", ru: "Керамогранит №3", rooms: R3_ALL, file: 'keramogranit-3.jpg', kind: 'tile_slab', sz: 65 },
@@ -712,95 +712,64 @@
         o._aspect = sh / sw;
         return c.toDataURL('image/jpeg', 0.92);
     } 
- if (o.kind === 'parquet_tile') {
+if (o.kind === 'parquet_tile') {
         const s = Math.min(w, h);
-        // Поворачиваем центр parket-1.jpg на 45°, чтобы вырезать реальные плашки вдоль волокон
-        const diag = Math.ceil(s * Math.SQRT2);
-        const rotC = mk(diag, diag), rg = rotC.getContext('2d');
-        rg.translate(diag / 2, diag / 2);
-        rg.rotate(-Math.PI / 4);
-        rg.drawImage(im, -s / 2, -s / 2, s, s);
+        const norm = mk(s, s), ng = norm.getContext('2d');
+        ng.drawImage(im, 0, 0, s, s, 0, 0, s, s);
 
-        const safe = Math.round(s * 0.56);
-        const c0 = Math.round((diag - safe) / 2);
-        const pW = Math.round(safe * 0.78);
-        const pH = Math.max(18, Math.round(pW / 5.5));
-
-        // Вырезаем 16 живых плашек из центра фото (сохраняя оригинальный цвет и сучки)
-        const planks = [];
-        for (let k = 0; k < 16; k++) {
-            const sx = c0 + ((k * 17) % Math.max(1, safe - pW));
-            const sy = c0 + ((k * 29) % Math.max(1, safe - pH));
-            const pc = mk(pW, pH), pg = pc.getContext('2d');
-            pg.drawImage(rotC, sx, sy, pW, pH, 0, 0, pW, pH);
-            // Тонкая естественная фаска по краю плашки
-            pg.strokeStyle = 'rgba(55, 38, 18, 0.35)';
-            pg.lineWidth = 1.5;
-            pg.strokeRect(0.5, 0.5, pW - 1, pH - 1);
-            planks.push(pc);
+        // Выравниваем перепад яркости по краям, чтобы светлые и тёмные плашки не давали полосу на стыке
+        const idata = ng.getImageData(0, 0, s, s), d = idata.data;
+        const rowLum = new Float32Array(s);
+        let totalLum = 0;
+        for (let y = 0; y < s; y++) {
+            let sum = 0;
+            for (let x = 0; x < s; x += 4) {
+                const i = (y * s + x) * 4;
+                sum += d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+            }
+            rowLum[y] = sum / Math.ceil(s / 4);
+            totalLum += rowLum[y];
         }
-
-        // Собираем математически бесшовный блок 5 уровней (2 колонки x 10 шагов)
-        const W = 40;
-        const L = Math.round(W * 5.2);
-        const s2 = Math.SQRT1_2;
-        const halfW = Math.round(L * s2);
-        const rowW = halfW * 2;
-        const stepY = Math.round(W / s2);
-
-        const cols = 2;
-        const rows = 10;
-        const tileW = rowW * cols;
-        const tileH = stepY * rows;
-        const out = mk(tileW, tileH), og = out.getContext('2d');
-        const nPl = planks.length;
-
-        og.drawImage(planks[0], 0, 0, tileW, tileH);
-
-        for (let c = 0; c < cols; c++) {
-            const x0 = c * rowW;
-            const xm = x0 + halfW;
-            const x1 = x0 + rowW;
-
-            // Рисуем с запасом сверху и снизу, чтобы верхний край тайла (y=0) и нижний (y=tileH)
-            // содержали ровно те же плашки с тем же смещением (100% бесшовный стык)
-            for (let r = -6; r < rows + 6; r++) {
-                const rMod = ((r % rows) + rows) % rows;
-                const y0 = r * stepY;
-
-                const plL = planks[(rMod * 3 + c * 5) % nPl];
-                og.save();
-                og.beginPath();
-                og.moveTo(x0, y0 + halfW);
-                og.lineTo(xm, y0);
-                og.lineTo(xm, y0 + stepY);
-                og.lineTo(x0, y0 + halfW + stepY);
-                og.closePath();
-                og.clip();
-                og.translate(x0, y0 + halfW);
-                og.rotate(-Math.PI / 4);
-                og.drawImage(plL, -4, 0, L + 8, W);
-                og.restore();
-
-                const plR = planks[(rMod * 7 + c * 3 + 1) % nPl];
-                og.save();
-                og.beginPath();
-                og.moveTo(xm, y0);
-                og.lineTo(x1, y0 + halfW);
-                og.lineTo(x1, y0 + halfW + stepY);
-                og.lineTo(xm, y0 + stepY);
-                og.closePath();
-                og.clip();
-                og.translate(xm, y0);
-                og.rotate(Math.PI / 4);
-                og.drawImage(plR, -4, 0, L + 8, W);
-                og.restore();
+        const avgLum = totalLum / s;
+        for (let y = 0; y < s; y++) {
+            const gain = rowLum[y] > 10 ? (0.45 + 0.55 * (avgLum / rowLum[y])) : 1;
+            for (let x = 0; x < s; x++) {
+                const i = (y * s + x) * 4;
+                d[i] = Math.min(255, d[i] * gain);
+                d[i + 1] = Math.min(255, d[i + 1] * gain);
+                d[i + 2] = Math.min(255, d[i + 2] * gain);
             }
         }
+        ng.putImageData(idata, 0, 0);
 
-        o._aspect = tileH / tileW;
-        return out.toDataURL('image/jpeg', 0.92);
-    }
+        // Плавное сшивание правого края с левым и нижнего с верхним (14%)
+        const bw = Math.floor(s * 0.14);
+        const bh = Math.floor(s * 0.14);
+        const tw = s - bw, th = s - bh;
+        const c = mk(tw, th), g = c.getContext('2d');
+        g.drawImage(norm, 0, 0, tw, th, 0, 0, tw, th);
+
+        for (let x = 0; x < bw; x++) {
+            g.globalAlpha = 1 - x / bw;
+            g.drawImage(norm, tw + x, 0, 1, th, x, 0, 1, th);
+        }
+        g.globalAlpha = 1;
+
+        const bg = mk(tw, bh), bctx = bg.getContext('2d');
+        bctx.drawImage(norm, 0, th, tw, bh, 0, 0, tw, bh);
+        for (let x = 0; x < bw; x++) {
+            bctx.globalAlpha = 1 - x / bw;
+            bctx.drawImage(norm, tw + x, th, 1, bh, x, 0, 1, bh);
+        }
+        for (let y = 0; y < bh; y++) {
+            g.globalAlpha = 1 - y / bh;
+            g.drawImage(bg, 0, y, tw, 1, 0, y, tw, 1);
+        }
+        g.globalAlpha = 1;
+
+        o._aspect = 1;
+        return c.toDataURL('image/jpeg', 0.92);
+    } 
     if (o.kind === 'grid_crop') {
         const baseSide = Math.min(w, h);
         const side = Math.round(baseSide * 0.80);
