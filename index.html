@@ -687,7 +687,7 @@
                 { id: 'c-rect', v: 'drywall', uz: "To'rtburchak shift", ru: "Прямоугольный потолок", rooms: R3_DRY, file: 'tex-ceiling-rect.jpg', kind: 'cover' }
             ]
         };
-        const R3_DEFAULT = { floor: { dry: 'parket-1', wet: 'f-tile' }, wall: { dry: 'w-palm-leaves', wet: 'w-tile' }, ceil: { dry: 'c-emb', wet: 'c-pvx-silver' } };
+        const R3_DEFAULT = { floor: { dry: 'f-parket-1', wet: 'f-tile' }, wall: { dry: 'w-palm-leaves', wet: 'w-tile' }, ceil: { dry: 'c-emb', wet: 'c-pvx-silver' } };
         const R3_SHADE = { back: 0.10, left: 0.30, right: 0.20, floor: 0.14, ceil: 0 };
         const R3_FACES = { floor: ['r3-floor'], wall: ['r3-back', 'r3-left', 'r3-right'], ceil: ['r3-ceil'] };
  
@@ -743,8 +743,8 @@ if (o.kind === 'parquet_tile') {
         ng.putImageData(idata, 0, 0);
 
         // Плавное сшивание правого края с левым и нижнего с верхним (14%)
-        const bw = Math.floor(s * 0.14);
-        const bh = Math.floor(s * 0.14);
+       const bw = Math.floor(s * 0.04);
+       const bh = Math.floor(s * 0.04);
         const tw = s - bw, th = s - bh;
         const c = mk(tw, th), g = c.getContext('2d');
         g.drawImage(norm, 0, 0, tw, th, 0, 0, tw, th);
