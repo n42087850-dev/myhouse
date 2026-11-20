@@ -714,8 +714,8 @@
     } 
     if (o.kind === 'parquet_tile') {
         const s = Math.min(w, h);
-        const bw = Math.floor(s * 0.13);
-        const bh = Math.floor(s * 0.13);
+        const bw = Math.floor(s * 0.02);
+        const bh = Math.floor(s * 0.02);
         const tw = s - bw, th = s - bh;
 
         const c = mk(tw, th), g = c.getContext('2d');
