@@ -973,7 +973,7 @@
                 for (let dy = 2; dy < pH - 2 && ok; dy += 3) {
                     for (let dx = 4; dx < pW - 4; dx += 8) {
                         const i = ((y + dy) * diag + (x + dx)) * 4;
-                        if (idata[i] < 135 || idata[i + 1] < 105 || idata[i + 2] < 60) {
+                        if (idata[i] < 105 || idata[i + 1] < 85 || idata[i + 2] < 50) {
                             ok = false;
                             break;
                         }
@@ -1059,12 +1059,13 @@
             }
         }
 
-        // Компенсируем тень пола (0.14) и сохраняем тёплый золотисто-кремовый оттенок дуба
+        // Точная нейтральная компенсация тени пола (R3_SHADE.floor = 0.14 -> 1 / 0.86 = 1.163)
         const outData = og.getImageData(0, 0, tileW, tileH), od = outData.data;
+        const gain = 1 / (1 - (R3_SHADE.floor || 0));
         for (let i = 0; i < od.length; i += 4) {
-            od[i]     = Math.min(255, Math.round(od[i] * 1.24 + 8));
-            od[i + 1] = Math.min(255, Math.round(od[i + 1] * 1.21 + 5));
-            od[i + 2] = Math.min(255, Math.round(od[i + 2] * 1.12));
+            od[i]     = Math.min(255, Math.round(od[i] * gain));
+            od[i + 1] = Math.min(255, Math.round(od[i + 1] * gain));
+            od[i + 2] = Math.min(255, Math.round(od[i + 2] * gain));
         }
         og.putImageData(outData, 0, 0);
 
