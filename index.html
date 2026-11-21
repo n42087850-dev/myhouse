@@ -950,8 +950,10 @@
         o._aspect = tileH / tileW;
         return outC.toDataURL('image/png');
     } 
-  if (o.kind === 'herringbone_stack') {
-        // Поворачиваем щит на 45°, чтобы плашки встали строго горизонтально
+
+        
+        if (o.kind === 'herringbone_stack') {
+        // Поворачиваем щит на 45°, чтобы правые плашки встали строго горизонтально
         const diag = Math.ceil(Math.hypot(w, h));
         const rotC = mk(diag, diag), rg = rotC.getContext('2d');
         rg.fillStyle = '#000';
@@ -960,20 +962,29 @@
         rg.rotate(-Math.PI / 4);
         rg.drawImage(im, -w / 2, -h / 2, w, h);
 
-        // Ищем внутри повёрнутого кадра чистые узкие полосы дерева (без чёрного фона, клипс и тёмных швов)
+        // Находим центр и реальную ширину/высоту одной целой доски на щитке
         const idata = rg.getImageData(0, 0, diag, diag).data;
-        const pW = Math.max(110, Math.round(Math.min(w, h) * 0.24));
-        const pH = Math.max(14, Math.round(pW / 9));
+        const isWood = (x, y) => {
+            if (x < 0 || y < 0 || x >= diag || y >= diag) return false;
+            const i = (Math.floor(y) * diag + Math.floor(x)) * 4;
+            return idata[i] > 95 && idata[i + 1] > 75 && idata[i + 2] > 40;
+        };
+
+        // Собираем только целые внутренние области плашек (отступая от тёмных швов и краёв)
+        const pW = Math.round(Math.min(w, h) * 0.22);
+        const pH = Math.round(pW / 6.2);
         const planks = [];
         let sr = 0, sg = 0, sb = 0, scnt = 0;
 
-        for (let y = 20; y <= diag - pH - 20; y += Math.max(10, Math.floor(pH * 0.7))) {
-            for (let x = 20; x <= diag - pW - 20; x += Math.max(24, Math.floor(pW * 0.35))) {
+        for (let y = 10; y <= diag - pH - 10; y += Math.max(8, Math.floor(pH * 0.5))) {
+            for (let x = 10; x <= diag - pW - 10; x += Math.max(20, Math.floor(pW * 0.4))) {
                 let ok = true, lr = 0, lg = 0, lb = 0, n = 0;
-                for (let dy = 2; dy < pH - 2 && ok; dy += 3) {
-                    for (let dx = 4; dx < pW - 4; dx += 8) {
+                // Проверяем всю площадь плашки, включая края, чтобы не захватить чёрный фон или чужой шов
+                for (let dy = 0; dy < pH && ok; dy += 2) {
+                    for (let dx = 0; dx < pW; dx += 6) {
                         const i = ((y + dy) * diag + (x + dx)) * 4;
-                        if (idata[i] < 105 || idata[i + 1] < 85 || idata[i + 2] < 50) {
+                        // Отсекаем чёрный фон и тёмные межпланочные швы (R < 135)
+                        if (idata[i] < 135 || idata[i + 1] < 110 || idata[i + 2] < 65) {
                             ok = false;
                             break;
                         }
@@ -983,8 +994,9 @@
                 if (ok && n > 0) {
                     const pc = mk(pW, pH), pg = pc.getContext('2d');
                     pg.drawImage(rotC, x, y, pW, pH, 0, 0, pW, pH);
-                    pg.strokeStyle = 'rgba(45, 30, 12, 0.28)';
-                    pg.lineWidth = 1.5;
+                    // Мягкая натуральная фаска только по самому краю плашки
+                    pg.strokeStyle = 'rgba(70, 48, 20, 0.22)';
+                    pg.lineWidth = 1;
                     pg.strokeRect(0.5, 0.5, pW - 1, pH - 1);
                     planks.push(pc);
                     sr += lr / n; sg += lg / n; sb += lb / n; scnt++;
@@ -994,7 +1006,7 @@
 
         const baseRgb = scnt > 0
             ? `rgb(${Math.round(sr / scnt)},${Math.round(sg / scnt)},${Math.round(sb / scnt)})`
-            : '#d9b574';
+            : '#dfc18d';
         if (!planks.length) {
             const fb = mk(pW, pH), fg = fb.getContext('2d');
             fg.fillStyle = baseRgb;
@@ -1002,7 +1014,6 @@
             planks.push(fb);
         }
 
-        // Собираем 100% бесшовный тайл без ступенек (строгий угол 90°)
         const s2 = Math.SQRT1_2;
         const stepY = 44;
         const W = stepY * s2;
@@ -1059,12 +1070,13 @@
             }
         }
 
-        
-
         o._aspect = tileH / tileW;
         return outC.toDataURL('image/jpeg', 0.92);
     }
+            
+        
                
+                
        
        
         
