@@ -1059,15 +1059,7 @@
             }
         }
 
-        // Точная нейтральная компенсация тени пола (R3_SHADE.floor = 0.14 -> 1 / 0.86 = 1.163)
-        const outData = og.getImageData(0, 0, tileW, tileH), od = outData.data;
-        const gain = 1 / (1 - (R3_SHADE.floor || 0));
-        for (let i = 0; i < od.length; i += 4) {
-            od[i]     = Math.min(255, Math.round(od[i] * gain));
-            od[i + 1] = Math.min(255, Math.round(od[i + 1] * gain));
-            od[i + 2] = Math.min(255, Math.round(od[i + 2] * gain));
-        }
-        og.putImageData(outData, 0, 0);
+        
 
         o._aspect = tileH / tileW;
         return outC.toDataURL('image/jpeg', 0.92);
@@ -1309,7 +1301,7 @@ function r3LoadPhotos() {
                 const o = r3Chosen(R3.active, sf); if (!o || !o.img) return;
                 R3_FACES[sf].forEach(fid => {
                     const el = document.getElementById(fid); if (!el) return;
-                    const sh = R3_SHADE[fid.replace('r3-', '')] || 0;
+                   const sh = (o.id === 'f-parket-3') ? 0 : (R3_SHADE[fid.replace('r3-', '')] || 0); 
                     
                     el.style.backgroundImage = `linear-gradient(rgba(0,0,0,${sh}),rgba(0,0,0,${sh})),url(${o.img})`;
                     
