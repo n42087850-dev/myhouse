@@ -658,7 +658,7 @@
                 { id: 'f-kg-5', v: 'tile', uz: "Keramogranit №5", ru: "Керамогранит №5", rooms: R3_ALL, file: 'keramogranit-5.jpg', kind: 'tile_slab', sz: 65 },
                 { id: 'f-kg-6', v: 'tile', uz: "Keramogranit №6", ru: "Керамогранит №6", rooms: R3_ALL, file: 'keramogranit-6.jpg', kind: 'tile_slab', sz: 65 },
                 { id: 'f-parket-2', v: 'parquet', uz: "Parket-2", ru: "Паркет №2", rooms: R3_LB, file: 'parket-2.jpg', kind: 'parquet_tile', sz: 100 },
-                { id: 'f-parket-3', v: 'parquet', uz: "Parket-3", ru: "Паркет №3", rooms: R3_LB, file: 'parket-3.jpg', kind: 'herringbone_stack', sz: 120 },
+                { id: 'f-parket-3', v: 'parquet', uz: "Parket-3", ru: "Паркет №3", rooms: R3_LB, file: 'parket-3.jpg', kind: 'herringbone_stack', sz: 280 },
             ], 
            wall: [
    
@@ -950,7 +950,7 @@
         o._aspect = tileH / tileW;
         return outC.toDataURL('image/png');
     } 
-   if (o.kind === 'herringbone_stack') {
+  if (o.kind === 'herringbone_stack') {
         // Поворачиваем щит на 45°, чтобы плашки встали строго горизонтально
         const diag = Math.ceil(Math.hypot(w, h));
         const rotC = mk(diag, diag), rg = rotC.getContext('2d');
@@ -960,21 +960,20 @@
         rg.rotate(-Math.PI / 4);
         rg.drawImage(im, -w / 2, -h / 2, w, h);
 
-        // Ищем внутри повёрнутого кадра все чистые прямоугольники дерева (исключая чёрный фон и клипсы)
+        // Ищем внутри повёрнутого кадра чистые узкие полосы дерева (без чёрного фона, клипс и тёмных швов)
         const idata = rg.getImageData(0, 0, diag, diag).data;
         const pW = Math.max(110, Math.round(Math.min(w, h) * 0.24));
-        const pH = Math.max(18, Math.round(pW / 5.5));
+        const pH = Math.max(14, Math.round(pW / 9));
         const planks = [];
         let sr = 0, sg = 0, sb = 0, scnt = 0;
 
-        for (let y = 20; y <= diag - pH - 20; y += Math.max(12, Math.floor(pH * 0.7))) {
+        for (let y = 20; y <= diag - pH - 20; y += Math.max(10, Math.floor(pH * 0.7))) {
             for (let x = 20; x <= diag - pW - 20; x += Math.max(24, Math.floor(pW * 0.35))) {
                 let ok = true, lr = 0, lg = 0, lb = 0, n = 0;
-                for (let dy = 2; dy < pH - 2 && ok; dy += 4) {
+                for (let dy = 2; dy < pH - 2 && ok; dy += 3) {
                     for (let dx = 4; dx < pW - 4; dx += 8) {
                         const i = ((y + dy) * diag + (x + dx)) * 4;
-                        // Отсекаем чёрный фон Photoroom и тёмные пластиковые замки по краям
-                        if (idata[i] < 75 || idata[i + 1] < 55 || idata[i + 2] < 30) {
+                        if (idata[i] < 135 || idata[i + 1] < 105 || idata[i + 2] < 60) {
                             ok = false;
                             break;
                         }
@@ -984,7 +983,7 @@
                 if (ok && n > 0) {
                     const pc = mk(pW, pH), pg = pc.getContext('2d');
                     pg.drawImage(rotC, x, y, pW, pH, 0, 0, pW, pH);
-                    pg.strokeStyle = 'rgba(45, 30, 12, 0.32)';
+                    pg.strokeStyle = 'rgba(45, 30, 12, 0.28)';
                     pg.lineWidth = 1.5;
                     pg.strokeRect(0.5, 0.5, pW - 1, pH - 1);
                     planks.push(pc);
@@ -995,7 +994,7 @@
 
         const baseRgb = scnt > 0
             ? `rgb(${Math.round(sr / scnt)},${Math.round(sg / scnt)},${Math.round(sb / scnt)})`
-            : '#c8a363';
+            : '#d9b574';
         if (!planks.length) {
             const fb = mk(pW, pH), fg = fb.getContext('2d');
             fg.fillStyle = baseRgb;
@@ -1003,17 +1002,17 @@
             planks.push(fb);
         }
 
-        // Собираем 100% бесшовный тайл (2 колонки x 12 шагов)
-        const W = 38;
-        const L = Math.round(W * 5.5);
+        // Собираем 100% бесшовный тайл без ступенек (строгий угол 90°)
         const s2 = Math.SQRT1_2;
-        const halfW = Math.round(L * s2);
+        const stepY = 44;
+        const W = stepY * s2;
+        const L = W * 5.5;
+        const halfW = L * s2;
         const rowW = halfW * 2;
-        const stepY = Math.round(W / s2);
 
         const cols = 2;
-        const rows = 12;
-        const tileW = rowW * cols;
+        const rows = 6;
+        const tileW = Math.round(rowW * cols);
         const tileH = stepY * rows;
         const outC = mk(tileW, tileH), og = outC.getContext('2d');
         const nPl = planks.length;
@@ -1033,38 +1032,51 @@
                 const plL = planks[(rMod * 5 + c * 3) % nPl];
                 og.save();
                 og.beginPath();
-                og.moveTo(x0 - 0.7, y0 + halfW - 0.7);
-                og.lineTo(xm + 0.7, y0 - 0.7);
-                og.lineTo(xm + 0.7, y0 + stepY + 0.7);
-                og.lineTo(x0 - 0.7, y0 + halfW + stepY + 0.7);
+                og.moveTo(x0, y0 + halfW);
+                og.lineTo(xm, y0);
+                og.lineTo(xm, y0 + stepY);
+                og.lineTo(x0, y0 + halfW + stepY);
                 og.closePath();
                 og.clip();
                 og.translate(x0, y0 + halfW);
                 og.rotate(-Math.PI / 4);
-                og.drawImage(plL, -4, -1, L + 8, W + 2);
+                og.drawImage(plL, -2, 0, L + 4, W);
                 og.restore();
 
                 const plR = planks[(rMod * 7 + c * 5 + 1) % nPl];
                 og.save();
                 og.beginPath();
-                og.moveTo(xm - 0.7, y0 - 0.7);
-                og.lineTo(x1 + 0.7, y0 + halfW - 0.7);
-                og.lineTo(x1 + 0.7, y0 + halfW + stepY + 0.7);
-                og.lineTo(xm - 0.7, y0 + stepY + 0.7);
+                og.moveTo(xm, y0);
+                og.lineTo(x1, y0 + halfW);
+                og.lineTo(x1, y0 + halfW + stepY);
+                og.lineTo(xm, y0 + stepY);
                 og.closePath();
                 og.clip();
                 og.translate(xm, y0);
                 og.rotate(Math.PI / 4);
-                og.drawImage(plR, -4, -1, L + 8, W + 2);
+                og.drawImage(plR, -2, 0, L + 4, W);
                 og.restore();
             }
         }
 
+        // Компенсируем тень пола (0.14) и сохраняем тёплый золотисто-кремовый оттенок дуба
+        const outData = og.getImageData(0, 0, tileW, tileH), od = outData.data;
+        for (let i = 0; i < od.length; i += 4) {
+            od[i]     = Math.min(255, Math.round(od[i] * 1.24 + 8));
+            od[i + 1] = Math.min(255, Math.round(od[i + 1] * 1.21 + 5));
+            od[i + 2] = Math.min(255, Math.round(od[i + 2] * 1.12));
+        }
+        og.putImageData(outData, 0, 0);
+
         o._aspect = tileH / tileW;
         return outC.toDataURL('image/jpeg', 0.92);
     }
-            
+               
+       
+       
         
+              
+       
 
                 
        
