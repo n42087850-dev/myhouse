@@ -1310,16 +1310,17 @@ function r3LoadPhotos() {
                 return;
             }
 
-            const cur = r3Chosen(R3.active, sf);
+           const cur = r3Chosen(R3.active, sf);
             r3OptionsFor(sf, type).forEach(o => {
                 const b = document.createElement('button');
                 b.type = 'button'; b.className = 'r3-opt'; b.setAttribute('aria-pressed', cur && cur.id === o.id);
-                b.innerHTML = `<div class="sw" style="background-image:url(${o.img})"></div><b>${o.uz}</b><span>${o.ru}</span>`;
+                const priceHTML = o.price
+                    ? `<div style="margin-top:5px; font-size:11.5px; font-weight:700; color:var(--accent-gold);">${o.price.toLocaleString('ru-RU')} so'm / m²</div>`
+                    : '';
+                b.innerHTML = `<div class="sw" style="background-image:url(${o.img})"></div><b>${o.uz}</b><span>${o.ru}</span>${priceHTML}`;
                 b.onclick = () => { R3.mat[R3.active][sf] = o.id; r3Paint(); r3RenderOpts(); };
                 box.appendChild(b);
             });
-        }
-
         function r3Paint() {
             if (R3.active === null) return;
             ['floor', 'wall', 'ceil'].forEach(sf => {
