@@ -2124,14 +2124,13 @@ function r3LoadPhotos() {
                 const wallState = document.getElementById(`q-wall-state-${room.id}`)?.value;
                 const wallFinish = document.getElementById(`q-wall-finish-${room.id}`)?.value;
                 const ceilingState = document.getElementById(`q-ceiling-state-${room.id}`)?.value;
-                const ceilingFinish = document.getElementById(`q-ceiling-finish-${room.id}`)?.value;
- 
-                if (floorState === 'raw') {
-                    items.push({ name: "Nivelirlovchi pol aralashmasi (styajka) / Наливной пол / Самонивелир (Стяжка)", qty: Math.ceil(room.floorArea * 12), unit: "kg" });
+                const ceilingFinish = document.getElementById(`q-ceiling-finish-${room.id}`)?.value;     
+    if (floorState === 'raw') {
+                    items.push({ name: "Sement (styajka uchun) / Цемент (для стяжки)", qty: Math.ceil(room.floorArea * 12), unit: "kg" });
                 } else if (floorState === 'old') {
-                    items.push({ name: "Pol uchun tekislovchi aralashma / Выравнивающая смесь для пола", qty: Math.ceil(room.floorArea * 6), unit: "kg" });
+                    items.push({ name: "Quyuq pol (sement) / Наливной пол (цемент)", qty: Math.ceil(room.floorArea * 6), unit: "kg" });
                 }
- 
+              
                if (floorFinish === 'laminate') {
     const flOpt = r3Chosen(room.id, 'floor');
     const lamQty = parseFloat((room.floorArea * 1.05).toFixed(1));
@@ -3120,4 +3119,5 @@ document.addEventListener("DOMContentLoaded", initThreeFurniture);
 </script>
 </body>
 </html>
+
 
