@@ -2143,7 +2143,7 @@ function r3LoadPhotos() {
     });
     items.push({ name: "Laminat osti qoplamasi (podlojka) / Подложка под ламинат", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
     items.push({ name: "Pol plintusi / Плинтус напольный", qty: parseFloat((2 * (room.length + room.width)).toFixed(1)), unit: "p.m. / п.м." });
-}
+
                 } else if (floorFinish === 'spc') {
                     items.push({ name: "Kvars-vinil / SPC (+ 5% zaxira) / Кварц-винил / SPC (+ 5% запас)", qty: parseFloat((room.floorArea * 1.05).toFixed(1)), unit: "m²" });
                     items.push({ name: "SPC uchun maxsus podlojka / Специальная подложка SPC", qty: parseFloat(room.floorArea.toFixed(1)), unit: "m²" });
@@ -2302,17 +2302,19 @@ function r3LoadPhotos() {
             summaryTG += `📐 Umumiy pol maydoni: ${totalFloorAreaAll.toFixed(1)} m²\n`;
             summaryTG += `🧱 Umumiy devor maydoni: ${totalWallAreaAll.toFixed(1)} m²\n\n`;
 
-            for (let k in overallTotals) {
+           for (let k in overallTotals) {
                 const item = overallTotals[k];
                 const displayQty = (typeof item.qty === 'number' && !Number.isInteger(item.qty)) ? item.qty.toFixed(1) : item.qty;
+                const totalPriceTag = item.cost ? ` · <span style="color: var(--accent-green);">${item.cost.toLocaleString('ru-RU')} so'm</span>` : '';
+                const totalPriceTagTG = item.cost ? ` (${item.cost.toLocaleString('ru-RU')} so'm)` : '';
                 
                 overallHTML += `
                     <div class="estimate-item">
                         <span style="font-weight: 600;">• ${item.name}</span>
-                        <b style="color: var(--accent-gold); font-size: 14px;">${displayQty}${item.unit}</b>
+                        <b style="color: var(--accent-gold); font-size: 14px; text-align: right;">${displayQty} ${item.unit}${totalPriceTag}</b>
                     </div>
                 `;
-                summaryTG += `• ${item.name}: ${displayQty}${item.unit}\n`;
+                summaryTG += `• ${item.name}: ${displayQty} ${item.unit}${totalPriceTagTG}\n`;
             }
 
             fullTelegramText = summaryTG + `\n------------------------\n\n` + fullTelegramText;
