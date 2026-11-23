@@ -1321,6 +1321,7 @@ function r3LoadPhotos() {
                 b.onclick = () => { R3.mat[R3.active][sf] = o.id; r3Paint(); r3RenderOpts(); };
                 box.appendChild(b);
             });
+            }
         function r3Paint() {
             if (R3.active === null) return;
             ['floor', 'wall', 'ceil'].forEach(sf => {
