@@ -512,10 +512,50 @@
         .mat-info-box {
             padding: 16px 18px;
         }
+
+        /* ===== ЗАНАВЕС С ЛОГОТИПОМ ПРИ ВХОДЕ (2.5 СЕК) ===== */
+        #intro-curtain {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: radial-gradient(circle at center, #111C38 0%, #070C1E 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            transition: transform 0.75s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.65s ease;
+            will-change: transform, opacity;
+        }
+        #intro-curtain.curtain-hide {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #intro-curtain img {
+            max-width: min(260px, 68vw);
+            max-height: 220px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 12px 32px rgba(56, 189, 248, 0.25));
+            animation: logoBreath 1.4s ease-out forwards;
+        }
+        @keyframes logoBreath {
+            0% { opacity: 0; transform: scale(0.92); }
+            100% { opacity: 1; transform: scale(1); }
+        }
     </style>
+
 
 </head>
 <body>
+
+    <!-- Занавес с логотипом при входе на сайт -->
+    <div id="intro-curtain">
+        <img src="./logo.png" alt="MYHOUSE PRO" onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src='./images/logo.png';}">
+    </div>
+
  
     <div class="header">
         <h1>MYHOUSE PRO</h1>
@@ -3086,6 +3126,13 @@ function r3LoadPhotos() {
         }
 
         document.addEventListener("DOMContentLoaded", function() {
+            const curtain = document.getElementById('intro-curtain');
+            if (curtain) {
+                setTimeout(() => {
+                    curtain.classList.add('curtain-hide');
+                    setTimeout(() => curtain.remove(), 800);
+                }, 2500);
+            }
             r3Init();
             addRoom();
             document.getElementById('crew-slot-1').innerHTML = crewBoxHTML();
