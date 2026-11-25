@@ -213,8 +213,13 @@
         }
  
         .btn-custom {
-            background: var(--accent-gold);
-            color: #0F172A;
+            background: #000000;
+            color: #F8FAFC;
+            border: 1px solid #334155;
+        }
+        .btn-custom:hover {
+            background: #0F172A;
+            border-color: var(--accent-cyan);
         }
  
         .top-nav-bar {
@@ -513,6 +518,49 @@
             padding: 16px 18px;
         }
 
+        .mat-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.88);
+            color: #F8FAFC;
+            border: 1.5px solid rgba(255, 255, 255, 0.35);
+            font-size: 20px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+            transition: transform 0.15s, background 0.15s, border-color 0.15s;
+            z-index: 3;
+            user-select: none;
+        }
+        .mat-nav-btn:hover {
+            background: var(--accent-cyan);
+            color: #0F172A;
+            border-color: var(--accent-cyan);
+            transform: translateY(-50%) scale(1.06);
+        }
+        .mat-nav-prev { left: 12px; }
+        .mat-nav-next { right: 12px; }
+        .mat-counter {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.85);
+            color: #F8FAFC;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
         /* ===== ЗАНАВЕС С ЛОГОТИПОМ ПРИ ВХОДЕ (МГНОВЕННЫЙ ПОКАЗ 2.5 СЕК) ===== */
         #intro-curtain {
             position: fixed;
@@ -523,7 +571,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 24px;
+            padding: 8px;
             transition: transform 0.75s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.65s ease;
             will-change: transform, opacity;
         }
@@ -533,8 +581,8 @@
             pointer-events: none;
         }
         #intro-curtain img {
-            width: min(360px, 78vw);
-            max-height: 64vh;
+            width: min(640px, 95vw);
+            max-height: 85vh;
             height: auto;
             object-fit: contain;
             display: block;
@@ -728,7 +776,10 @@
     <div class="mat-modal" id="matPreviewModal" onclick="if(event.target === this) closeMatPreview()">
         <div class="mat-modal-card">
             <div class="mat-img-wrap">
+                <button type="button" class="mat-nav-btn mat-nav-prev" id="matPrevBtn" onclick="stepMatPreview(-1)" title="Oldingi / Назад">❮</button>
                 <img id="matPreviewImg" src="" alt="">
+                <button type="button" class="mat-nav-btn mat-nav-next" id="matNextBtn" onclick="stepMatPreview(1)" title="Keyingi / Далее">❯</button>
+                <div class="mat-counter" id="matPreviewCounter"></div>
                 <button type="button" class="mat-close-x" onclick="closeMatPreview()" title="Yopish / Закрыть">✕</button>
             </div>
             <div class="mat-info-box">
@@ -817,30 +868,30 @@
     { id: 'f-lam-12-61', v: 'laminate', uz: "Laminat 12-61", ru: "Ламинат 12-61", price: 142000, rooms: R3_DRY, file: 'laminat-12-61.jpg', kind: 'parquet_tile', sz: 120 },
     { id: 'f-lam-12-62', v: 'laminate', uz: "Laminat 12-62", ru: "Ламинат 12-62", price: 142000, rooms: R3_DRY, file: 'laminat-12-62.jpg', kind: 'parquet_tile', sz: 120 },
     { id: 'f-lam-12-65', v: 'laminate', uz: "Laminat 12-65", ru: "Ламинат 12-65", price: 142000, rooms: R3_DRY, file: 'laminat-12-65.jpg', kind: 'parquet_tile', sz: 120 },
-    { id: 'f-kg-1', v: 'tile', uz: "Keramogranit №1", ru: "Керамогранит №1", rooms: R3_ALL, file: 'keramogranit-1.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-2', v: 'tile', uz: "Keramogranit №2", ru: "Керамогранит №2", rooms: R3_ALL, file: 'keramogranit-2.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-3', v: 'tile', uz: "Keramogranit №3", ru: "Керамогранит №3", rooms: R3_ALL, file: 'keramogranit-3.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-4', v: 'tile', uz: "Keramogranit №4", ru: "Керамогранит №4", rooms: R3_ALL, file: 'keramogranit-4.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-5', v: 'tile', uz: "Keramogranit №5", ru: "Керамогранит №5", rooms: R3_ALL, file: 'keramogranit-5.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-6', v: 'tile', uz: "Keramogranit №6", ru: "Керамогранит №6", rooms: R3_ALL, file: 'keramogranit-6.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-7', v: 'tile', uz: "Keramogranit №7", ru: "Керамогранит №7", rooms: R3_ALL, file: 'keramogranit-7.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-8', v: 'tile', uz: "Keramogranit №8", ru: "Керамогранит №8", rooms: R3_ALL, file: 'keramogranit-8.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-9', v: 'tile', uz: "Keramogranit №9", ru: "Керамогранит №9", rooms: R3_ALL, file: 'keramogranit-9.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-10', v: 'tile', uz: "Keramogranit №10", ru: "Керамогранит №10", rooms: R3_ALL, file: 'keramogranit-10.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-11', v: 'tile', uz: "Keramogranit №11", ru: "Керамогранит №11", rooms: R3_ALL, file: 'keramogranit-11.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-12', v: 'tile', uz: "Keramogranit №12", ru: "Керамогранит №12", rooms: R3_ALL, file: 'keramogranit-12.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-13', v: 'tile', uz: "Keramogranit №13", ru: "Керамогранит №13", rooms: R3_ALL, file: 'keramogranit-13.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-14', v: 'tile', uz: "Keramogranit №14", ru: "Керамогранит №14", rooms: R3_ALL, file: 'keramogranit-14.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-15', v: 'tile', uz: "Keramogranit №15", ru: "Керамогранит №15", rooms: R3_ALL, file: 'keramogranit-15.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-16', v: 'tile', uz: "Keramogranit №16", ru: "Керамогранит №16", rooms: R3_ALL, file: 'keramogranit-16.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-17', v: 'tile', uz: "Keramogranit №17", ru: "Керамогранит №17", rooms: R3_ALL, file: 'keramogranit-17.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-18', v: 'tile', uz: "Keramogranit №18", ru: "Керамогранит №18", rooms: R3_ALL, file: 'keramogranit-18.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-19', v: 'tile', uz: "Keramogranit №19", ru: "Керамогранит №19", rooms: R3_ALL, file: 'keramogranit-19.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-20', v: 'tile', uz: "Keramogranit №20", ru: "Керамогранит №20", rooms: R3_ALL, file: 'keramogranit-20.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-21', v: 'tile', uz: "Keramogranit №21", ru: "Керамогранит №21", rooms: R3_ALL, file: 'keramogranit-21.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-22', v: 'tile', uz: "Keramogranit №22", ru: "Керамогранит №22", rooms: R3_ALL, file: 'keramogranit-22.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-23', v: 'tile', uz: "Keramogranit №23", ru: "Керамогранит №23", rooms: R3_ALL, file: 'keramogranit-23.jpg', kind: 'tile_slab', sz: 65 },
-    { id: 'f-kg-24', v: 'tile', uz: "Keramogranit №24", ru: "Керамогранит №24", rooms: R3_ALL, file: 'keramogranit-24.jpg', kind: 'tile_slab', sz: 65 }
+    { id: 'f-kg-1', v: 'tile', uz: "Keramogranit №1", ru: "Керамогранит №1", rooms: R3_KBW, file: 'keramogranit-1.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-2', v: 'tile', uz: "Keramogranit №2", ru: "Керамогранит №2", rooms: R3_KBW, file: 'keramogranit-2.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-3', v: 'tile', uz: "Keramogranit №3", ru: "Керамогранит №3", rooms: R3_KBW, file: 'keramogranit-3.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-4', v: 'tile', uz: "Keramogranit №4", ru: "Керамогранит №4", rooms: R3_KBW, file: 'keramogranit-4.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-5', v: 'tile', uz: "Keramogranit №5", ru: "Керамогранит №5", rooms: R3_KBW, file: 'keramogranit-5.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-6', v: 'tile', uz: "Keramogranit №6", ru: "Керамогранит №6", rooms: R3_KBW, file: 'keramogranit-6.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-7', v: 'tile', uz: "Keramogranit №7", ru: "Керамогранит №7", rooms: R3_KBW, file: 'keramogranit-7.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-8', v: 'tile', uz: "Keramogranit №8", ru: "Керамогранит №8", rooms: R3_KBW, file: 'keramogranit-8.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-9', v: 'tile', uz: "Keramogranit №9", ru: "Керамогранит №9", rooms: R3_KBW, file: 'keramogranit-9.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-10', v: 'tile', uz: "Keramogranit №10", ru: "Керамогранит №10", rooms: R3_KBW, file: 'keramogranit-10.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-11', v: 'tile', uz: "Keramogranit №11", ru: "Керамогранит №11", rooms: R3_KBW, file: 'keramogranit-11.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-12', v: 'tile', uz: "Keramogranit №12", ru: "Керамогранит №12", rooms: R3_KBW, file: 'keramogranit-12.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-13', v: 'tile', uz: "Keramogranit №13", ru: "Керамогранит №13", rooms: R3_KBW, file: 'keramogranit-13.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-14', v: 'tile', uz: "Keramogranit №14", ru: "Керамогранит №14", rooms: R3_KBW, file: 'keramogranit-14.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-15', v: 'tile', uz: "Keramogranit №15", ru: "Керамогранит №15", rooms: R3_KBW, file: 'keramogranit-15.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-16', v: 'tile', uz: "Keramogranit №16", ru: "Керамогранит №16", rooms: R3_KBW, file: 'keramogranit-16.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-17', v: 'tile', uz: "Keramogranit №17", ru: "Керамогранит №17", rooms: R3_KBW, file: 'keramogranit-17.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-18', v: 'tile', uz: "Keramogranit №18", ru: "Керамогранит №18", rooms: R3_KBW, file: 'keramogranit-18.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-19', v: 'tile', uz: "Keramogranit №19", ru: "Керамогранит №19", rooms: R3_KBW, file: 'keramogranit-19.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-20', v: 'tile', uz: "Keramogranit №20", ru: "Керамогранит №20", rooms: R3_KBW, file: 'keramogranit-20.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-21', v: 'tile', uz: "Keramogranit №21", ru: "Керамогранит №21", rooms: R3_KBW, file: 'keramogranit-21.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-22', v: 'tile', uz: "Keramogranit №22", ru: "Керамогранит №22", rooms: R3_KBW, file: 'keramogranit-22.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-23', v: 'tile', uz: "Keramogranit №23", ru: "Керамогранит №23", rooms: R3_KBW, file: 'keramogranit-23.jpg', kind: 'tile_slab', sz: 65 },
+    { id: 'f-kg-24', v: 'tile', uz: "Keramogranit №24", ru: "Керамогранит №24", rooms: R3_KBW, file: 'keramogranit-24.jpg', kind: 'tile_slab', sz: 65 }
 ],
            wall: [
     { id: 'w-paint-white', v: 'paint', uz: "Devorni bo'yash (oq mat)", ru: "Покраска стен (белая матовая)", rooms: R3_DRY, proc: r3Solid('#F1F5F9', 600), sz: 128 },
@@ -1525,9 +1576,30 @@ function r3LoadPhotos() {
             });
         }
 
+        let matPreviewList = [];
+        let matPreviewIndex = 0;
+        let matPreviewSurface = 'floor';
+
         function openMatPreview(o) {
             const modal = document.getElementById('matPreviewModal');
             if (!modal) return;
+
+            matPreviewSurface = R3.tab || 'floor';
+            const type = r3Type(R3.active);
+            matPreviewList = r3OptionsFor(matPreviewSurface, type);
+            matPreviewIndex = matPreviewList.findIndex(item => item.id === o.id);
+            if (matPreviewIndex < 0) {
+                matPreviewList = [o];
+                matPreviewIndex = 0;
+            }
+
+            renderMatPreviewItem();
+            modal.style.display = 'flex';
+        }
+
+        function renderMatPreviewItem() {
+            const o = matPreviewList[matPreviewIndex];
+            if (!o) return;
             const realPhoto = o.file ? `./images/${o.file}` : o.img;
             document.getElementById('matPreviewImg').src = realPhoto;
             document.getElementById('matPreviewTitleUz').innerText = o.uz || '';
@@ -1539,8 +1611,38 @@ function r3LoadPhotos() {
             } else {
                 priceEl.innerText = "Narxi so'rov bo'yicha / Цена по запросу";
             }
-            modal.style.display = 'flex';
+
+            const hasMultiple = matPreviewList.length > 1;
+            const prevBtn = document.getElementById('matPrevBtn');
+            const nextBtn = document.getElementById('matNextBtn');
+            const counterEl = document.getElementById('matPreviewCounter');
+            if (prevBtn) prevBtn.style.display = hasMultiple ? 'flex' : 'none';
+            if (nextBtn) nextBtn.style.display = hasMultiple ? 'flex' : 'none';
+            if (counterEl) {
+                counterEl.style.display = hasMultiple ? 'block' : 'none';
+                counterEl.innerText = `${matPreviewIndex + 1} / ${matPreviewList.length}`;
+            }
         }
+
+        function stepMatPreview(dir) {
+            if (!matPreviewList || matPreviewList.length <= 1) return;
+            matPreviewIndex = (matPreviewIndex + dir + matPreviewList.length) % matPreviewList.length;
+            const o = matPreviewList[matPreviewIndex];
+            if (o && R3.active !== null && R3.mat[R3.active]) {
+                R3.mat[R3.active][matPreviewSurface] = o.id;
+                r3Paint();
+                r3RenderOpts();
+            }
+            renderMatPreviewItem();
+        }
+
+        document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('matPreviewModal');
+            if (!modal || modal.style.display !== 'flex') return;
+            if (e.key === 'ArrowRight') stepMatPreview(1);
+            else if (e.key === 'ArrowLeft') stepMatPreview(-1);
+            else if (e.key === 'Escape') closeMatPreview();
+        });
 
         function closeMatPreview() {
             const modal = document.getElementById('matPreviewModal');
@@ -2012,7 +2114,7 @@ function r3LoadPhotos() {
                 { id: 'ff-spc', v: 'spc', uz: "Kvars-vinil (SPC)", ru: "Кварц-винил (SPC)", img: 'floor-spc', rooms: WZ_DRY },
                 { id: 'ff-parquet', v: 'parquet', uz: "Parket taxtasi", ru: "Паркетная доска", img: 'floor-parquet', rooms: WZ_LB },
                 { id: 'ff-linoleum', v: 'linoleum', uz: "Linoleum", ru: "Линолеум", img: 'floor-linoleum', rooms: WZ_DRY },
-                { id: 'ff-tile', v: 'tile', uz: "Plitka / keramogranit", ru: "Плитка / керамогранит", img: 'floor-tile', rooms: WZ_DRY }
+                { id: 'ff-tile', v: 'tile', uz: "Plitka / keramogranit", ru: "Плитка / керамогранит", img: 'floor-tile', rooms: WZ_KBW }
             ],
             wallState: [
                 { id: 'ws-raw', v: 'raw', uz: "Yalang g'isht yoki beton", ru: "Голый кирпич или бетон", img: 'wall-state-bare-brick', rooms: WZ_ALL },
@@ -2574,7 +2676,7 @@ function r3LoadPhotos() {
                     <div style="margin-bottom: 20px;">
                         ${overallHTML}
                     </div>
-                    <button class="btn btn-custom" style="font-size: 15px; padding: 14px 16px;" onclick="openOrderModal('all_estimates', '${encodeURIComponent(fullTelegramText).replace(/'/g, '%27')}')">
+                    <button class="btn btn-custom" style="font-size: 15px; padding: 14px 16px; background: #000000; color: #F8FAFC; border: 1px solid #334155;" onclick="openOrderModal('all_estimates', '${encodeURIComponent(fullTelegramText).replace(/'/g, '%27')}')">
                         ✈ Yuborish (Butun uy smetasi) / Отправить общую смету в Telegram
                     </button>
                 </div>
