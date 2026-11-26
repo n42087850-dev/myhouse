@@ -894,17 +894,15 @@
     { id: 'f-kg-24', v: 'tile', uz: "Keramogranit №24", ru: "Керамогранит №24", rooms: R3_KBW, file: 'keramogranit-24.jpg', kind: 'tile_slab', sz: 65 }
 ],
            wall: [
-    { id: 'w-paint-white', v: 'paint', uz: "Devorni bo'yash (oq mat)", ru: "Покраска стен (белая матовая)", rooms: R3_DRY, proc: r3Solid('#F1F5F9', 600), sz: 128 },
-    { id: 'w-paint-beige', v: 'paint', uz: "Devorni bo'yash (iliq bej)", ru: "Покраска стен (тёплый беж)", rooms: R3_DRY, proc: r3Solid('#E7DFD3', 600), sz: 128 },
-    { id: 'w-palm-leaves', v: 'wallpaper', uz: "Gulqog'oz-1", ru: "Обои-1", rooms: R3_DRY, file: 'oboi_2.jpg', kind: 'blend', f: 0.25, sz: 90 },
-    { id: 'w-geo-arch', v: 'wallpaper', uz: "Gulqog'oz-2", ru: "Обои-2", rooms: R3_DRY, file: 'oboi_3.jpg', kind: 'raw_repeat', sz: 120 },
-    { id: 'w-wave-lines', v: 'wallpaper', uz: "Gulqog'oz-3", ru: "Обои-3", rooms: R3_DRY, file: 'oboi_4.jpg', kind: 'raw_repeat', sz: 130 },
-    { id: 'w-loft-concrete', v: 'wallpaper', uz: "Gulqog'oz-4", ru: "Обои-4", rooms: R3_DRY, file: 'oboi_5.jpg', kind: 'raw_repeat', sz: 110 },
-    { id: 'w-linen-gray', v: 'wallpaper', uz: "Gulqog'oz-5", ru: "Обои-5", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'raw_repeat', sz: 75 },
-    { id: 'w-micro-leaves', v: 'wallpaper', uz: "Gulqog'oz-6", ru: "Обои-6", rooms: R3_DRY, file: 'oboi_7.jpg', kind: 'xy', sz: 140 },
-    { id: 'w-chevron-gold', v: 'wallpaper', uz: "Gulqog'oz-7", ru: "Обои-7", rooms: R3_DRY, file: 'oboi_8.jpg', kind: 'chevron_stack', sz: 150 },
-    { id: 'w-brush-gray', v: 'wallpaper', uz: "Gulqog'oz-8", ru: "Обои-8", rooms: R3_DRY, file: 'oboi_9.jpg', kind: 'roll_crop_blend', sz: 65 },
-    { id: 'w-brush-beige', v: 'wallpaper', uz: "Gulqog'oz-9", ru: "Обои-9", rooms: R3_DRY, file: 'oboi_10.jpg', kind: 'roll_crop_blend', sz: 65 },
+    { id: 'w-palm-leaves', v: 'wallpaper', uz: "Gulqog'oz-1", ru: "Обои-1", rooms: R3_DRY, file: 'oboi_2.jpg', kind: 'blend', rollM: 1.06 },
+    { id: 'w-geo-arch', v: 'wallpaper', uz: "Gulqog'oz-2", ru: "Обои-2", rooms: R3_DRY, file: 'oboi_3.jpg', kind: 'raw_repeat', rollM: 1.06 },
+    { id: 'w-wave-lines', v: 'wallpaper', uz: "Gulqog'oz-3", ru: "Обои-3", rooms: R3_DRY, file: 'oboi_4.jpg', kind: 'raw_repeat', rollM: 1.06 },
+    { id: 'w-loft-concrete', v: 'wallpaper', uz: "Gulqog'oz-4", ru: "Обои-4", rooms: R3_DRY, file: 'oboi_5.jpg', kind: 'raw_repeat', rollM: 1.06 },
+    { id: 'w-linen-gray', v: 'wallpaper', uz: "Gulqog'oz-5", ru: "Обои-5", rooms: R3_DRY, file: 'oboi_6.jpg', kind: 'raw_repeat', rollM: 1.06 },
+    { id: 'w-micro-leaves', v: 'wallpaper', uz: "Gulqog'oz-6", ru: "Обои-6", rooms: R3_DRY, file: 'oboi_7.jpg', kind: 'raw_repeat', rollM: 1.06 },
+    { id: 'w-chevron-gold', v: 'wallpaper', uz: "Gulqog'oz-7", ru: "Обои-7", rooms: R3_DRY, file: 'oboi_8.jpg', kind: 'chevron_stack', rollM: 1.06 },
+    { id: 'w-brush-gray', v: 'wallpaper', uz: "Gulqog'oz-8", ru: "Обои-8", rooms: R3_DRY, file: 'oboi_9.jpg', kind: 'roll_crop_blend', rollM: 1.06 },
+    { id: 'w-brush-beige', v: 'wallpaper', uz: "Gulqog'oz-9", ru: "Обои-9", rooms: R3_DRY, file: 'oboi_10.jpg', kind: 'roll_crop_blend', rollM: 1.06 },
     { id: 'w-kg-1', v: 'tile', uz: "Keramogranit №1", ru: "Керамогранит №1", rooms: R3_KBW, file: 'keramogranit-1.jpg', kind: 'tile_slab', sz: 65 },
     { id: 'w-kg-2', v: 'tile', uz: "Keramogranit №2", ru: "Керамогранит №2", rooms: R3_KBW, file: 'keramogranit-2.jpg', kind: 'tile_slab', sz: 65 },
     { id: 'w-kg-3', v: 'tile', uz: "Keramogranit №3", ru: "Керамогранит №3", rooms: R3_KBW, file: 'keramogranit-3.jpg', kind: 'tile_slab', sz: 65 },
@@ -1430,13 +1428,18 @@ function r3LoadPhotos() {
         im.onload = () => {
             try {
                 o.img = r3PhotoTex(im, o);
-            if ((o.kind === 'grid_crop' || o.kind === 'roll_crop_blend' || o.kind === 'tile_slab' || o.kind === 'parquet_tile' || o.kind === 'herringbone_stack') && o._aspect) o.sz2 = Math.round(o.sz * o._aspect); 
-                
-                if (o.kind === 'y') o.sz2 = Math.round(o.sz * (im.naturalHeight * 2) / im.naturalWidth);
-               if (o.kind === 'xy' || o.kind === 'blend' || o.kind === 'raw_repeat') o.sz2 = Math.round(o.sz * im.naturalHeight / im.naturalWidth); 
-                if (o.kind === 'grid_crop' && o._aspect) o.sz2 = Math.round(o.sz * o._aspect); 
+                if (!o._aspect) {
+                    o._aspect = (o.kind === 'y')
+                        ? (im.naturalHeight * 2) / im.naturalWidth
+                        : (im.naturalHeight / im.naturalWidth);
+                }
+                if (o.sz) {
+                    o.sz2 = Math.round(o.sz * o._aspect);
+                }
                 r3RenderOpts(); r3Paint();
-            } catch (e) {
+            }
+            
+             catch (e) {
                 o.img = r3tex(r3Solid('#3b1818', 400), 1);
                 o.ru = 'Ошибка: ' + e.message;
                 r3RenderOpts();
@@ -1648,35 +1651,53 @@ function r3LoadPhotos() {
             const modal = document.getElementById('matPreviewModal');
             if (modal) modal.style.display = 'none';
         }
-        function r3Paint() {
+       function r3Paint() {
             if (R3.active === null) return;
+            const d = r3Dims();
+            const W = d.w * R3_PPM;
+            const D = d.l * R3_PPM;
+
             ['floor', 'wall', 'ceil'].forEach(sf => {
                 const o = r3Chosen(R3.active, sf); if (!o || !o.img) return;
                 R3_FACES[sf].forEach(fid => {
                     const el = document.getElementById(fid); if (!el) return;
-                   const sh = (o.id === 'f-parket-3') ? 0 : (R3_SHADE[fid.replace('r3-', '')] || 0); 
-                    
-                    el.style.backgroundImage = `linear-gradient(rgba(0,0,0,${sh}),rgba(0,0,0,${sh})),url(${o.img})`;
-                    
-                 const mult = (o.kind === 'xy') ? 6 : 3;
-            if (o.kind === 'cover') {
-                // Если явно указан sz — включаем repeat с этим размером
-                if (o.sz) {
-                    el.style.backgroundRepeat = 'repeat';
-                    el.style.backgroundSize = `auto,${o.sz * 3}px ${(o.sz2 || o.sz) * 3}px`;
-                } else {
-                    // Если sz нет — растягиваем на всю стену без повторов
-                    el.style.backgroundRepeat = 'no-repeat';
-                    el.style.backgroundPosition = 'center';
-                    el.style.backgroundSize = '100% 100%';
-                }
-            } else {
-                el.style.backgroundRepeat = 'repeat';
-                el.style.backgroundSize = `auto,${o.sz * mult}px ${(o.sz2 || o.sz) * mult}px`;
-            } 
-                });
-            });
+                    const face = fid.replace('r3-', '');
+                    const sh = (o.id === 'f-parket-3') ? 0 : (R3_SHADE[face] || 0);
 
+                    el.style.backgroundImage = `linear-gradient(rgba(0,0,0,${sh}),rgba(0,0,0,${sh})),url(${o.img})`;
+
+                    if (o.kind === 'cover' && !o.sz && !o.rollM) {
+                        el.style.backgroundRepeat = 'no-repeat';
+                        el.style.backgroundPosition = 'center';
+                        el.style.backgroundSize = '100% 100%';
+                        return;
+                    }
+
+                    el.style.backgroundRepeat = 'repeat';
+
+                    // Реальный физический масштаб рулона (1.06 * R3_PPM) с сохранением пропорций
+                    let tileW, tileH;
+                    if (o.rollM) {
+                        tileW = Math.round(o.rollM * R3_PPM);
+                        tileH = Math.round(tileW * (o._aspect || 1));
+                    } else {
+                        const mult = (o.kind === 'xy') ? 6 : 3;
+                        tileW = o.sz * mult;
+                        tileH = (o.sz2 || o.sz) * mult;
+                    }
+                    el.style.backgroundSize = `auto, ${tileW}px ${tileH}px`;
+
+                    // Единая непрерывная развёртка стен по периметру (левая -> задняя -> правая)
+                    if (sf === 'wall') {
+                        let offsetX = 0;
+                        if (face === 'back') offsetX = -D;
+                        else if (face === 'right') offsetX = -(D + W);
+                        el.style.backgroundPosition = `0px 0px, ${offsetX}px 0px`;
+                    } else {
+                        el.style.backgroundPosition = '0px 0px, 0px 0px';
+                    }
+                });
+            }); 
             const furnEl = document.getElementById('r3-furniture');
             if (furnEl) {
                 const furnId = R3.furniture[R3.active];
@@ -1732,7 +1753,11 @@ function r3LoadPhotos() {
             sc.style.perspective = (1050 * R3.kk) + 'px';
             R3.fit = Math.max(0.13, Math.min(0.55, 360 / Math.max(W, D))) * R3.kk * (full ? 0.85 : 0.92);
             r3Apply();
+            R3.fit = Math.max(0.13, Math.min(0.55, 360 / Math.max(W, D))) * R3.kk * (full ? 0.85 : 0.92);
+            r3Paint();
+            r3Apply();
         }
+        
         function r3Apply() {
             const room = document.getElementById('r3-room'); if (!room) return;
             const s2 = R3.fit * R3.zoom, D = r3Dims().l * R3_PPM;
