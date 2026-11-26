@@ -3430,7 +3430,7 @@ document.addEventListener('keydown', e => {
 <!-- ==================== THREE.JS 3D FURNITURE LOADER (SYNCED WITH CSS 3D ROOM) ==================== -->
 <script>
 let threeScene = null, threeCamera = null, threeRenderer = null, roomPivot = null;
-let activeModel3D = null, currentLoadedGlb = null;
+let activeModel3D = null, currentLoadedGlb = null, currentItemMeta = null;
 
 const gltfLoader = (typeof THREE !== 'undefined' && THREE.GLTFLoader) ? new THREE.GLTFLoader() : null;
 if (gltfLoader && THREE.DRACOLoader) {
@@ -3439,9 +3439,63 @@ if (gltfLoader && THREE.DRACOLoader) {
     gltfLoader.setDRACOLoader(dracoLoader);
 }
 
+function initThreeOverlay() {
+    if (threeRenderer || typeof THREE === 'undefined') return;
+    const canvas = document.getElementById('three-canvas');
+    const container = document.getElementById('r3-scene');
+    if (!canvas || !container) return;
+
+    const w = container.clientWidth || 392;
+    const h = container.clientHeight || 400;
+
+    threeScene = new THREE.Scene();
+
+    // Угол обзора 38° хорошо совпадает с perspective CSS-комнаты
+    threeCamera = new THREE.PerspectiveCamera(38, w / h, 0.05, 50);
+    threeCamera.position.set(0, 0, 4.2);
+    threeCamera.lookAt(0, 0, 0);
+
+    threeRenderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        alpha: true,
+        antialias: true,
+        preserveDrawingBuffer: true
+    });
+    threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    threeRenderer.setSize(w, h, false);
+    threeRenderer.outputEncoding = THREE.sRGBEncoding;
+    threeRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+    threeRenderer.toneMappingExposure = 1.05;
+
+    // Мягкий студийный свет, чтобы материалы и фасады не были ни чёрными, ни белыми
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x334155, 1.15);
+    hemiLight.position.set(0, 3, 2);
+    threeScene.add(hemiLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    dirLight.position.set(2.2, 3.5, 3.0);
+    threeScene.add(dirLight);
+
+    const fillLight = new THREE.DirectionalLight(0xe0f2fe, 0.45);
+    fillLight.position.set(-2.5, 1.5, 2.0);
+    threeScene.add(fillLight);
+
+    roomPivot = new THREE.Group();
+    threeScene.add(roomPivot);
+
+    function animateThree() {
+        requestAnimationFrame(animateThree);
+        syncThreeWithCssRoom();
+        if (threeRenderer && threeScene && threeCamera) {
+            threeRenderer.render(threeScene, threeCamera);
+        }
+    }
+    animateThree();
+}
+
 function getSyncedRoomMetrics(container, camera) {
-    const w = container.clientWidth || 1;
-    const h = container.clientHeight || 1;
+    const w = container.clientWidth || 392;
+    const h = container.clientHeight || 400;
     const aspect = w / h;
 
     const vFovRad = THREE.MathUtils.degToRad(camera.fov);
@@ -3449,17 +3503,17 @@ function getSyncedRoomMetrics(container, camera) {
     const viewW = viewH * aspect;
 
     const d = (typeof r3Dims === 'function') ? r3Dims() : { l: 4, w: 3.5, h: 2.7 };
-    const baseW = 2.30 * (d.w / 3.5);
-    const baseH = 1.08 * (d.h / 2.7);
-    const baseD = 2.30 * (d.l / 4.0);
-
     const zoom = (typeof R3 !== 'undefined' && R3.zoom) ? R3.zoom : 1;
-    const scaleFactor = Math.min(viewW / 3.2, viewH / 2.2) * zoom;
+
+    // Приводим метры комнаты к единицам сцены Three.js пропорционально CSS-боксу
+    const mToUnit = Math.min(viewW / Math.max(d.w, d.l), viewH / d.h) * 0.62 * zoom;
 
     return {
-        roomW: baseW * scaleFactor,
-        roomH: baseH * scaleFactor,
-        roomD: baseD * scaleFactor
+        roomW: d.w * mToUnit,
+        roomH: d.h * mToUnit,
+        roomD: d.l * mToUnit,
+        mToUnit: mToUnit,
+        dims: d
     };
 }
 
@@ -3476,15 +3530,15 @@ function placeThreeFurnitureModel(raw) {
     let box = new THREE.Box3().setFromObject(raw);
     let size = box.getSize(new THREE.Vector3());
 
-    // Если модель экспортирована лёжа (Z больше Y), поднимаем её вертикально
-    if (size.z > size.y * 1.2) {
+    // Если модель экспортирована лёжа (Z значительно больше Y), ставим её вертикально
+    if (size.z > size.y * 1.35) {
         raw.rotation.x = -Math.PI / 2;
         raw.updateMatrixWorld(true);
         box.setFromObject(raw);
         size = box.getSize(new THREE.Vector3());
     }
 
-    // Если длинная сторона модели смотрит в глубину (Z > X), разворачиваем её вдоль дальней стены (X)
+    // Разворачиваем длинной стороной вдоль задней стены (ось X)
     if (size.z > size.x) {
         raw.rotation.y += Math.PI / 2;
         raw.updateMatrixWorld(true);
@@ -3492,204 +3546,119 @@ function placeThreeFurnitureModel(raw) {
         size = box.getSize(new THREE.Vector3());
     }
 
-    const { roomW, roomH, roomD } = getSyncedRoomMetrics(container, threeCamera);
+    const { roomW, roomH, roomD, mToUnit, dims } = getSyncedRoomMetrics(container, threeCamera);
 
-    const targetW = roomW * 0.92;
-    const targetH = roomH * 0.92;
-    const targetD = Math.min(roomD * 0.36, 0.45 * (roomH / 1.08));
+    // Масштабируем ПРОПОРЦИОНАЛЬНО (uniform scale), чтобы мебель не плющило!
+    const desiredW = (currentItemMeta && currentItemMeta.widthM)
+        ? Math.min(currentItemMeta.widthM * mToUnit, roomW * 0.94)
+        : roomW * 0.85;
 
-    raw.scale.set(
-        targetW / (size.x || 1),
-        targetH / (size.y || 1),
-        targetD / (size.z || 1)
-    );
+    const scaleByW = desiredW / (size.x || 1);
+    const scaleByH = (roomH * 0.88) / (size.y || 1);
+    const scaleByD = (roomD * 0.45) / (size.z || 1);
+    const finalScale = Math.min(scaleByW, scaleByH, scaleByD);
+
+    raw.scale.setScalar(finalScale);
     raw.updateMatrixWorld(true);
 
+    // Ставим ровно на пол (y = -roomH / 2) и прижимаем спинкой к задней стене (z = -roomD / 2)
     box.setFromObject(raw);
     const center = box.getCenter(new THREE.Vector3());
 
-    // Ставим по центру дальней стены, спиной вплотную к задней стене, низом строго на пол
-    raw.position.set(
-        -center.x,
-        -box.min.y - (roomH / 2),
-        -box.min.z - (roomD / 2) + 0.02
-    );
+    raw.position.x = -center.x;
+    raw.position.y = (-roomH / 2) - box.min.y;
+    raw.position.z = (-roomD / 2) - box.min.z + 0.01;
+    raw.updateMatrixWorld(true);
 }
 
-function initThreeFurniture() {
+function syncThreeWithCssRoom() {
+    if (!threeRenderer || !threeCamera || !roomPivot) return;
     const container = document.getElementById('r3-scene');
-    const canvas = document.getElementById('three-canvas');
-    if (!container || !canvas || typeof THREE === 'undefined') return;
+    if (!container) return;
 
-    threeScene = new THREE.Scene();
-
-    threeCamera = new THREE.PerspectiveCamera(
-        45,
-        (container.clientWidth || 392) / (container.clientHeight || 400),
-        0.1,
-        100
-    );
-    threeCamera.position.set(0, 0, 3.5);
-    threeCamera.lookAt(0, 0, 0);
-
-    threeRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-    threeRenderer.setSize(container.clientWidth || 392, container.clientHeight || 400);
-    threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    if ('outputColorSpace' in threeRenderer && THREE.SRGBColorSpace) {
-        threeRenderer.outputColorSpace = THREE.SRGBColorSpace;
-    } else if ('outputEncoding' in threeRenderer && THREE.sRGBEncoding) {
-        threeRenderer.outputEncoding = THREE.sRGBEncoding;
-    }
-    threeRenderer.toneMapping = THREE.ACESFilmicToneMapping;
-    threeRenderer.toneMappingExposure = 1.15;
-
-    // Мягкое студийное освещение
-    threeScene.add(new THREE.AmbientLight(0xffffff, 1.35));
-
-    const dirLight = new THREE.DirectionalLight(0xfff8ee, 1.6);
-    dirLight.position.set(1.5, 2.5, 3.0);
-    threeScene.add(dirLight);
-
-    const fillLight = new THREE.DirectionalLight(0xeef4ff, 0.7);
-    fillLight.position.set(-2.0, 0.5, 2.0);
-    threeScene.add(fillLight);
-
-    // Пивот в центре комнаты, повторяющий вращение и панорамирование #r3-room
-    roomPivot = new THREE.Group();
-    threeScene.add(roomPivot);
-
-    let lastZoom = null;
-
-    function animate() {
-        requestAnimationFrame(animate);
-
-        if (typeof R3 !== 'undefined' && roomPivot) {
-            const yawRad = THREE.MathUtils.degToRad(R3.yaw || 0);
-            const pitchRad = THREE.MathUtils.degToRad(-(R3.pitch || 0));
-
-            roomPivot.rotation.order = 'YXZ';
-            roomPivot.rotation.y = yawRad;
-            roomPivot.rotation.x = pitchRad;
-
-            // Синхронизируем сдвиг камеры (panX, panY) при дрон-турах
-            const px = (R3.panX || 0) * 0.003;
-            const py = -(R3.panY || 0) * 0.003;
-            roomPivot.position.set(px, py, 0);
-
-            const currentZoom = (R3.fit || 1) * (R3.zoom || 1);
-            if (activeModel3D && activeModel3D.children.length && currentZoom !== lastZoom) {
-                lastZoom = currentZoom;
-                placeThreeFurnitureModel(activeModel3D.children[0]);
-            }
-        }
-
-        threeRenderer.render(threeScene, threeCamera);
-    }
-    animate();
-    window.addEventListener('resize', () => {
-        if (!container) return;
-        threeCamera.aspect = container.clientWidth / container.clientHeight;
+    const w = container.clientWidth || 392;
+    const h = container.clientHeight || 400;
+    const canvas = threeRenderer.domElement;
+    if (canvas.width !== Math.round(w * threeRenderer.getPixelRatio()) ||
+        canvas.height !== Math.round(h * threeRenderer.getPixelRatio())) {
+        threeCamera.aspect = w / h;
         threeCamera.updateProjectionMatrix();
-        threeRenderer.setSize(container.clientWidth, container.clientHeight);
-    });
+        threeRenderer.setSize(w, h, false);
+    }
+
+    if (activeModel3D) {
+        placeThreeFurnitureModel(activeModel3D);
+    }
+
+    // Синхронизируем углы поворота и сдвиг с CSS-комнатой (R3.yaw, R3.pitch, R3.panX, R3.panY)
+    const yawRad = THREE.MathUtils.degToRad(R3.yaw || 0);
+    const pitchRad = THREE.MathUtils.degToRad(-(R3.pitch || 0));
+
+    roomPivot.rotation.order = 'YXZ';
+    roomPivot.rotation.y = yawRad;
+    roomPivot.rotation.x = pitchRad;
+
+    const vFovRad = THREE.MathUtils.degToRad(threeCamera.fov);
+    const viewH = 2 * Math.tan(vFovRad / 2) * threeCamera.position.z;
+    const pxToUnit = viewH / h;
+
+    roomPivot.position.x = (R3.panX || 0) * pxToUnit;
+    roomPivot.position.y = -(R3.panY || 0) * pxToUnit;
 }
 
 function setRoom3DModel(item) {
-    if (!threeScene || !gltfLoader) return;
+    currentItemMeta = item || null;
 
     if (!item || !item.glb) {
-        if (activeModel3D) {
-            threeScene.remove(activeModel3D);
-            activeModel3D = null;
-            currentLoadedGlb = null;
+        if (activeModel3D && roomPivot) {
+            roomPivot.remove(activeModel3D);
         }
+        activeModel3D = null;
+        currentLoadedGlb = null;
         return;
     }
 
-    const isSameGlb = (currentLoadedGlb === item.glb);
+    initThreeOverlay();
+    if (!gltfLoader || !roomPivot) return;
+
+    if (currentLoadedGlb === item.glb && activeModel3D) {
+        activeModel3D.visible = true;
+        placeThreeFurnitureModel(activeModel3D);
+        return;
+    }
+
     currentLoadedGlb = item.glb;
-
-    const placeModel = (raw) => {
-        raw.rotation.set(0, 0, 0);
-        raw.scale.set(1, 1, 1);
-        raw.position.set(0, 0, 0);
-        raw.updateMatrixWorld(true);
-
-        let box = new THREE.Box3().setFromObject(raw);
-        let size = box.getSize(new THREE.Vector3());
-
-        // Если модель экспортирована лёжа (Z больше Y — как на видео), поднимаем её вертикально
-        if (size.z > size.y * 1.2) {
-            raw.rotation.x = -Math.PI / 2;
-            raw.updateMatrixWorld(true);
-            box.setFromObject(raw);
-            size = box.getSize(new THREE.Vector3());
-        }
-
-        // Если длинная сторона модели смотрит в глубину (Z > X), разворачиваем её вдоль дальней стены (X)
-        if (size.z > size.x) {
-            raw.rotation.y += Math.PI / 2;
-            raw.updateMatrixWorld(true);
-            box.setFromObject(raw);
-            size = box.getSize(new THREE.Vector3());
-        }
-
-        const d = (typeof r3Dims === 'function') ? r3Dims() : { l: 4, w: 3.5, h: 2.7 };
-        const roomW = 2.30 * (d.w / 3.5);
-        const roomH = 1.08 * (d.h / 2.7);
-        const roomHalfD = 1.15 * (d.l / 4.0);
-
-        // Ширина — во всю дальнюю стену, высота — от пола до потолка, глубина — реальные ~0.42 (без растяжения на полкомнаты)
-        const targetW = roomW * 0.96;
-        const targetH = roomH * 0.96;
-        const targetD = 0.42;
-
-        raw.scale.set(
-            targetW / (size.x || 1),
-            targetH / (size.y || 1),
-            targetD / (size.z || 1)
-        );
-        raw.updateMatrixWorld(true);
-
-        box.setFromObject(raw);
-        const center = box.getCenter(new THREE.Vector3());
-
-        // Ставим по центру дальней стены, спиной вплотную к стене, низом на пол
-        raw.position.set(
-            -center.x,
-            -box.min.y - (roomH / 2),
-            -box.min.z - roomHalfD + 0.02
-        );
-
-        if (activeModel3D) {
-            while (activeModel3D.children.length) activeModel3D.remove(activeModel3D.children[0]);
-            activeModel3D.add(raw);
-        } else {
-            activeModel3D = new THREE.Group();
-            activeModel3D.position.set(0, 0, 0);
-            activeModel3D.add(raw);
-            threeScene.add(activeModel3D);
-        }
-    };
-
-    if (isSameGlb && activeModel3D && activeModel3D.children.length) {
-        placeModel(activeModel3D.children[0]);
-        return;
-    }
 
     gltfLoader.load(
         item.glb,
-        (gltf) => {
-            if (activeModel3D) threeScene.remove(activeModel3D);
-            activeModel3D = null;
-            placeModel(gltf.scene);
+        function(gltf) {
+            if (currentLoadedGlb !== item.glb) return;
+            if (activeModel3D) {
+                roomPivot.remove(activeModel3D);
+            }
+
+            const model = gltf.scene;
+            model.traverse(function(child) {
+                if (child.isMesh && child.material) {
+                    const mats = Array.isArray(child.material) ? child.material : [child.material];
+                    mats.forEach(m => {
+                        if (m.map) m.map.encoding = THREE.sRGBEncoding;
+                        m.side = THREE.DoubleSide;
+                        m.needsUpdate = true;
+                    });
+                }
+            });
+
+            activeModel3D = model;
+            roomPivot.add(activeModel3D);
+            placeThreeFurnitureModel(activeModel3D);
         },
         undefined,
-        (err) => console.warn("Ошибка загрузки GLB:", item.glb, err)
+        function(err) {
+            console.error('Ошибка загрузки GLB модели мебели:', item.glb, err);
+        }
     );
 }
-document.addEventListener("DOMContentLoaded", initThreeFurniture);
 </script>
 </body>
 </html>
-
